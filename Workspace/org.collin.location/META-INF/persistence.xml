@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+	<persistence-unit name="org.fgf.animal.count.location" transaction-type="RESOURCE_LOCAL">
+    <description>Forget the Fish Location Provider</description>
+	<class>org.fgf.animal.count.location.model.WaterTypes</class>
+	<class>org.fgf.animal.count.location.model.Location</class>
+	<class>org.fgf.animal.count.location.model.LocaleDescription</class>
+	<class>org.fgf.animal.count.location.model.MorphoLogicalCode</class>
+	<class>org.fgf.animal.count.location.model.WaterAnimal</class>
+	<class>org.fgf.animal.count.location.model.Measurement</class>
+	<class>org.fgf.animal.count.location.model.Batch</class>
+	<exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <properties>
+			<property name="bundle-name" value="org.fgf.animal.count.location" />
+			<property name="unit-name" value="Waterdiertjes location" />
+      		<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
+			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://databaseserver:3306/waterdiertjes"/>
+			<property name="javax.persistence.jdbc.user" value="phpmyadmin"/>
+ 			<property name="javax.persistence.jdbc.password" value="1001_Beestjes"/>
+			<property name="eclipselink.jdbc.read-connections.min" value="1"/>
+			<property name="eclipselink.jdbc.write-connections.min" value="1"/>
+			
+			<!-- Auto create tables -->
+			<property name="javax.persistence.schema-generation.database.action"
+				value="create" />
+			<property name="javax.persistence.sql-load-script-source"
+              	value="META-INF/sql/data.sql" />				
+			<!-- Logging -->
+			<!-- <property name="eclipselink.logging.level" value="FINE"/> -->
+			<property name="eclipselink.logging.timestamp" value="false"/>
+			<property name="eclipselink.logging.thread" value="false"/>
+			<property name="eclipselink.logging.session" value="false"/>
+	</properties>
+	</persistence-unit>
+</persistence>

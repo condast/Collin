@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+	<persistence-unit name="org.collin.authentication" transaction-type="RESOURCE_LOCAL">
+    <description>Forget the Fish Database Provider</description>
+	<class>org.collin.authentication.model.Name</class>
+	<class>org.collin.authentication.model.Person</class>
+    <class>org.collin.authentication.model.Address</class>
+    <class>org.collin.authentication.model.PersonAddress</class>
+	<class>org.collin.authentication.model.Login</class>
+    <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    <properties>
+			<property name="bundle-name" value="org.collin.authentication" />
+			<property name="unit-name" value="CoLLIN Authentication" />
+      		<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
+			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://databaseserver:3306/collin"/>
+			<property name="javax.persistence.jdbc.user" value="phpmyadmin"/>
+ 			<property name="javax.persistence.jdbc.password" value="1001_Beestjes"/>
+			<property name="eclipselink.jdbc.read-connections.min" value="1"/>
+			<property name="eclipselink.jdbc.write-connections.min" value="1"/>
+			
+			<!-- Auto create tables -->
+			<property name="javax.persistence.schema-generation.database.action"
+				value="create" />
+				
+			<!-- Logging -->
+			<!-- <property name="eclipselink.logging.level" value="FINE"/> -->
+			<property name="eclipselink.logging.timestamp" value="false"/>
+			<property name="eclipselink.logging.thread" value="false"/>
+			<property name="eclipselink.logging.session" value="false"/>
+	</properties>
+	</persistence-unit>
+</persistence>

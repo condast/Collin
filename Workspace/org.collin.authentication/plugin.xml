@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+          id="org.collin.authentication.login"
+          name="COLLIN Login Module"
+          point="org.eclipse.equinox.security.loginModule">
+      <loginModule
+            class="org.collin.authentication.core.LoginModule"
+            description="Login module voor COLLIN">
+      </loginModule>
+   </extension>
+   <extension
+         id="org.collin.authentication.login.callback"
+         name="CallBack Handler for Login"
+         point="org.eclipse.equinox.security.callbackHandler">
+      <callbackHandler
+            class="org.collin.authentication.core.CollinCallbackHandler">
+      </callbackHandler>
+   </extension>
+   <extension
+         point="org.eclipse.equinox.security.callbackHandlerMapping">
+      <callbackHandlerMapping
+            callbackHandlerId="org.collin.authentication.login.callback"
+            configName="COLLIN">
+      </callbackHandlerMapping>
+   </extension>
+   <extension
+         point="org.eclipse.equinox.http.registry.servlets">
+      <servlet
+            alias="/collin/auth"
+            class="org.collin.authentication.RestServlet"
+            load-on-startup="false">
+        <init-param name="javax.ws.rs.Application"
+    			    value="org.collin.authentication.RestApplication">
+		</init-param>
+      </servlet>
+   </extension>
+ </plugin>
