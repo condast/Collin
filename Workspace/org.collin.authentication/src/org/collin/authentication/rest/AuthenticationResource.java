@@ -3,9 +3,6 @@ package org.collin.authentication.rest;
 import java.util.Collection;
 import java.util.logging.Logger;
 
-import javax.security.auth.Subject;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.login.LoginException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -14,17 +11,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.collin.authentication.core.CollinCallbackHandler;
-import org.collin.authentication.core.LoginMediator;
-import org.collin.authentication.core.LoginModule;
 import org.collin.authentication.ds.Dispatcher;
 import org.collin.authentication.model.Login;
 import org.collin.authentication.services.LoginService;
 import org.collin.core.authentication.AuthenticationUtils;
 import org.collin.core.authentication.ILoginUser;
-import org.condast.commons.authentication.core.AbstractAuthenticationManager;
 import org.condast.commons.strings.StringUtils;
-import org.eclipse.equinox.security.auth.ILoginContextListener;
 
 import com.google.gson.Gson;
 
@@ -56,15 +48,13 @@ public class AuthenticationResource{
 	public AuthenticationResource() {
 		super();
 	}
-
+	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/register")
 	public Response register( @QueryParam("name") String name, @QueryParam("password") String password, @QueryParam("email") String email) {
 
 		Response retval = Response.noContent().build();
-		AuthenticationManager manager = new AuthenticationManager();
-		manager.open();
 		try{
 			if( StringUtils.isEmpty(name) && StringUtils.isEmpty( email )) {
 				retval = Response.notModified( ErrorMessages.NO_USERNAME_OR_EMAIL.name()).build();
@@ -78,19 +68,16 @@ public class AuthenticationResource{
 			logger.info( "Registering " + name + "(" + email + ")");
 			Dispatcher dispatcher=  Dispatcher.getInstance();
 			
-			ILoginUser user = manager.login( name, password);
-			if( user == null )
-				user = manager.registerUser(name, password, email);
-			dispatcher.addUser(user, manager);
-			retval = manager.response;
+			//ILoginUser user = manager.login( name, password);
+			//if( user == null )
+			//	user = manager.registerUser(name, password, email);
+			//dispatcher.addUser(user);
+			retval = Response.ok().build();
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();
 			return Response.serverError().build();
-		}finally {
-			manager.close();
 		}
-
 		return retval;
 	}
 
@@ -100,8 +87,6 @@ public class AuthenticationResource{
 	public Response login( @QueryParam("name") String name, @QueryParam("password") String password ) {
 
 		Response retval = null;
-		AuthenticationManager manager = new AuthenticationManager();
-		manager.open();
 		try{
 			logger.info( "Login " + name );
 			if( StringUtils.isEmpty(name)) {
@@ -111,6 +96,7 @@ public class AuthenticationResource{
 				return Response.status( Status.BAD_REQUEST).build();
 			}
 	
+			/*
 			ILoginUser user = manager.login( name, password);
 			if( user == null )
 				return Response.status( Status.UNAUTHORIZED).build();
@@ -121,13 +107,13 @@ public class AuthenticationResource{
 			if( dispatcher.isLoggedIn(user.getId())) {
 				return retval;
 			}else
-				dispatcher.addUser(user, manager);
+				dispatcher.addUser(user);
+				*/
 		}catch( Exception ex ){
 			ex.printStackTrace();
 			return Response.serverError().build();
-		}finally {
-			manager.close();
 		}
+		
 		return retval;
 	}
 
@@ -142,14 +128,16 @@ public class AuthenticationResource{
 			if( !dispatcher.isLoggedIn( id))
 				retval = Response.noContent().build();
 			else {
-				ILoginUser user = dispatcher.getUser( id );
-				if( user == null )
-					return Response.status( Status.GONE ).build();
-				logger.info( "Log off " + user.getUserName() );
-				AuthenticationManager manager = (AuthenticationManager) dispatcher.getManager(user);
-				manager.logoff(id);
-				manager.close();
-				retval = manager.response;
+				ILoginUser user = dispatcher.getLoginUser(id);
+				dispatcher.removeUser(user);
+				Response response = Response.ok().build();
+				try {
+					return response;
+				}
+				catch( Exception ex ) {
+					ex.printStackTrace();
+				}
+				return Response.status( Status.UNAUTHORIZED ).build();
 			}
 		}
 		catch( Exception ex ){
@@ -171,10 +159,9 @@ public class AuthenticationResource{
 				retval = Response.noContent().build();
 			else {
 				ILoginUser user = dispatcher.getUser( id );
-				AuthenticationManager manager = (AuthenticationManager) dispatcher.getManager(user);
 				logger.info( "Unregister " + user.getUserName() );
-				manager.unregisterUser(user);
-				retval = manager.response;
+				//manager.unregisterUser(user);
+				retval = Response.ok().build();
 			}
 		}
 		catch( Exception ex ){
@@ -208,140 +195,6 @@ public class AuthenticationResource{
 		return retval;
 	}
 
-	public class AuthenticationManager extends AbstractAuthenticationManager implements Callback{
-
-		static final String S_CALLBACK_ID = "FGF";
-
-		private LoginMediator mediator = LoginMediator.getIntance();
-		private Callback callback = this;
-
-		private ILoginContextListener listener = new ILoginContextListener(){
-
-			@Override
-			public void onLoginStart(Subject arg0) {
-				mediator.add( callback );
-			}
-
-			@Override
-			public void onLoginFinish(Subject arg0, LoginException arg1) {
-				if( arg1 != null ){
-
-					try{
-						if( AuthenticationResults.isValid( arg1.getMessage() )){
-							return;
-						}
-						LoginModule module = new LoginModule();
-						module.login( new CollinCallbackHandler());
-						completeLogin( AuthenticationResults.OK );
-					}
-					catch( IllegalArgumentException ex ){
-						logger.warning( ex.getMessage() + "\n defaulting to local login");
-					} catch (LoginException e) {
-						e.printStackTrace();
-						completeLogin( AuthenticationResults.INVALID_NAME );
-					}
-					return;
-				}
-				mediator.remove( callback );
-			}
-
-
-			protected void completeLogin( final AuthenticationResults result ){
-				
-			}
-			
-			@Override
-			public void onLogoutStart(Subject arg0) {
-				// NOTHING	
-			}
-			
-
-			@Override
-			public void onLogoutFinish(Subject arg0, LoginException arg1) {
-			}
-		};
-
-		private Response response;
-		
-		private AuthenticationManager() {
-			super( S_CALLBACK_ID );
-			registerListener(listener);
-		}
-
-		public synchronized ILoginUser registerUser(String userName, String password, String email ) {
-			Dispatcher dispatcher = Dispatcher.getInstance();
-			response = null;
-			LoginService service = new LoginService( dispatcher );
-			ILoginUser user = null;
-			service.open();
-			try {
-				user = service.create(userName, password, email);
-				response = Response.ok( toResponseString(user)).build();
-			}
-			catch( Exception ex ) {
-				ex.printStackTrace();
-				response = Response.serverError().build();
-			}
-			finally {
-				service.close();
-			}
-			return user;
-		}
-		
-		public synchronized void unregisterUser(ILoginUser officer) {
-			Dispatcher dispatcher = Dispatcher.getInstance();
-			LoginService service = new LoginService( dispatcher );
-			ILoginUser user = null;
-			service.open();
-			try {
-				dispatcher.removeUser(user);
-				service.remove( officer.getId() );
-				response = Response.ok().build();
-			}
-			catch( Exception ex ) {
-				ex.printStackTrace();
-				response = Response.serverError().build();
-			}
-			finally {
-				service.close();
-				Thread.currentThread().interrupt();
-			}
-		}
-
-		public synchronized ILoginUser login( String userName, String password ) {
-			Dispatcher dispatcher = Dispatcher.getInstance();
-			LoginService service = new LoginService( dispatcher );
-			ILoginUser user = null;
-			service.open();
-			try {
-				user = service.login(userName, password);
-				if( user == null )
-					response = Response.status( Status.UNAUTHORIZED).build();
-				else
-					response = Response.ok( toResponseString(user)).build();
-			}
-			catch( Exception ex ) {
-				ex.printStackTrace();
-				response = Response.serverError().build();
-			}
-			finally {
-				service.close();
-			}
-			return user;
-		}
-		
-		public synchronized ILoginUser logoff( long id ) {
-			Dispatcher dispatcher = Dispatcher.getInstance();
-			ILoginUser user = dispatcher.getUser(id);
-			if( user == null )
-				response = Response.noContent().build();
-			else {
-				dispatcher.removeUser( user );		
-				response = Response.ok().build();
-			}
-			return user;
-		}
-	}
 
 	/**
 	 * Create a response object of the user

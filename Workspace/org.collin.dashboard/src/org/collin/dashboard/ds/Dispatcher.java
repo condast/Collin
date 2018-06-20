@@ -2,23 +2,26 @@ package org.collin.dashboard.ds;
 
 import org.collin.core.authentication.ILoginUser;
 import org.collin.core.authentication.ILoginUserFactory;
+import org.eclipse.swt.widgets.Composite;
 
 /**
  * The volunteer who has access to the data
  * @author Kees
  *
  */
-public class AuthenticationDispatcher{
+public class Dispatcher{
 
-	private static AuthenticationDispatcher dispatcher = new AuthenticationDispatcher();
+	private static Dispatcher dispatcher = new Dispatcher();
 	
 	private ILoginUserFactory factory;
+	
+	private Composite main; 
 
-	public static AuthenticationDispatcher getInstance(){
+	public static Dispatcher getInstance(){
 		return dispatcher;
 	}
 	
-	private AuthenticationDispatcher() {
+	private Dispatcher() {
 		super();
 	}
 
@@ -29,7 +32,15 @@ public class AuthenticationDispatcher{
 	public void unsetFactory( ILoginUserFactory factory ){
 		this.factory = null;
 	}
-		
+	
+	public Composite getMainComposite() {
+		return main;
+	}
+	
+	public void setMainComposite( Composite main) {
+		this.main = main;
+	}
+	
 	public ILoginUser getOfficer( String userName, String password, String email ) {
 		ILoginUser officer = factory.registerUser( userName, password, email );
 		//manager.setSupportOfficer(officer);

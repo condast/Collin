@@ -8,6 +8,7 @@ Automatic-Module-Name: org.fgf.animal.count.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.condast.commons.config,
  org.condast.commons.messaging.http,
+ org.eclipse.equinox.security.auth;version="1.0.0",
  org.eclipse.swt,
  org.eclipse.swt.events,
  org.eclipse.swt.layout,

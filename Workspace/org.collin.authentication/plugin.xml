@@ -2,15 +2,6 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-          id="org.collin.authentication.login"
-          name="COLLIN Login Module"
-          point="org.eclipse.equinox.security.loginModule">
-      <loginModule
-            class="org.collin.authentication.core.LoginModule"
-            description="Login module voor COLLIN">
-      </loginModule>
-   </extension>
-   <extension
          id="org.collin.authentication.login.callback"
          name="CallBack Handler for Login"
          point="org.eclipse.equinox.security.callbackHandler">

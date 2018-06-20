@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.condast.commons.messaging.http.AbstractHttpRequest;
 import org.condast.commons.messaging.http.ResponseEvent;
+import org.eclipse.equinox.security.auth.ILoginContext;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.layout.GridData;
@@ -26,8 +27,11 @@ public class AuthenticationComposite extends Composite {
 	private Text textName;
 	private Text textPassword;
 	//public static final String S_COLLIN_URL = "http://www.condast.com:8080/collin/auth/";
+	
+	private ILoginContext module;
 
 	public enum Requests{
+		ACTIVATE,
 		REGISTER,
 		LOGIN,
 		LOGOUT,
@@ -89,7 +93,24 @@ public class AuthenticationComposite extends Composite {
 		textPassword = new Text(this, SWT.BORDER);
 		textPassword.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		textPassword.setText("TestPassword");
-		
+
+		Link activatLink = new Link(this, SWT.NONE);
+		activatLink.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		activatLink.setText("<a>Login</a>");
+		activatLink.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				try {
+					module.login();
+					activatLink.setText("<a>Logout</a>");
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+
 		Link loginLink = new Link(this, SWT.NONE);
 		loginLink.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		loginLink.setText("<a>Login</a>");
@@ -129,6 +150,15 @@ public class AuthenticationComposite extends Composite {
 		registerLink.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		registerLink.setText("<a>Register</a>");
 	}
+
+	public ILoginContext getInput() {
+		return module;
+	}
+
+	public void setInput( ILoginContext module) {
+		this.module = module;
+	}
+
 
 	@Override
 	protected void checkSubclass() {

@@ -16,7 +16,7 @@ public class AuthenticationComponent{
 
 	public static final String COMPONENT_NAME = "org.collin.dashboard.service.login";
 
-	private AuthenticationDispatcher dispatcher = AuthenticationDispatcher.getInstance();
+	private Dispatcher dispatcher = Dispatcher.getInstance();
 	
     private static final Logger logger = Logger.getLogger( AuthenticationComponent.class.getName());
     

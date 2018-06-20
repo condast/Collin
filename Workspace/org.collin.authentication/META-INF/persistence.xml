@@ -14,7 +14,7 @@
 			<property name="bundle-name" value="org.collin.authentication" />
 			<property name="unit-name" value="CoLLIN Authentication" />
       		<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
-			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://databaseserver:3306/collin"/>
+			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://databaseserver:3306/Collin"/>
 			<property name="javax.persistence.jdbc.user" value="phpmyadmin"/>
  			<property name="javax.persistence.jdbc.password" value="1001_Beestjes"/>
 			<property name="eclipselink.jdbc.read-connections.min" value="1"/>

@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import org.collin.core.data.BatchEntry;
 import org.condast.commons.messaging.http.AbstractHttpRequest;
 import org.condast.commons.test.core.AbstractTestSuite;
+import org.condast.commons.test.core.ITestEvent;
 
 import test.fgf.animal.count.post.Activator;
 
@@ -160,7 +161,7 @@ public class TestSuite extends AbstractTestSuite<Object>{
 			while( scanner.hasNextLine() )
 				buffer.append( scanner.nextLine());
 			String snd = URLEncoder.encode(buffer.toString(), "UTF-8");
-			client.sendPost(path, buffer.toString());
+			client.sendPost(path, buffer.toString(), false);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -243,5 +244,18 @@ public class TestSuite extends AbstractTestSuite<Object>{
 			logger.info( msg.toString() );	
 			return response;
 		}
+	}
+
+	@Override
+	protected void onPrepare(ITestEvent<Object> event) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	protected void onPerform(ITestEvent<Object> event) {
+		// TODO Auto-generated method stub
+		
 	}
 }

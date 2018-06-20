@@ -1,10 +1,15 @@
-package org.collin.authentication.core;
+package org.collin.dashboard.authentication;
 
+import java.util.Map;
+
+import javax.security.auth.Subject;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.NameCallback;
+import javax.security.auth.callback.PasswordCallback;
+import javax.security.auth.callback.TextOutputCallback;
 import javax.security.auth.login.LoginException;
-
-import org.collin.authentication.ds.Dispatcher;
-import org.collin.authentication.services.LoginService;
-import org.collin.core.authentication.ILoginUser;
+import javax.security.auth.spi.LoginModule;
 
 /*
 *
@@ -45,8 +50,7 @@ import org.collin.core.authentication.ILoginUser;
 * maintenance of any nuclear facility.
 */
 
-import org.condast.commons.authentication.module.AbstractLoginModule;
-
+import org.eclipse.swt.SWT;
 
 /**
 * <p> This sample LoginModule authenticates users with a password.
@@ -63,21 +67,54 @@ import org.condast.commons.authentication.module.AbstractLoginModule;
 * debug messages will be output to the output stream, System.out.
 *
 */
-public class LoginModule extends AbstractLoginModule {
+public class CollinLoginModule implements LoginModule {
 
-	private static final String S_DEF_USERNAME = "CoLLIN";
-
-	private static final String S_COLLIN_MODULE = "[COLLINModule]";
-	
-	public LoginModule() {
-		super( S_COLLIN_MODULE, S_DEF_USERNAME);
+    private CallbackHandler callbackHandler;
+    private Subject subject;
+    
+	public CollinLoginModule() {
 	}
 
 	@Override
-	protected boolean verifyUsernameAndPassword(String userName, char[] password) throws LoginException{
-		Dispatcher dispatcher = Dispatcher.getInstance();
-		LoginService loginService = new LoginService( dispatcher );
-		ILoginUser login = loginService.login(userName, String.valueOf(password) );
-		return ( login != null );
-	}
+	public void initialize(Subject subject, CallbackHandler callback, Map<String, ?> arg2, Map<String, ?> arg3) {
+        this.subject = subject;
+        this.callbackHandler = callback;
+    }
+
+    public boolean login() throws LoginException {
+        Callback label = new TextOutputCallback(
+                TextOutputCallback.INFORMATION,
+                "Please login! Hint: user1/rap");
+        NameCallback nameCallback = new NameCallback("Username:");
+        PasswordCallback passwordCallback = new PasswordCallback(
+                "Password:", false);
+        try {
+        	callbackHandler.handle(new Callback[] { label, nameCallback,
+                    passwordCallback });
+        } catch (ThreadDeath death) {
+            LoginException loginException = new LoginException();
+            loginException.initCause(death);
+            throw loginException;
+        } catch (Exception exception) {
+            LoginException loginException = new LoginException();
+            loginException.initCause(exception);
+            throw loginException;
+        }
+        return true;
+    }
+
+    public boolean commit() throws LoginException {
+        //subject.getPublicCredentials().add(USERS);
+        //subject.getPrivateCredentials().add(Display.getCurrent());
+        subject.getPrivateCredentials().add(SWT.getPlatform());
+        return true;
+     }
+
+    public boolean abort() throws LoginException {
+         return true;
+    }
+
+    public boolean logout() throws LoginException {
+    	return true;
+    }
 }

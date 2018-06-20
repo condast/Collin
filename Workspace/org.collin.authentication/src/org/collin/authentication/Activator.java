@@ -6,7 +6,7 @@ import org.osgi.framework.BundleContext;
 public class Activator implements BundleActivator {
 
     public static String BUNDLE_ID = "org.collin.authentication";
-    
+
     private static BundleContext defaultContext;
  
 	public void start(BundleContext context) throws Exception {
