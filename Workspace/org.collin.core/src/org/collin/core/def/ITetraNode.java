@@ -21,4 +21,8 @@ public interface ITetraNode<D extends Object> {
 
 	void select();
 
+	int getSelected();
+
+	int balance(int offset);
+
 }

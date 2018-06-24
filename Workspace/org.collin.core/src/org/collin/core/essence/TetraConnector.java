@@ -3,27 +3,18 @@ package org.collin.core.essence;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.collin.core.def.IPlane;
 import org.collin.core.def.ITetraNode;
 
 public class TetraConnector<D extends Object> {
 
-	private IPlane<D>[] planes;
-	
 	private Collection<Connector> connectors;
 		
-	@SuppressWarnings("unchecked")
-	public TetraConnector( IPlane<D> first, IPlane<D> second ) {
+	public TetraConnector() {
 		connectors = new ArrayList<Connector>();
-		planes = new IPlane[2];
-		planes[0] = first;
-		planes[1] = second;
 	}
 	
-	public void connect( ITetraNode.Nodes node1, ITetraNode.Nodes node2) {
-		ITetraNode<D> nd1 = planes[0].getNode(node1);
-		ITetraNode<D> nd2 = planes[1].getNode(node2);
-		connectors.add( new Connector( nd1, nd2 ));
+	public void connect( ITetraNode<D> node1, ITetraNode<D> node2) {
+		connectors.add( new Connector( node1, node2 ));
 	}
 
 	public boolean disconnect( ITetraNode<D> node1, ITetraNode<D> node2) {
@@ -34,7 +25,16 @@ public class TetraConnector<D extends Object> {
 		}
 		return false;
 	}
-	
+
+	public boolean remove( ITetraNode<D> node1 ) {
+		Collection<Connector> temp = new ArrayList<Connector>();
+		for( Connector connector: this.connectors ) {
+			if( !connector.contains( node1 ))
+				temp.add( connector );
+		}
+		return this.connectors.removeAll( temp );
+	}
+
 	public void dispose() {
 		for( Connector connector: this.connectors )
 			connector.dispose();
@@ -70,6 +70,10 @@ public class TetraConnector<D extends Object> {
 			nd1.addTetraListener(listener);
 			nodes[1] = nd2;
 			nd2.addTetraListener(listener);
+		}
+		
+		public boolean contains( ITetraNode<D> node ) {
+			return nodes[0].equals(node ) || nodes[1].equals( node );
 		}
 		
 		public boolean isEqual( ITetraNode<D> node1, ITetraNode<D> node2 ) {

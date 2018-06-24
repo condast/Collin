@@ -1,6 +1,5 @@
 package org.collin.core.essence;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,35 +7,47 @@ import java.util.Map;
 import org.collin.core.def.IPlane;
 import org.collin.core.def.ITetraNode;
 
-public class Tetra<N extends Object> {
+public class Tetra<D extends Object> implements ITetra<D> {
 
-	private enum Planes{
-		AMBITION,
-		LEARNING,
-		OPERATION,
-		RECOVERY;
-	}
-
-	private Map<Planes, Plane> planes;
+	private String label;
 	
-	private Map<ITetraNode.Nodes, Node> nodes;
+	private Map<Planes, IPlane<D>> planes;
 	
-	private ITetraNode<N> selected;
+	private Map<ITetraNode.Nodes, ITetraNode<D>> nodes;
+	
+	private ITetraNode<D> selected;
 
-	protected Tetra() {
-		planes = new HashMap<Planes, Plane>();
-		nodes = new HashMap<ITetraNode.Nodes,Node>();
+	protected Tetra( String label ) {
+		this.label = label;
+		planes = new HashMap<Planes, IPlane<D>>();
+		nodes = new HashMap<ITetraNode.Nodes, ITetraNode<D>>();
 	}
 
-	public Tetra(N task, N goal, N structure, N function) {
-		this();
-		this.planes.put( Planes.AMBITION,  new Plane( ITetraNode.Nodes.GOAL, goal, ITetraNode.Nodes.STRUCTURE, structure, ITetraNode.Nodes.FUNCTION, function  ));
-		this.planes.put( Planes.LEARNING,  new Plane( ITetraNode.Nodes.GOAL, goal, ITetraNode.Nodes.TASK, task, ITetraNode.Nodes.FUNCTION, function ));
-		this.planes.put( Planes.OPERATION, new Plane( ITetraNode.Nodes.STRUCTURE, structure, ITetraNode.Nodes.TASK, task, ITetraNode.Nodes.FUNCTION, function ));
-		this.planes.put( Planes.RECOVERY,  new Plane( ITetraNode.Nodes.GOAL, goal, ITetraNode.Nodes.TASK, task, ITetraNode.Nodes.STRUCTURE, structure ));
+	@Override
+	public String getLabel() {
+		return label;
 	}
 
-	public Map<Planes, Plane> getPlanes() {
+
+	public void addNode( Planes type, Plane<D> plane ) {
+		this.planes.put(type, plane );
+	}
+	
+	@Override
+	public ITetraNode<D> getNode( ITetraNode.Nodes type ) {
+		return this.nodes.get(type);
+	}
+	
+	@Override
+	public Collection<ITetraNode<D>> getNodes() {
+		return this.nodes.values();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.collin.core.essence.ITetra#getPlanes()
+	 */
+	@Override
+	public Map<Planes, IPlane<D>> getPlanes() {
 		return planes;
 	}
 	
@@ -44,108 +55,20 @@ public class Tetra<N extends Object> {
 		return this.planes.get(plane).getBalance();
 	}
 		
+	/* (non-Javadoc)
+	 * @see org.collin.core.essence.ITetra#select(org.collin.core.def.ITetraNode.Nodes)
+	 */
+	@Override
 	public void select( ITetraNode.Nodes node ) {
 		this.selected = this.nodes.get(node);
 		this.selected.select();
 		int low = Integer.MAX_VALUE;
-		for( Node nd: this.nodes.values()) {
-			if( nd.selected < low )
-				low = nd.selected;
+		for( ITetraNode<D> nd: this.nodes.values()) {
+			if( nd.getSelected() < low )
+				low = nd.getSelected();
 		}
-		for( Node nd: this.nodes.values()) {
-			nd.selected -= low;
+		for( ITetraNode<D> nd: this.nodes.values()) {
+			nd.balance( low );
 		}
-	}
-
-	private class Plane implements IPlane{
-		
-		private Map<ITetraNode.Nodes, Node> nodes;
-
-		public Plane() {
-			super();
-			nodes = new HashMap<ITetraNode.Nodes,Node>();
-		}
-
-		public Plane( ITetraNode.Nodes ns1, N node1, ITetraNode.Nodes ns2, N node2, ITetraNode.Nodes ns3, N node3) {
-			this();
-			this.nodes.put( ns1, new Node( ns1.toString(), node1 ));
-			this.nodes.put( ns2, new Node( ns2.toString(), node2 ));
-			this.nodes.put( ns3, new Node( ns3.toString(), node3 ));
-		}
-		
-		@Override
-		public ITetraNode<N> getNode(ITetraNode.Nodes node) {
-			return nodes.get(node);
-		}
-
-		/* (non-Javadoc)
-		 * @see org.collin.core.essence.IPlane#getBalance()
-		 */
-		@Override
-		public int getBalance() {
-			Collection<Node> select = this.nodes.values();
-			int min = Integer.MAX_VALUE;
-			int max = 0;
-			for( Node nd: this.nodes.values()) {
-				if( nd.selected < min )
-					min = nd.selected;
-				if( nd.selected > max )
-					max = nd.selected;
-			}	
-			return (max - min );
-		}
-	}
-	
-	private class Node implements ITetraNode<N>{
-		
-		private String id;
-		
-		private N data;
-		
-		private int selected;
-
-		private Collection<ITetraListener<N>> listeners;
-		
-		public Node( String id, N data ) {
-			super();
-			this.id = id;
-			this.selected = 0;
-			this.listeners = new ArrayList<ITetraListener<N>>();
-		}
- 
-		@Override
-		public String getId() {
-			return id;
-		}
-
-
-		@Override
-		public N getData() {
-			return this.data;
-		}
-
-		@Override
-		public void addTetraListener( ITetraListener<N> listener ) {
-			this.listeners.add( listener);
-		}
-
-		@Override
-		public void removeTetraListener( ITetraListener<N> listener ) {
-			this.listeners.remove( listener);
-		}
-		
-		protected void notifyTetraListeners( TetraEvent<N> event ) {
-			for( ITetraListener<N> listener: this.listeners )
-				listener.notifyNodeSelected(event);
-		}
-
-		/* (non-Javadoc)
-		 * @see org.collin.core.essence.ITetraNode#select()
-		 */
-		@Override
-		public void select() {
-			this.selected++;
-			notifyTetraListeners( new TetraEvent<N>( this, data, this.selected ));
-		}
-	}
+	}		
 }

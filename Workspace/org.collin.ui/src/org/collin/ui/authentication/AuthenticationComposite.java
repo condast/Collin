@@ -94,7 +94,7 @@ public class AuthenticationComposite extends Composite {
 		textPassword.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		textPassword.setText("TestPassword");
 
-		Link activatLink = new Link(this, SWT.NONE);
+		final Link activatLink = new Link(this, SWT.NONE);
 		activatLink.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		activatLink.setText("<a>Login</a>");
 		activatLink.addSelectionListener(new SelectionAdapter() {
