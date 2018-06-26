@@ -24,6 +24,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 				if( event.getData() instanceof AuthenticationComposite ) {
 					AuthenticationComposite composite=  (AuthenticationComposite) event.getData();
 					composite.setInput( Activator.createLoginContext());
+					composite.setLoginProvider( dispatcher);
 				}
 			}
 			catch( Exception ex ) {
@@ -31,7 +32,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 			}
 		}
 	};
-
+	
 	@Override
 	protected void createContents(Composite parent) {
 		parent.setLayout(new FillLayout());       

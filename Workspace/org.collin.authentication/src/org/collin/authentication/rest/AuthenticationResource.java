@@ -15,8 +15,10 @@ import org.collin.authentication.ds.Dispatcher;
 import org.collin.authentication.model.Login;
 import org.collin.authentication.services.LoginService;
 import org.collin.core.authentication.AuthenticationUtils;
-import org.collin.core.authentication.ILoginUser;
+import org.condast.commons.authentication.core.ILoginUser;
 import org.condast.commons.strings.StringUtils;
+import org.condast.commons.verification.IVerification;
+import org.condast.commons.verification.IVerification.VerificationTypes;
 
 import com.google.gson.Gson;
 
@@ -53,10 +55,11 @@ public class AuthenticationResource{
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/register")
 	public Response register( @QueryParam("name") String name, @QueryParam("password") String password, @QueryParam("email") String email) {
-
 		Response retval = Response.noContent().build();
-		try{
-			if( StringUtils.isEmpty(name) && StringUtils.isEmpty( email )) {
+			if( StringUtils.isEmpty(name) || StringUtils.isEmpty( email )) {
+				retval = Response.notModified( ErrorMessages.NO_USERNAME_OR_EMAIL.name()).build();
+				return retval;
+			}else if( !IVerification.VerificationTypes.verify(VerificationTypes.EMAIL, email)){
 				retval = Response.notModified( ErrorMessages.NO_USERNAME_OR_EMAIL.name()).build();
 				return retval;
 			}else if( StringUtils.isEmpty( name )) {
@@ -64,56 +67,52 @@ public class AuthenticationResource{
 			}else if( StringUtils.isEmpty( password )) {
 				return Response.status( Status.BAD_REQUEST).build();
 			}
-			
+
 			logger.info( "Registering " + name + "(" + email + ")");
 			Dispatcher dispatcher=  Dispatcher.getInstance();
-			
-			//ILoginUser user = manager.login( name, password);
-			//if( user == null )
-			//	user = manager.registerUser(name, password, email);
-			//dispatcher.addUser(user);
-			retval = Response.ok().build();
-		}
-		catch( Exception ex ){
-			ex.printStackTrace();
-			return Response.serverError().build();
-		}
-		return retval;
+
+			LoginService service = new LoginService( dispatcher ); 
+			try{
+				service.open();
+				ILoginUser user = service.create(name, password, email);
+				dispatcher.addUser(user);
+				retval = Response.ok( String.valueOf( user.getId())).build();
+			}
+			catch( Exception ex ){
+				ex.printStackTrace();
+				return Response.serverError().build();
+			}
+			finally {
+				service.close();
+			}
+			return retval;
 	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/login")
 	public Response login( @QueryParam("name") String name, @QueryParam("password") String password ) {
-
-		Response retval = null;
+		Response retval = Response.noContent().build();
 		try{
-			logger.info( "Login " + name );
-			if( StringUtils.isEmpty(name)) {
+			if( StringUtils.isEmpty(name) || StringUtils.isEmpty(password )) {
 				retval = Response.notModified( ErrorMessages.NO_USERNAME_OR_EMAIL.name()).build();
 				return retval;
 			}else if( StringUtils.isEmpty( password )) {
 				return Response.status( Status.BAD_REQUEST).build();
 			}
-	
-			/*
-			ILoginUser user = manager.login( name, password);
-			if( user == null )
-				return Response.status( Status.UNAUTHORIZED).build();
-
-			logger.info( "User logged in " + name );
-			retval = manager.response;
+			
+			logger.info( "Login " + name );
 			Dispatcher dispatcher=  Dispatcher.getInstance();
-			if( dispatcher.isLoggedIn(user.getId())) {
-				return retval;
-			}else
-				dispatcher.addUser(user);
-				*/
-		}catch( Exception ex ){
+			
+			LoginService service = new LoginService( dispatcher ); 
+			ILoginUser user = service.login(name, password);
+			dispatcher.addUser(user);
+			retval = Response.ok( String.valueOf( user.getId() )).build();
+		}
+		catch( Exception ex ){
 			ex.printStackTrace();
 			return Response.serverError().build();
 		}
-		
 		return retval;
 	}
 
@@ -130,14 +129,7 @@ public class AuthenticationResource{
 			else {
 				ILoginUser user = dispatcher.getLoginUser(id);
 				dispatcher.removeUser(user);
-				Response response = Response.ok().build();
-				try {
-					return response;
-				}
-				catch( Exception ex ) {
-					ex.printStackTrace();
-				}
-				return Response.status( Status.UNAUTHORIZED ).build();
+				return Response.ok(String.valueOf( user.getId() )).build();
 			}
 		}
 		catch( Exception ex ){
@@ -153,20 +145,28 @@ public class AuthenticationResource{
 	public Response unregister( @QueryParam("id") long id ) {
 
 		Response retval = null;
+		Dispatcher dispatcher=  Dispatcher.getInstance();
+		if( !dispatcher.isRegistered(id)) {
+			retval = Response.noContent().build();
+			return retval;
+		}
+
+		LoginService service = new LoginService( dispatcher ); 
 		try{
-			Dispatcher dispatcher=  Dispatcher.getInstance();
-			if( !dispatcher.isRegistered(id))
-				retval = Response.noContent().build();
-			else {
-				ILoginUser user = dispatcher.getUser( id );
-				logger.info( "Unregister " + user.getUserName() );
-				//manager.unregisterUser(user);
-				retval = Response.ok().build();
-			}
+			service.open();	
+			ILoginUser user = dispatcher.getUser( id );
+			logger.info( "Unregister " + user.getUserName() );			
+
+			service.remove(user.getId());
+			//manager.unregisterUser(user);
+			retval = Response.ok(String.valueOf( user.getId() )).build();
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();
 			return Response.serverError().build();
+		}
+		finally{ 
+			service.close();
 		}
 		return retval;
 	}

@@ -1,14 +1,17 @@
 package org.collin.authentication.ds;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.collin.authentication.services.LoginService;
-import org.collin.core.authentication.ILoginProvider;
-import org.collin.core.authentication.ILoginUser;
+import org.condast.commons.authentication.core.AuthenticationEvent;
+import org.condast.commons.authentication.core.IAuthenticationListener;
+import org.condast.commons.authentication.core.IAuthenticationListener.AuthenticationEvents;
+import org.condast.commons.authentication.core.ILoginProvider;
+import org.condast.commons.authentication.core.ILoginUser;
 import org.condast.commons.persistence.service.AbstractPersistencyService;
 import org.condast.commons.persistence.service.IPersistenceService;
 
@@ -22,15 +25,33 @@ public class Dispatcher extends AbstractPersistencyService implements ILoginProv
 	
 	private  Set<ILoginUser> users;
 	
+	private Collection<IAuthenticationListener> listeners;
+		
 	private Dispatcher(  ) {
 		super( S_COLLIN_SERVICE_ID, S_COLLIN_SERVICE );
 		users = new TreeSet<ILoginUser>();
+		listeners = new ArrayList<>();
 	}
 
 	public static Dispatcher getInstance(){
 		return service;
 	}
 	
+	@Override
+	public void addAuthenticationListener( IAuthenticationListener listener ) {
+		this.listeners.add(listener);
+	}
+
+	@Override
+	public void removeAuthenticationListener( IAuthenticationListener listener ) {
+		this.listeners.remove(listener);		
+	}
+	
+	protected void notifyListeners( AuthenticationEvent event ) {
+		for( IAuthenticationListener listener: this.listeners )
+			listener.notifyLoginChanged( event );
+	}
+
 	public boolean isRegistered( ILoginUser user ) {
 		return this.users.contains( user );
 	}
@@ -41,11 +62,14 @@ public class Dispatcher extends AbstractPersistencyService implements ILoginProv
 			return false;
 		}
 		this.users.add( user );
+		notifyListeners( new AuthenticationEvent( this, AuthenticationEvents.LOGIN, user ));
 		return true;
 	}
 	
 	public boolean removeUser( ILoginUser user ) {
-		return this.users.remove( user );
+		boolean result = this.users.remove( user );
+		notifyListeners( new AuthenticationEvent( this, AuthenticationEvents.LOG_OFF, user ));
+		return result;
 	}
 
 	public ILoginUser getUser( long id ) {

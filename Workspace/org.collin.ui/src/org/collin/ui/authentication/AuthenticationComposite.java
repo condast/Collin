@@ -1,6 +1,7 @@
 package org.collin.ui.authentication;
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Label;
 
@@ -10,6 +11,9 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.condast.commons.authentication.core.AuthenticationEvent;
+import org.condast.commons.authentication.core.IAuthenticationListener;
+import org.condast.commons.authentication.core.ILoginProvider;
 import org.condast.commons.messaging.http.AbstractHttpRequest;
 import org.condast.commons.messaging.http.ResponseEvent;
 import org.eclipse.equinox.security.auth.ILoginContext;
@@ -69,6 +73,30 @@ public class AuthenticationComposite extends Composite {
 		}		
 	}
 
+	private IAuthenticationListener alistener=  new IAuthenticationListener(){
+
+		@Override
+		public void notifyLoginChanged(AuthenticationEvent event) {
+			getDisplay().asyncExec( new Runnable() {
+
+				@Override
+				public void run() {
+					try {
+						long loginId = (long) Display.getCurrent().getData("id");
+						String text = provider.isLoggedIn(loginId)?	"<a>Logout</a>": "<a>Login</a>";
+						activateLink.setText(text);		
+					}
+					catch( Exception ex ) {
+						ex.printStackTrace();
+					}
+				}			
+			});
+		}	
+	};
+
+	private ILoginProvider provider;
+
+	private Link activateLink;
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -76,6 +104,10 @@ public class AuthenticationComposite extends Composite {
 	 */
 	public AuthenticationComposite(Composite parent, int style) {
 		super(parent, style);
+		createComposite( parent, style );
+	}
+	
+	protected void createComposite( Composite parent, int style ) {
 		setLayout(new GridLayout(2, false));
 		
 		Label lblName = new Label(this, SWT.NONE);
@@ -94,17 +126,16 @@ public class AuthenticationComposite extends Composite {
 		textPassword.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		textPassword.setText("TestPassword");
 
-		final Link activatLink = new Link(this, SWT.NONE);
-		activatLink.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		activatLink.setText("<a>Login</a>");
-		activatLink.addSelectionListener(new SelectionAdapter() {
+		activateLink = new Link(this, SWT.NONE);
+		activateLink.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		activateLink.setText("<a>Login</a>");
+		activateLink.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try {
 					module.login();
-					activatLink.setText("<a>Logout</a>");
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
@@ -158,11 +189,20 @@ public class AuthenticationComposite extends Composite {
 	public void setInput( ILoginContext module) {
 		this.module = module;
 	}
-
+	
+	public void setLoginProvider( ILoginProvider provider ) {
+		this.provider = provider;
+		this.provider.addAuthenticationListener(alistener);
+	}
 
 	@Override
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components
+	}
+	
+	public void dispose() {
+		this.provider.removeAuthenticationListener(alistener);
+		super.dispose();
 	}
 
 	private class WebClient extends AbstractHttpRequest{

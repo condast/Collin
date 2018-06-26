@@ -7,8 +7,8 @@ import java.util.Map;
 import javax.persistence.TypedQuery;
 
 import org.collin.authentication.model.Login;
-import org.collin.core.authentication.ILoginUser;
 import org.condast.commons.Utils;
+import org.condast.commons.authentication.core.ILoginUser;
 import org.condast.commons.persistence.service.AbstractEntityService;
 import org.condast.commons.persistence.service.IPersistenceService;
 
@@ -50,7 +50,7 @@ public class LoginService extends AbstractEntityService<Login>{
 	}
 	
 	/**
-	 * Get the user names corrspeonding with the given user ids.
+	 * Get the user names corresponding with the given user ids.
 	 * @param userIds
 	 * @return
 	 */

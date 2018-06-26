@@ -4,15 +4,26 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.collin.authentication.services.LoginService;
-import org.collin.core.authentication.ILoginProvider;
-import org.collin.core.authentication.ILoginUser;
+import org.condast.commons.authentication.core.IAuthenticationListener;
+import org.condast.commons.authentication.core.ILoginProvider;
+import org.condast.commons.authentication.core.ILoginUser;
 import org.osgi.service.component.annotations.Component;
 
-@Component( name="org.collin.authentication.factory")
+@Component( name="org.collin.authentication.provider")
 public class LoginUserProvider implements ILoginProvider {
 
 	private Dispatcher dispatcher = Dispatcher.getInstance();
 	
+	@Override
+	public void addAuthenticationListener(IAuthenticationListener listener) {
+		dispatcher.addAuthenticationListener(listener);
+	}
+
+	@Override
+	public void removeAuthenticationListener(IAuthenticationListener listener) {
+		dispatcher.removeAuthenticationListener(listener);
+	}
+
 	@Override
 	public boolean isRegistered( long loginId) {
 		return dispatcher.isRegistered( loginId );

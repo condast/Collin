@@ -1,7 +1,14 @@
 package org.collin.dashboard.ds;
 
-import org.collin.core.authentication.ILoginUser;
-import org.collin.core.authentication.ILoginUserFactory;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.condast.commons.authentication.core.AuthenticationEvent;
+import org.condast.commons.authentication.core.IAuthenticationListener;
+import org.condast.commons.authentication.core.ILoginProvider;
+import org.condast.commons.authentication.core.ILoginUser;
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -9,13 +16,35 @@ import org.eclipse.swt.widgets.Composite;
  * @author Kees
  *
  */
-public class Dispatcher{
+public class Dispatcher implements ILoginProvider{
 
 	private static Dispatcher dispatcher = new Dispatcher();
 	
-	private ILoginUserFactory factory;
+	private ILoginProvider factory;
 	
 	private Composite main; 
+
+	private Collection<IAuthenticationListener> listeners;
+
+	private Collection<ILoginUser> users;
+
+	private IAuthenticationListener listener=  new IAuthenticationListener(){
+
+		@Override
+		public void notifyLoginChanged(AuthenticationEvent event) {
+			switch( event.getEvent() ) {
+			case REGISTER:
+			case LOGIN:
+				users.add(event.getUser());
+				break;
+			default:
+				users.remove( event.getUser());
+				break;
+			}
+			for( IAuthenticationListener listener: listeners )
+				listener.notifyLoginChanged( event );
+		}	
+	};
 
 	public static Dispatcher getInstance(){
 		return dispatcher;
@@ -23,13 +52,25 @@ public class Dispatcher{
 	
 	private Dispatcher() {
 		super();
+		listeners = new ArrayList<>();
+		users = new ArrayList<>();
 	}
 
-	public void setFactory( ILoginUserFactory factory ){
+	public void addAuthenticationListener( IAuthenticationListener listener ) {
+		this.listeners.add(listener);
+	}
+
+	public void removeAuthenticationListener( IAuthenticationListener listener ) {
+		this.listeners.remove(listener);		
+	}
+	
+	public void setFactory( ILoginProvider factory ){
 		this.factory = factory;
+		this.factory.addAuthenticationListener(listener);
 	}
 
-	public void unsetFactory( ILoginUserFactory factory ){
+	public void unsetFactory( ILoginProvider factory ){
+		this.factory.removeAuthenticationListener(listener);
 		this.factory = null;
 	}
 	
@@ -41,9 +82,39 @@ public class Dispatcher{
 		this.main = main;
 	}
 	
-	public ILoginUser getOfficer( String userName, String password, String email ) {
-		ILoginUser officer = factory.registerUser( userName, password, email );
-		//manager.setSupportOfficer(officer);
-		return officer;
+	@Override
+	public boolean isRegistered(long loginId) {
+		for( ILoginUser user: this.users ) {
+			if( user.getId() == loginId )
+				return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean isLoggedIn(long loginId) {
+		for( ILoginUser user: this.users ) {
+			if( user.getId() == loginId )
+				return true;
+		}
+		return false;
+	}
+
+	@Override
+	public ILoginUser getLoginUser(long loginId) {
+		for( ILoginUser user: this.users ) {
+			if( user.getId() == loginId )
+				return user;
+		}
+		return null;
+	}
+
+	@Override
+	public Map<Long, String> getUserNames(Collection<Long> userIds) {
+		Map<Long, String> results = new HashMap<>();
+		for( ILoginUser user: this.users ) {
+			results.put( user.getId(), user.getUserName());
+		}
+		return results;
 	}
 }

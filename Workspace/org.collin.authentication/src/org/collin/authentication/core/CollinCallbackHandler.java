@@ -12,11 +12,17 @@ import javax.security.auth.callback.CallbackHandler;
 import org.collin.ui.authentication.AuthenticationComposite.Requests;
 import org.condast.commons.authentication.dialog.AbstractLoginDialog;
 import org.condast.commons.messaging.http.AbstractHttpRequest;
+import org.condast.commons.messaging.http.AbstractHttpRequest.HttpStatus;
+import org.condast.commons.number.NumberUtils;
+import org.condast.commons.messaging.http.IHttpClientListener;
 import org.condast.commons.messaging.http.ResponseEvent;
 import org.condast.commons.strings.StringUtils;
-import org.condast.commons.ui.verification.IWidgetVerificationDelegate;
-import org.condast.commons.ui.verification.IWidgetVerificationDelegate.VerificationTypes;
+import org.condast.commons.verification.IVerification;
+import org.condast.commons.verification.IVerification.VerificationTypes;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.window.Window;
+import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.service.UISession;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -27,6 +33,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -50,13 +57,33 @@ public class CollinCallbackHandler implements CallbackHandler{
 	}
 
 	private Display display;
-	private boolean registering;
-	private Link registerLink;
-	private Text emailText;
-	private String email;
+	private LoginDialog dialog;
 	
+	private WebClient client;	
+	private IHttpClientListener listener = new IHttpClientListener() {
+
+		@Override
+		public void notifyResponse(ResponseEvent event) {
+			if( event.getResponseCode() == HttpStatus.OK.getStatus()) {
+				Display.getCurrent().asyncExec( new Runnable() {
+
+					@Override
+					public void run() {
+						if( !NumberUtils.isStringNumeric( event.getResponse() ))
+							return;
+								
+						long id = Long.parseLong( event.getResponse());
+						Display.getCurrent().setData("id", id);
+						dialog.close();
+					}			
+				});
+			}	
+		}	
+	};
+
 	public CollinCallbackHandler() {
-		this.registering = false;
+ 		this.client = new WebClient();
+		this.client.addListener(listener);
     }
 
 	/*
@@ -72,13 +99,11 @@ public class CollinCallbackHandler implements CallbackHandler{
 
 			@Override
 			public void run() {
-				LoginDialog dialog = new LoginDialog( display.getActiveShell(), "Login");
+				dialog = new LoginDialog( display.getActiveShell(), "Login");
+		   		dialog.setBlockOnOpen(true);
 				dialog.setCallback(callbacks);
-				try {
-					dialog.openDialog();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				if( dialog.open() == Window.OK )
+					return;
 			}
 			
 		});
@@ -87,14 +112,24 @@ public class CollinCallbackHandler implements CallbackHandler{
     private class LoginDialog extends AbstractLoginDialog{
 		private static final long serialVersionUID = 1L;
 
+		private boolean registering;
+		private Text confirmText;
+		private Link registerLink;
+		private Text emailText;
+		private String email;
+
     	protected LoginDialog(Shell parentShell, String title) {
     		super(parentShell, title);
+    		this.registering = false;
     	}
  	
+		protected Point getInitialSize() {
+    		return new Point(500, 300);
+    	}
+
     	@Override
 		protected void onHandleLogin(SelectionEvent event) {
 			try {
-				WebClient client = new WebClient();
 				Requests request = registering?Requests.REGISTER: Requests.LOGIN;
 				Map<String, String> parameters = new HashMap<String, String>();
 				parameters.put( Parameters.NAME.toString(), getName());
@@ -106,7 +141,6 @@ public class CollinCallbackHandler implements CallbackHandler{
 				e1.printStackTrace();
 			}
 		}
-
 
 		@Override
 		protected Control createDialogArea(Composite parent) {
@@ -131,7 +165,23 @@ public class CollinCallbackHandler implements CallbackHandler{
 					getButton( IDialogConstants.OK_ID).setEnabled(isValidEntry());
 				}
 			});
+			
+			Label confirmLabel = new Label( comp, SWT.NONE );
+			confirmLabel.setText("Confirm: ");
+			confirmLabel.setLayoutData( new GridData( SWT.FILL, SWT.RIGHT, false, false ));
+			confirmLabel.setVisible(registering);
+			confirmText = new Text( comp, SWT.BORDER );
+			confirmText.setVisible(registering);
+			confirmText.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ));
+			confirmText.addModifyListener( new ModifyListener() {
+			private static final long serialVersionUID = 1L;
 
+				@Override
+				public void modifyText(ModifyEvent event) {
+					getButton( IDialogConstants.OK_ID).setEnabled(isValidEntry());
+				}
+			});
+			
 			registerLink = new Link(comp, SWT.NONE);
 			registerLink.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = 1L;
@@ -141,7 +191,9 @@ public class CollinCallbackHandler implements CallbackHandler{
 					try {
 						registering = true;
 						registerLink.setText("Email:");
-						emailText.setVisible(true);
+						emailText.setVisible(registering);
+						confirmLabel.setVisible(registering);
+						confirmText.setVisible(registering);
 						getButton( IDialogConstants.OK_ID).setEnabled(false);
 					} catch (Exception ex) {
 						ex.printStackTrace();
@@ -175,14 +227,15 @@ public class CollinCallbackHandler implements CallbackHandler{
 		protected boolean isValidEntry() {
 			if( StringUtils.isEmpty( getName() ) || StringUtils.isEmpty( getPassword() ))
 				return false;
-			boolean valid = IWidgetVerificationDelegate.VerificationTypes.verify( VerificationTypes.EMAIL, emailText.getText() );
+			if(!registering )
+				return true;
+			if( StringUtils.isEmpty( confirmText.getText() ) || !getPassword().equals( confirmText.getText()))
+				return false;
+			boolean valid = IVerification.VerificationTypes.verify( VerificationTypes.EMAIL, emailText.getText() );
 			return registering?valid: true;
-		}
-		protected Point getInitialSize() {
-    		return new Point(500, 300);
-    	}
-    	
-    	
+		}  
+		
+		
     }
  
 	private class WebClient extends AbstractHttpRequest{

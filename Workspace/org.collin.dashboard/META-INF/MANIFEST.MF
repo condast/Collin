@@ -11,6 +11,7 @@ Bundle-ActivationPolicy: lazy
 Import-Package: org.collin.core.authentication,
  org.collin.ui.authentication,
  org.collin.ui.test,
+ org.condast.commons.authentication.core,
  org.condast.commons.authentication.dialog,
  org.condast.commons.i18n,
  org.condast.commons.messaging.http,

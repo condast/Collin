@@ -2,7 +2,7 @@ package org.collin.dashboard.ds;
 
 import java.util.logging.Logger;
 
-import org.collin.core.authentication.ILoginUserFactory;
+import org.condast.commons.authentication.core.ILoginProvider;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -31,11 +31,11 @@ public class AuthenticationComponent{
 	}
 
 	@Reference
-	public void setFactory( ILoginUserFactory factory ){
+	public void setFactory( ILoginProvider factory ){
 		dispatcher.setFactory(factory);
 	}
 
-	public void unsetFactory( ILoginUserFactory factory ){
+	public void unsetFactory( ILoginProvider factory ){
 		dispatcher.unsetFactory(factory);
 	}
 }

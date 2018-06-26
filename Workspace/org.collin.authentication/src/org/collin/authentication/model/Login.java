@@ -13,7 +13,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.collin.core.authentication.ILoginUser;
+import org.condast.commons.authentication.core.ILoginUser;
 import org.condast.commons.ui.date.DateUtils;
 
 @Entity
