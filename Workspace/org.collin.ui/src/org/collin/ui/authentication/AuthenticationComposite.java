@@ -10,13 +10,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-
+import javax.servlet.http.HttpSession;
 import org.condast.commons.authentication.core.AuthenticationEvent;
 import org.condast.commons.authentication.core.IAuthenticationListener;
 import org.condast.commons.authentication.core.ILoginProvider;
 import org.condast.commons.messaging.http.AbstractHttpRequest;
 import org.condast.commons.messaging.http.ResponseEvent;
 import org.eclipse.equinox.security.auth.ILoginContext;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.layout.GridData;
@@ -82,7 +83,7 @@ public class AuthenticationComposite extends Composite {
 				@Override
 				public void run() {
 					try {
-						long loginId = (long) Display.getCurrent().getData("id");
+						long loginId = event.getUser().getId();
 						String text = provider.isLoggedIn(loginId)?	"<a>Logout</a>": "<a>Login</a>";
 						activateLink.setText(text);		
 					}

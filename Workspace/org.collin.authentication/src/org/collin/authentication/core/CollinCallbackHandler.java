@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
+import javax.servlet.http.HttpSession;
 
 import org.collin.ui.authentication.AuthenticationComposite.Requests;
 import org.condast.commons.authentication.dialog.AbstractLoginDialog;
@@ -22,7 +23,6 @@ import org.condast.commons.verification.IVerification.VerificationTypes;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.window.Window;
 import org.eclipse.rap.rwt.RWT;
-import org.eclipse.rap.rwt.service.UISession;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -60,6 +60,9 @@ public class CollinCallbackHandler implements CallbackHandler{
 	private LoginDialog dialog;
 	
 	private WebClient client;	
+	
+	private HttpSession session = RWT.getUISession().getHttpSession( );
+
 	private IHttpClientListener listener = new IHttpClientListener() {
 
 		@Override
@@ -70,10 +73,7 @@ public class CollinCallbackHandler implements CallbackHandler{
 					@Override
 					public void run() {
 						if( !NumberUtils.isStringNumeric( event.getResponse() ))
-							return;
-								
-						long id = Long.parseLong( event.getResponse());
-						Display.getCurrent().setData("id", id);
+							return;							
 						dialog.close();
 					}			
 				});
