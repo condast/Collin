@@ -1,8 +1,9 @@
 package org.collin.dashboard;
 
 import org.collin.dashboard.ds.Dispatcher;
-import org.collin.dashboard.xml.XMLFactoryBuilder;
 import org.collin.ui.authentication.AuthenticationComposite;
+import org.collin.ui.authentication.MenuButton;
+import org.condast.commons.ui.xml.XMLFactoryBuilder;
 import org.condast.commons.xml.BuildEvent;
 import org.condast.commons.xml.IBuildListener;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
@@ -23,8 +24,11 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 			try {
 				if( event.getData() instanceof AuthenticationComposite ) {
 					AuthenticationComposite composite=  (AuthenticationComposite) event.getData();
-					composite.setInput( Activator.createLoginContext());
+					composite.setLoginContext( Activator.createLoginContext());
 					composite.setLoginProvider( dispatcher);
+				}else if( event.getData() instanceof MenuButton ) {
+					MenuButton mb = (MenuButton) event.getData();
+					mb.setInput( Activator.createLoginContext());
 				}
 			}
 			catch( Exception ex ) {

@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -25,6 +26,10 @@ public class TestSuite extends AbstractTestSuite<Object, Object>{
 	public static final String S_TEST_CONTEXT = "http://waterdiertjes.condast.com:8080/wd";
 	
 	public static final int USER_ID = 51;
+	
+	public enum Requests{
+		
+	}
 	
 	public enum Tests{
 		CREATE_BATCH,
@@ -206,7 +211,7 @@ public class TestSuite extends AbstractTestSuite<Object, Object>{
 		logger.info( client.getResponse());
 	}
 
-	private class WebClient extends AbstractHttpRequest{
+	private class WebClient extends AbstractHttpRequest<Requests>{
 
 		private String response;
 		
@@ -218,6 +223,32 @@ public class TestSuite extends AbstractTestSuite<Object, Object>{
 		@Override
 		public String getContextPath() {
 			return super.getContextPath();
+		}
+
+		
+		@Override
+		protected void sendGet(Requests request) throws Exception {
+			// TODO Auto-generated method stub
+			super.sendGet(request);
+		}
+
+		@Override
+		public void sendGet(String path, Map<String, String> parameters) throws Exception {
+			// TODO Auto-generated method stub
+			super.sendGet(path, parameters);
+		}
+
+		@Override
+		protected synchronized String sendGet(String url) throws Exception {
+			// TODO Auto-generated method stub
+			return super.sendGet(url);
+		}
+
+		
+		@Override
+		protected String sendPost(String url, String dataStream, boolean encode) throws Exception {
+			// TODO Auto-generated method stub
+			return super.sendPost(url, dataStream, encode);
 		}
 
 		public String getResponse() {

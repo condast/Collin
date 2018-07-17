@@ -6,7 +6,7 @@ import java.util.Map;
 import org.collin.authentication.services.LoginService;
 import org.condast.commons.authentication.core.IAuthenticationListener;
 import org.condast.commons.authentication.core.ILoginProvider;
-import org.condast.commons.authentication.core.ILoginUser;
+import org.condast.commons.authentication.user.ILoginUser;
 import org.osgi.service.component.annotations.Component;
 
 @Component( name="org.collin.authentication.provider")
@@ -35,13 +35,25 @@ public class LoginUserProvider implements ILoginProvider {
 	}
 
 	@Override
-	public ILoginUser getLoginUser( long loginId) {
-		return dispatcher.getLoginUser( loginId );
-	}
-	
-	@Override
 	public Map<Long, String> getUserNames( Collection<Long> userIds ){
 		LoginService service = new LoginService( dispatcher );
 		return service.getUserNames(userIds);
+	}
+
+	@Override
+	public ILoginUser getLoginUser(long loginId, long token) {
+		return dispatcher.getLoginUser( loginId, token );
+	}
+
+	@Override
+	public void logoutRequest() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void logout(long loginId, long token) {
+		// TODO Auto-generated method stub
+		
 	}
 }

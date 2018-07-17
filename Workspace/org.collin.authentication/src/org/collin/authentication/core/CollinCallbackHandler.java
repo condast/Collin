@@ -11,7 +11,7 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.servlet.http.HttpSession;
 
 import org.collin.ui.authentication.AuthenticationComposite.Requests;
-import org.condast.commons.authentication.dialog.AbstractLoginDialog;
+import org.condast.commons.authentication.ui.dialog.AbstractLoginDialog;
 import org.condast.commons.messaging.http.AbstractHttpRequest;
 import org.condast.commons.messaging.http.AbstractHttpRequest.HttpStatus;
 import org.condast.commons.number.NumberUtils;
@@ -233,9 +233,7 @@ public class CollinCallbackHandler implements CallbackHandler{
 				return false;
 			boolean valid = IVerification.VerificationTypes.verify( VerificationTypes.EMAIL, emailText.getText() );
 			return registering?valid: true;
-		}  
-		
-		
+		}  	
     }
  
 	private class WebClient extends AbstractHttpRequest{

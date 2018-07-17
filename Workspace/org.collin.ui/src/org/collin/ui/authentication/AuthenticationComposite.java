@@ -1,7 +1,6 @@
 package org.collin.ui.authentication;
 
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Label;
 
@@ -10,10 +9,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpSession;
 import org.condast.commons.authentication.core.AuthenticationEvent;
 import org.condast.commons.authentication.core.IAuthenticationListener;
 import org.condast.commons.authentication.core.ILoginProvider;
+import org.condast.commons.authentication.user.ILoginUser;
 import org.condast.commons.messaging.http.AbstractHttpRequest;
 import org.condast.commons.messaging.http.ResponseEvent;
 import org.eclipse.equinox.security.auth.ILoginContext;
@@ -27,6 +26,8 @@ import org.eclipse.swt.widgets.Text;
 
 public class AuthenticationComposite extends Composite {
 	private static final long serialVersionUID = 1L;
+
+	public static final String S_COLLIN = "collin";
 
 	public static final String S_AUTHENTICATION_URL = "http://localhost:10080/collin/auth/";
 	private Text textName;
@@ -83,9 +84,17 @@ public class AuthenticationComposite extends Composite {
 				@Override
 				public void run() {
 					try {
-						long loginId = event.getUser().getId();
-						String text = provider.isLoggedIn(loginId)?	"<a>Logout</a>": "<a>Login</a>";
-						activateLink.setText(text);		
+						switch( event.getEvent()) {
+						case REGISTER:
+						case LOGIN:
+							menuButton.loggedIn( event.getUser());
+							break;
+						default:
+							ILoginUser user = menuButton.getUser();
+							provider.logout( user.getId(), user.getToken() );
+							menuButton.loggedOff();
+							break;
+						}
 					}
 					catch( Exception ex ) {
 						ex.printStackTrace();
@@ -97,7 +106,7 @@ public class AuthenticationComposite extends Composite {
 
 	private ILoginProvider provider;
 
-	private Link activateLink;
+	private MenuButton menuButton;
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -112,36 +121,24 @@ public class AuthenticationComposite extends Composite {
 		setLayout(new GridLayout(2, false));
 		
 		Label lblName = new Label(this, SWT.NONE);
-		lblName.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblName.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 		lblName.setText("Name:");
 		
 		textName = new Text(this, SWT.BORDER);
 		textName.setText("TestNaam");
-		textName.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+		textName.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		
 		Label lblNewLabel = new Label(this, SWT.NONE);
-		lblNewLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblNewLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 		lblNewLabel.setText("Password");
 		
 		textPassword = new Text(this, SWT.BORDER);
-		textPassword.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+		textPassword.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		textPassword.setText("TestPassword");
 
-		activateLink = new Link(this, SWT.NONE);
-		activateLink.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		activateLink.setText("<a>Login</a>");
-		activateLink.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				try {
-					module.login();
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-			}
-		});
+		menuButton = new MenuButton(this, SWT.NONE);
+		menuButton.setData( RWT.CUSTOM_VARIANT, S_COLLIN);
+		menuButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 
 		Link loginLink = new Link(this, SWT.NONE);
 		loginLink.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
@@ -183,14 +180,11 @@ public class AuthenticationComposite extends Composite {
 		registerLink.setText("<a>Register</a>");
 	}
 
-	public ILoginContext getInput() {
-		return module;
+	public void setLoginContext( ILoginContext module) {
+		this.module = module;
+		this.menuButton.setInput(module);
 	}
 
-	public void setInput( ILoginContext module) {
-		this.module = module;
-	}
-	
 	public void setLoginProvider( ILoginProvider provider ) {
 		this.provider = provider;
 		this.provider.addAuthenticationListener(alistener);

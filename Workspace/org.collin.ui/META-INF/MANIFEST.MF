@@ -6,16 +6,28 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Condast
 Automatic-Module-Name: org.fgf.animal.count.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: javax.servlet.http;version="3.0.0",
+Import-Package: org.collin.core.xml,
  org.condast.commons.authentication.core,
+ org.condast.commons.authentication.ui.menu,
+ org.condast.commons.authentication.user,
  org.condast.commons.config,
+ org.condast.commons.i18n,
  org.condast.commons.messaging.http,
+ org.condast.commons.strings,
+ org.condast.commons.ui.def,
+ org.condast.commons.ui.help,
+ org.condast.commons.ui.wizard,
+ org.condast.commons.ui.wizard.xml,
  org.eclipse.equinox.security.auth;version="1.0.0",
+ org.eclipse.jface.dialogs,
+ org.eclipse.jface.window,
+ org.eclipse.jface.wizard,
  org.eclipse.rap.rwt;version="3.4.0",
- org.eclipse.rap.rwt.service;version="3.4.0",
  org.eclipse.swt,
+ org.eclipse.swt.browser,
  org.eclipse.swt.events,
  org.eclipse.swt.layout,
  org.eclipse.swt.widgets
 Export-Package: org.collin.ui.authentication,
+ org.collin.ui.main,
  org.collin.ui.test
