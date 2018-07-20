@@ -3,10 +3,11 @@ package org.fgf.animal.count.location.ds;
 import java.util.Collection;
 import java.util.Map;
 
-import org.collin.core.authentication.AnonymousUser;
-import org.collin.core.authentication.ILoginProvider;
-import org.collin.core.authentication.ILoginUser;
 import org.condast.commons.Utils;
+import org.condast.commons.authentication.core.IAuthenticationListener;
+import org.condast.commons.authentication.core.ILoginProvider;
+import org.condast.commons.authentication.user.AnonymousUser;
+import org.condast.commons.authentication.user.ILoginUser;
 import org.condast.commons.persistence.service.AbstractPersistencyService;
 import org.condast.commons.strings.StringUtils;
 
@@ -63,7 +64,7 @@ public class Dispatcher extends AbstractPersistencyService implements ILoginProv
 	public boolean isAuthenticated(long loginId, long token ) {
 		if( this.loginProvider == null )
 			return false;
-		ILoginUser user = this.loginProvider.getLoginUser(loginId);
+		ILoginUser user = this.loginProvider.getLoginUser(loginId, token);
 		return( user == null )?false: user.getToken() == token;
 	}
 
@@ -80,12 +81,12 @@ public class Dispatcher extends AbstractPersistencyService implements ILoginProv
 	}
 
 	@Override
-	public org.collin.core.authentication.ILoginUser getLoginUser(long loginId) {
+	public ILoginUser getLoginUser(long loginId, long token) {
 		if( loginId <= 0 )
 			return new AnonymousUser();
 		if( this.loginProvider == null )
 			return null;
-		return this.loginProvider.getLoginUser(loginId);
+		return this.loginProvider.getLoginUser(loginId, token);
 	}
 
 	@Override
@@ -95,6 +96,30 @@ public class Dispatcher extends AbstractPersistencyService implements ILoginProv
 		if( this.loginProvider == null )
 			return null;
 		return this.loginProvider.getUserNames(userIds);
+	}
+
+	@Override
+	public void addAuthenticationListener(IAuthenticationListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeAuthenticationListener(IAuthenticationListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void logoutRequest() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void logout(long loginId, long token) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	

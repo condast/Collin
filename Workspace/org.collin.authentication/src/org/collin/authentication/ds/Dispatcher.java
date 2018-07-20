@@ -11,7 +11,7 @@ import org.condast.commons.authentication.core.AuthenticationEvent;
 import org.condast.commons.authentication.core.IAuthenticationListener;
 import org.condast.commons.authentication.core.IAuthenticationListener.AuthenticationEvents;
 import org.condast.commons.authentication.core.ILoginProvider;
-import org.condast.commons.authentication.core.ILoginUser;
+import org.condast.commons.authentication.user.ILoginUser;
 import org.condast.commons.persistence.service.AbstractPersistencyService;
 import org.condast.commons.persistence.service.IPersistenceService;
 
@@ -97,7 +97,7 @@ public class Dispatcher extends AbstractPersistencyService implements ILoginProv
 	}
 
 	@Override
-	public ILoginUser getLoginUser(long loginId) {
+	public ILoginUser getLoginUser(long loginId, long token) {
 		for( ILoginUser user: this.users) {
 			if( user.getId() == loginId )
 				return user;
@@ -109,5 +109,17 @@ public class Dispatcher extends AbstractPersistencyService implements ILoginProv
 	public Map<Long, String> getUserNames( Collection<Long> userIds) {
 		LoginService service = new LoginService( this );
 		return service.getUserNames(userIds);
+	}
+
+	@Override
+	public void logoutRequest() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void logout(long loginId, long token) {
+		// TODO Auto-generated method stub
+		
 	}	
 }

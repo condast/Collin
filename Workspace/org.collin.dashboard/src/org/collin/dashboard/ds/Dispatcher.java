@@ -8,7 +8,7 @@ import java.util.Map;
 import org.condast.commons.authentication.core.AuthenticationEvent;
 import org.condast.commons.authentication.core.IAuthenticationListener;
 import org.condast.commons.authentication.core.ILoginProvider;
-import org.condast.commons.authentication.core.ILoginUser;
+import org.condast.commons.authentication.user.ILoginUser;
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -101,7 +101,7 @@ public class Dispatcher implements ILoginProvider{
 	}
 
 	@Override
-	public ILoginUser getLoginUser(long loginId) {
+	public ILoginUser getLoginUser(long loginId, long token) {
 		for( ILoginUser user: this.users ) {
 			if( user.getId() == loginId )
 				return user;
@@ -116,5 +116,17 @@ public class Dispatcher implements ILoginProvider{
 			results.put( user.getId(), user.getUserName());
 		}
 		return results;
+	}
+
+	@Override
+	public void logoutRequest() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void logout(long loginId, long token) {
+		// TODO Auto-generated method stub
+		
 	}
 }

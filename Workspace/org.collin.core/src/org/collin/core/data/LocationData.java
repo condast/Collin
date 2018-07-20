@@ -16,8 +16,8 @@ public class LocationData {
 	
 	public LocationData( ILocation location ) {
 		this.locationId = location.getId();
-		this.name = location.getName();
-		this.description = location.getDescription();
+		this.name = location.getLocation().getId();
+		this.description = location.getLocation().getDescription();
 		this.latitude = location.getLocation().getLatitude();
 		this.longitude = location.getLocation().getLongitude();
 		if( location instanceof IUpdateable ) {

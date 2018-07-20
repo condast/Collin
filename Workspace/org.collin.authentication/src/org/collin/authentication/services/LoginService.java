@@ -8,7 +8,7 @@ import javax.persistence.TypedQuery;
 
 import org.collin.authentication.model.Login;
 import org.condast.commons.Utils;
-import org.condast.commons.authentication.core.ILoginUser;
+import org.condast.commons.authentication.user.ILoginUser;
 import org.condast.commons.persistence.service.AbstractEntityService;
 import org.condast.commons.persistence.service.IPersistenceService;
 

@@ -13,7 +13,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.condast.commons.authentication.core.ILoginUser;
+import org.condast.commons.authentication.user.ILoginUser;
 import org.condast.commons.ui.date.DateUtils;
 
 @Entity
@@ -152,5 +152,17 @@ public class Login implements ILoginUser {
 	public int compareTo(ILoginUser arg0) {
 		long diff = id - arg0.getId();
 		return ( diff < 0)?-1: (diff>0)?1:0;
+	}
+
+	@Override
+	public Object getAttribute(String key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setAttribute(String key, Object value) {
+		// TODO Auto-generated method stub
+		
 	}
 }
