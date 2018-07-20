@@ -3,25 +3,15 @@
 	<preferences>
 		<store id="org.collin.rest" name="Rest"/>
 	</preferences>
-	<frontend title="ACTIVE" id="org.collin.frontend" style="SWT.NONE">
+	<frontend title="ACTIVE" id="org.fgf.frontend" style="SWT.NONE">
 		<layout name="grid-layout" columns="1" />
-		<toolbar id="org.collin.toolbar">
-			<layout name="grid-layout" columns="1" />
-			<layout-data>
-				<horizontal align="fill" grab-excess="true" />
-				<vertical align="fill" grab-excess="false" />
-			</layout-data>
-			<item name="Menu">
-				<control class="org.collin.ui.authentication.MenuButton" name="Menu-Button" text="login"/>
-			</item>
-		</toolbar>
 		<tabfolder>
 			<layout-data>
 				<horizontal align="fill" grab-excess="true" />
 				<vertical align="fill" grab-excess="true" />
 			</layout-data>
 			<item name="Main">
-				<composite class="org.collin.ui.main.CollinComposite" name="CoLLin-composite">
+				<composite class="org.collin.ui.authentication.AuthenticationComposite" name="Authentication-composite">
 					<layout-data type="grid-data">
 						<horizontal spacing="fill" grab-excess="true" columns="1" />
 						<vertical spacing="fill" />

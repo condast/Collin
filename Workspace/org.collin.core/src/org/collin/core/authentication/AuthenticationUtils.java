@@ -1,6 +1,6 @@
 package org.collin.core.authentication;
 
-import org.condast.commons.authentication.user.ILoginUser;
+import org.condast.commons.authentication.core.ILoginUser;
 
 public class AuthenticationUtils {
 

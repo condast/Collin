@@ -15,7 +15,7 @@ import org.collin.authentication.ds.Dispatcher;
 import org.collin.authentication.model.Login;
 import org.collin.authentication.services.LoginService;
 import org.collin.core.authentication.AuthenticationUtils;
-import org.condast.commons.authentication.user.ILoginUser;
+import org.condast.commons.authentication.core.ILoginUser;
 import org.condast.commons.strings.StringUtils;
 import org.condast.commons.verification.IVerification;
 import org.condast.commons.verification.IVerification.VerificationTypes;
@@ -106,8 +106,6 @@ public class AuthenticationResource{
 			
 			LoginService service = new LoginService( dispatcher ); 
 			ILoginUser user = service.login(name, password);
-			if( user == null )
-				return Response.status( Status.NOT_FOUND).build();
 			dispatcher.addUser(user);
 			retval = Response.ok( String.valueOf( user.getId() )).build();
 		}
@@ -121,7 +119,7 @@ public class AuthenticationResource{
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/logoff")
-	public Response logoff( @QueryParam("userid") long id, @QueryParam("token") long token ) {
+	public Response logoff( @QueryParam("userid") long id ) {
 
 		Response retval = null;
 		Dispatcher dispatcher=  Dispatcher.getInstance();
@@ -129,7 +127,7 @@ public class AuthenticationResource{
 			if( !dispatcher.isLoggedIn( id))
 				retval = Response.noContent().build();
 			else {
-				ILoginUser user = dispatcher.getLoginUser(id, token);
+				ILoginUser user = dispatcher.getLoginUser(id);
 				dispatcher.removeUser(user);
 				return Response.ok(String.valueOf( user.getId() )).build();
 			}
@@ -160,6 +158,7 @@ public class AuthenticationResource{
 			logger.info( "Unregister " + user.getUserName() );			
 
 			service.remove(user.getId());
+			//manager.unregisterUser(user);
 			retval = Response.ok(String.valueOf( user.getId() )).build();
 		}
 		catch( Exception ex ){

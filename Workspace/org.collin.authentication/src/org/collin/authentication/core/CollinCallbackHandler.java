@@ -11,7 +11,7 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.servlet.http.HttpSession;
 
 import org.collin.ui.authentication.AuthenticationComposite.Requests;
-import org.condast.commons.authentication.ui.dialog.AbstractLoginDialog;
+import org.condast.commons.authentication.dialog.AbstractLoginDialog;
 import org.condast.commons.messaging.http.AbstractHttpRequest;
 import org.condast.commons.messaging.http.AbstractHttpRequest.HttpStatus;
 import org.condast.commons.number.NumberUtils;
@@ -23,6 +23,7 @@ import org.condast.commons.verification.IVerification.VerificationTypes;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.window.Window;
 import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.service.UISession;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -74,6 +75,8 @@ public class CollinCallbackHandler implements CallbackHandler{
 					public void run() {
 						if( !NumberUtils.isStringNumeric( event.getResponse() ))
 							return;							
+						UISession session = RWT.getUISession();
+						Object obj = session.getAttribute("handle");
 						dialog.close();
 					}			
 				});
@@ -233,7 +236,9 @@ public class CollinCallbackHandler implements CallbackHandler{
 				return false;
 			boolean valid = IVerification.VerificationTypes.verify( VerificationTypes.EMAIL, emailText.getText() );
 			return registering?valid: true;
-		}  	
+		}  
+		
+		
     }
  
 	private class WebClient extends AbstractHttpRequest{

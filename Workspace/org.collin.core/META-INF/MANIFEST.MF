@@ -10,18 +10,12 @@ Automatic-Module-Name: org.fgf.animal.count.core
 Import-Package: com.google.gson;version="2.7.0",
  org.condast.commons,
  org.condast.commons.authentication.core,
- org.condast.commons.authentication.user,
  org.condast.commons.data.latlng,
- org.condast.commons.io,
  org.condast.commons.persistence.def,
  org.condast.commons.strings,
  org.condast.commons.ui.date,
- org.condast.commons.ui.def,
- org.condast.commons.ui.wizard,
- org.condast.commons.ui.wizard.xml,
  org.osgi.framework;version="1.3.0"
 Bundle-ActivationPolicy: lazy
 Export-Package: org.collin.core.authentication,
- org.collin.core.data,
- org.collin.core.xml
+ org.collin.core.data
 Require-Bundle: org.condast.commons.data;bundle-version="1.0.0"
