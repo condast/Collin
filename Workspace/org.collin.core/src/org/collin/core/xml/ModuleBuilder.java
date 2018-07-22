@@ -286,7 +286,8 @@ public class ModuleBuilder<T extends Object> implements IWizardBuilder<T>{
 				String enstr = attributes.getValue( AttributeNames.ENABLED.toXmlStyle());
 				boolean enabled = StringUtils.isEmpty( enstr )? true: Boolean.parseBoolean( enstr );
 				is = wizard.getCurrent();
-				is.addButtonInfo( button, visible, enabled);
+				if( is != null )
+					is.addButtonInfo( button, visible, enabled);
 				break;	
 			default:
 				break;
@@ -321,7 +322,7 @@ public class ModuleBuilder<T extends Object> implements IWizardBuilder<T>{
 		@Override
 		public void characters(char ch[], int start, int length) throws SAXException {
 			String value = new String(ch, start, length);
-			if( StringUtils.isEmpty( value ))
+			if( StringUtils.isEmpty( value ) || ( stored.isEmpty()))
 				return;
 			Nodes current = stored.lastElement();
 			switch( current ){

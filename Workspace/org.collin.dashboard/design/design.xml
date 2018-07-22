@@ -12,7 +12,7 @@
 				<vertical align="fill" grab-excess="false" />
 			</layout-data>
 			<item name="Menu">
-				<control class="org.collin.ui.authentication.MenuButton" name="Menu-Button" text="login"/>
+				<control class="org.collin.ui.menu.MenuButton" name="Menu-Button" text="login"/>
 			</item>
 		</toolbar>
 		<tabfolder>

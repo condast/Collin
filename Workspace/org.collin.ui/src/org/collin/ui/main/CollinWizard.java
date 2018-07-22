@@ -3,11 +3,14 @@ package org.collin.ui.main;
 import java.io.InputStream;
 import org.collin.core.xml.ModuleBuilder;
 import org.condast.commons.ui.def.IWizardBuilder;
+import org.condast.commons.ui.wizard.IHeadlessWizardContainer.ContainerTypes;
 import org.condast.commons.ui.wizard.xml.AbstractXmlBrowserFlowWizard;
+import org.condast.commons.ui.wizard.xml.IXmlFlowWizard;
+import org.condast.commons.ui.wizard.xml.IndexStore;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.widgets.Composite;
 
-public class CollinWizard extends AbstractXmlBrowserFlowWizard<String> {
+public class CollinWizard extends AbstractXmlBrowserFlowWizard<String> implements IXmlFlowWizard<String> {
 
 	public static String S_DEFAULT_FOLDER = "/design/";
 	public static String S_DEFAULT_DESIGN_FILE = S_DEFAULT_FOLDER + "wizard.xml";
@@ -84,5 +87,36 @@ public class CollinWizard extends AbstractXmlBrowserFlowWizard<String> {
 			}	
 		};
 		return wizard;
+	}
+
+	@Override
+	public void setPreviousNext(boolean previousNext) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public IndexStore addPage(String pageName, String description, String message, ContainerTypes type,
+			boolean onCancel, boolean onFinish) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IndexStore getCurrent() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setTitleStyle(String titleStyle) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setButtonbarStyle(String buttonbarStyle) {
+		// TODO Auto-generated method stub
+		
 	}
 }

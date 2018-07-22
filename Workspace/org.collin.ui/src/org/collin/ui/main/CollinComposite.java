@@ -24,7 +24,7 @@ public class CollinComposite extends Composite {
 		super(parent, style);
 		setLayout( new FillLayout());
 		wizard = new CollinWizard();
-		wizard.createPageControls(this);
+		//wizard.createPageControls(this);
 		setBackground(  Display.getDefault().getSystemColor( SWT.COLOR_BLUE));
 	}
 

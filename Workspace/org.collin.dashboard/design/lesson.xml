@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<course id="org.collin.dashboard.test" name="Collin Test" title="Lesson 1">
+  <module id="lesson1" index="0" uri="http://www.condast.com"></module>
+  <module id="lesson2" index="1" uri="http://www.condast.com"></module>
+  <module id="lesson3" index="2" uri="http://www.condast.com"></module>
+  <module id="lesson4" index="3" uri="http://www.condast.com"></module>
+  <module id="lesson5" index="4" uri="http://www.condast.com"></module>
+  <module id="lesson6" index="5" uri="http://www.condast.com"></module>
+  <module id="lesson7" index="6" uri="http://www.condast.com"></module>
+</course>
