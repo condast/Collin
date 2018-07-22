@@ -3,6 +3,7 @@ package org.collin.authentication.core;
 import javax.servlet.http.HttpSession;
 
 import org.condast.commons.authentication.ui.callback.AbstractCallbackHandler;
+import org.condast.commons.authentication.ui.core.CallbackData;
 import org.condast.commons.messaging.http.AbstractHttpRequest.HttpStatus;
 import org.condast.commons.number.NumberUtils;
 import org.condast.commons.messaging.http.IHttpClientListener;
@@ -37,4 +38,16 @@ public class CollinCallbackHandler extends AbstractCallbackHandler{
 			}	
 		}	
 	};
+
+	public CollinCallbackHandler() {
+		super( callbackDataFactory());
+	}
+	
+	private static CallbackData callbackDataFactory() {
+		String context = "http://www.localhost:10080/arnac/rest";
+		String title = "Login Collin";
+		String agreement = "http://www.condast.com";
+		String privacy = "http://www.condast.com";
+		return new CallbackData( title, context, agreement, privacy);
+	}
 }
