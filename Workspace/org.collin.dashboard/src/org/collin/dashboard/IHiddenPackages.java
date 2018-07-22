@@ -11,7 +11,7 @@
  *******************************************************************************/
 package org.collin.dashboard;
 
-import org.collin.ui.authentication.*;
+import org.collin.ui.menu.*;
 import org.collin.ui.test.*;
 import org.condast.commons.messaging.http.*;
 import org.condast.commons.ui.logger.*;

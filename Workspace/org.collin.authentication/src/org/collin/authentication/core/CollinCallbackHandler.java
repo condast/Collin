@@ -10,7 +10,7 @@ import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.servlet.http.HttpSession;
 
-import org.collin.ui.authentication.AuthenticationComposite.Requests;
+import org.collin.ui.menu.CollinComposite.Requests;
 import org.condast.commons.authentication.ui.dialog.AbstractLoginDialog;
 import org.condast.commons.messaging.http.AbstractHttpRequest;
 import org.condast.commons.messaging.http.AbstractHttpRequest.HttpStatus;
