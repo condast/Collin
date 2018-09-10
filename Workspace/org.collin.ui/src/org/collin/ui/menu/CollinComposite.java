@@ -90,8 +90,8 @@ public class CollinComposite extends Composite {
 							menuButton.loggedIn( event.getUser());
 							break;
 						default:
-							ILoginUser user = menuButton.getUser();
-							provider.logout( user.getId(), user.getToken() );
+							//ILoginUser user = menuButton.getData();
+							//provider.logout( user.getId(), user.getToken() );
 							menuButton.logOut();
 							break;
 						}
@@ -178,11 +178,6 @@ public class CollinComposite extends Composite {
 		});
 		registerLink.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		registerLink.setText("<a>Register</a>");
-	}
-
-	public void setLoginContext( ILoginContext module) {
-		this.module = module;
-		this.menuButton.setInput(module);
 	}
 
 	public void setLoginProvider( ILoginProvider provider ) {

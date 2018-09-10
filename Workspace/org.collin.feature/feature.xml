@@ -57,13 +57,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.fgf.animal.dashboard"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.condast.commons"
          download-size="0"
          install-size="0"
@@ -113,13 +106,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.collin.location"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.collin.ui"
          download-size="0"
          install-size="0"
@@ -128,6 +114,20 @@
 
    <plugin
          id="org.condast.commons.messaging"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.collin.dashboard"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.collin.moodle"
          download-size="0"
          install-size="0"
          version="0.0.0"

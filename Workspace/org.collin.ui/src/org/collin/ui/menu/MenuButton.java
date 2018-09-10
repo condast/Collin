@@ -4,7 +4,6 @@ import org.condast.commons.authentication.ui.menu.AbstractMenuButton;
 import org.condast.commons.authentication.user.ILoginUser;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.ui.help.AbstractHelpDialog;
-import org.eclipse.equinox.security.auth.ILoginContext;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -15,7 +14,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 
-public class MenuButton extends AbstractMenuButton {
+public class MenuButton extends AbstractMenuButton<ILoginUser> {
 	private static final long serialVersionUID = 1L;
 	
 	public static final String S_HELP_URL = "/help/help.html";
@@ -52,12 +51,6 @@ public class MenuButton extends AbstractMenuButton {
 		this.button = this;
 		this.selection = 0;
 	}
-
-	@Override
-	public void setInput(ILoginContext input) {
-		super.setInput(input);
-	}
-
 
 	public int getSelected() {
 		return selection;

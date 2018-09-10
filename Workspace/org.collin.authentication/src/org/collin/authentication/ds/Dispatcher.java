@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.security.auth.callback.CallbackHandler;
+
 import org.collin.authentication.services.LoginService;
 import org.condast.commons.authentication.core.AuthenticationEvent;
 import org.condast.commons.authentication.core.IAuthenticationListener;
@@ -68,7 +70,7 @@ public class Dispatcher extends AbstractPersistencyService implements ILoginProv
 	
 	public boolean removeUser( ILoginUser user ) {
 		boolean result = this.users.remove( user );
-		notifyListeners( new AuthenticationEvent( this, AuthenticationEvents.LOG_OFF, user ));
+		notifyListeners( new AuthenticationEvent( this, AuthenticationEvents.LOGOUT, user ));
 		return result;
 	}
 
@@ -121,5 +123,11 @@ public class Dispatcher extends AbstractPersistencyService implements ILoginProv
 	public void logout(long loginId, long token) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public CallbackHandler createCallbackHandler() {
+		// TODO Auto-generated method stub
+		return null;
 	}	
 }

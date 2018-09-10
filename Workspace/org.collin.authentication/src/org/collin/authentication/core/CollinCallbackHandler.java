@@ -22,7 +22,7 @@ public class CollinCallbackHandler extends AbstractCallbackHandler{
 	private IHttpClientListener listener = new IHttpClientListener() {
 
 		@Override
-		public void notifyResponse(ResponseEvent event) {
+		public void notifyResponse( final ResponseEvent event) {
 			if( event.getResponseCode() == HttpStatus.OK.getStatus()) {
 				Display.getCurrent().asyncExec( new Runnable() {
 

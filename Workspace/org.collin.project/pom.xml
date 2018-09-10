@@ -63,9 +63,9 @@
   <modules>
     <module>../org.collin.core</module>
     <module>../org.collin.authentication</module>
-    <module>../org.collin.location</module>
     <module>../org.collin.ui</module>
-    <module>../org.fgf.animal.dashboard</module>
+    <module>../org.collin.moodle</module>
+    <module>../org.collin.dashboard</module>
     <module>../org.collin.feature</module>
     <module>../org.collin.update</module>
   </modules>

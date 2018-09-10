@@ -153,16 +153,4 @@ public class Login implements ILoginUser {
 		long diff = id - arg0.getId();
 		return ( diff < 0)?-1: (diff>0)?1:0;
 	}
-
-	@Override
-	public Object getAttribute(String key) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setAttribute(String key, Object value) {
-		// TODO Auto-generated method stub
-		
-	}
 }
