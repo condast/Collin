@@ -8,7 +8,9 @@ Bundle-Vendor: Condast
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Automatic-Module-Name: org.fgf.animal.dasboard
 Bundle-ActivationPolicy: lazy
-Import-Package: org.collin.core.authentication,
+Import-Package: javax.servlet;version="3.1.0.20170128",
+ javax.servlet.http;version="3.0.0",
+ org.collin.core.authentication,
  org.collin.ui.main,
  org.collin.ui.menu,
  org.collin.ui.test,

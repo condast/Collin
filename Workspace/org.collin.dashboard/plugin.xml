@@ -10,4 +10,12 @@
             description="Login module voor COLLIN">
       </loginModule>
    </extension>
+   <extension
+         point="org.eclipse.equinox.http.registry.servlets">
+      <servlet
+            alias="/ponte"
+            class="org.collin.dashboard.servlet.CollinServlet"
+            load-on-startup="true">
+      </servlet>
+   </extension>
  </plugin>

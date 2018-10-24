@@ -1,12 +1,12 @@
 package org.collin.ui.main;
 
 import java.io.InputStream;
-import org.collin.core.xml.ModuleBuilder;
 import org.condast.commons.ui.def.IWizardBuilder;
 import org.condast.commons.ui.wizard.IHeadlessWizardContainer.ContainerTypes;
 import org.condast.commons.ui.wizard.xml.AbstractXmlBrowserFlowWizard;
 import org.condast.commons.ui.wizard.xml.IXmlFlowWizard;
 import org.condast.commons.ui.wizard.xml.IndexStore;
+import org.condast.commons.ui.wizard.xml.XMLWizardBuilder;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.widgets.Composite;
 
@@ -45,7 +45,7 @@ public class CollinWizard extends AbstractXmlBrowserFlowWizard<String> implement
 
 	@Override
 	protected IWizardBuilder<String> createBuilder(InputStream in) {
-		IWizardBuilder<String> builder = new ModuleBuilder<String>( in );
+		IWizardBuilder<String> builder = new XMLWizardBuilder<String>( in );
 		return builder;
 	}
 

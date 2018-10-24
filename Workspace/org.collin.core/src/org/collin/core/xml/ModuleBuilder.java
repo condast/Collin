@@ -7,32 +7,29 @@
  *******************************************************************************/
 package org.collin.core.xml;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Stack;
 import java.util.logging.Logger;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.condast.commons.io.IOUtils;
+import org.collin.core.xml.SequenceNode.Nodes;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
-import org.condast.commons.ui.def.IWizardBuilder;
-import org.condast.commons.ui.wizard.IButtonWizardContainer.Buttons;
-import org.condast.commons.ui.wizard.IHeadlessWizardContainer.ContainerTypes;
-import org.condast.commons.ui.wizard.xml.IXmlFlowWizard;
-import org.condast.commons.ui.wizard.xml.IndexStore;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class ModuleBuilder<T extends Object> implements IWizardBuilder<T>{
+public class ModuleBuilder<T extends Object>{
 
-	public static String S_DEFAULT_FOLDER = "/qualities";
+	public static String S_DEFAULT_FOLDER = "/design";
+	public static String S_DEFAULT_FILE = "lesson.xml";
 	public static String S_SCHEMA_LOCATION =  S_DEFAULT_FOLDER + "/rdm-schema.xsd";
 
 	protected static final String JAXP_SCHEMA_SOURCE =
@@ -52,27 +49,15 @@ public class ModuleBuilder<T extends Object> implements IWizardBuilder<T>{
 	private boolean completed, failed;
 	private InputStream in;
 
-	private enum Nodes{
-		COURSE,
-		MODULE,
-		BUTTONS,
-		BUTTON,
-		PUSH;
-
-		@Override
-		public String toString() {
-			return StringStyler.prettyString( super.toString() );
-		}
-
-		public static boolean isNode( String value ){
-			if( StringUtils.isEmpty( value ))
-				return false;
-			for( Nodes node: values() ){
-				if( node.name().equals( value ))
-					return true;
-			}
-			return false;
-		}
+	public enum SequenceEvents{
+		RESET,
+		CURRENT,
+		NEXT,
+		PREVIOUS,
+		NEXT_TRACK,
+		PREVIOUS_TRACK,
+		OFFSET,
+		COMPLETE;
 	}
 
 	private enum AttributeNames{
@@ -81,15 +66,12 @@ public class ModuleBuilder<T extends Object> implements IWizardBuilder<T>{
 		NAME,
 		DESCRIPTION,
 		ENABLED,
-		MESSAGE,
 		TYPE,
-		CLASS,
 		INDEX,
 		SOURCE,
 		URI,
-		CANCEL,
-		FINISH,
-		VISIBLE;//page to which will be returned when pressing cancel (default= 0)
+		FROM,
+		TO;
 
 		@Override
 		public String toString() {
@@ -101,15 +83,15 @@ public class ModuleBuilder<T extends Object> implements IWizardBuilder<T>{
 		}
 	}
 	
-	private enum ToolbarOptions{
-		TOP,
-		BOTTOM;
-
-	}
-
 	private XmlHandler<T> handler;
+
+	private Collection<ISequenceEventListener> listeners;
 	
 	private Logger logger = Logger.getLogger( ModuleBuilder.class.getName() );
+
+	public ModuleBuilder( Class<?> clss ) throws IOException {
+		this( clss, S_DEFAULT_FOLDER + File.separator + S_DEFAULT_FILE);
+	}
 	
 	public ModuleBuilder( Class<?> clss, String fileName ) throws IOException {
 		this( clss.getResource( fileName ).openStream() );
@@ -126,16 +108,23 @@ public class ModuleBuilder<T extends Object> implements IWizardBuilder<T>{
 		this.in = in;
 		this.completed = false;
 		this.failed = false;
+		this.listeners = new ArrayList<>();
+	}
+	
+	public void addListener( ISequenceEventListener listener ) {
+		this.listeners.add(listener);
 	}
 
-	/* (non-Javadoc)
-	 * @see net.osgi.jp2p.chaupal.xml.IFactoryBuilder#build()
-	 */
-	/* (non-Javadoc)
-	 * @see org.condast.commons.ui.wizard.xml.IWizardBuilder#build(org.condast.commons.ui.wizard.xml.AbstractXmlFlowWizard)
-	 */
-	@Override
-	public void build( IXmlFlowWizard<T> wizard) {
+	public void removeListener( ISequenceEventListener listener ) {
+		this.listeners.remove(listener);
+	}
+	
+	protected void notifyListeners( SequenceEvent event ) {
+		for( ISequenceEventListener listener: this.listeners )
+			listener.notifySequenceEvent(event);
+	}
+
+	public SequenceNode build() {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		//URL schema_in = XMLFactoryBuilder.class.getResource( S_SCHEMA_LOCATION); 
 		//if( schema_in == null )
@@ -148,6 +137,7 @@ public class ModuleBuilder<T extends Object> implements IWizardBuilder<T>{
 		//Source schemaFile = new StreamSource( this.getClass().getResourceAsStream( S_SCHEMA_LOCATION ));
 		
 		//First parse the XML file
+		SequenceNode result = null;
 		try {
 			logger.info("Parsing code " );
 			//Schema schema = schemaFactory.newSchema(schemaFile);
@@ -159,44 +149,28 @@ public class ModuleBuilder<T extends Object> implements IWizardBuilder<T>{
 			
 			//saxParser.setProperty(JAXP_SCHEMA_LANGUAGE, W3C_XML_SCHEMA); 
 			//saxParser.setProperty(JAXP_SCHEMA_SOURCE, new File(JP2P_XSD_SCHEMA)); 
-			handler = new XmlHandler<T>( wizard );
+			handler = new XmlHandler<T>();
 			saxParser.parse( in, handler);
-		} catch( SAXNotRecognizedException e ){
-			failed = true;
-			e.printStackTrace();			
-		} catch (ParserConfigurationException e) {
-			failed = true;
-			e.printStackTrace();
-		} catch (SAXException e) {
-			failed = true;
-			e.printStackTrace();
-		} catch (IOException e) {
-			failed = true;
-			e.printStackTrace();
+			result = handler.root;
 		}
-		finally{
-			IOUtils.close(in);
+		catch( Exception ex) {
+			ex.printStackTrace();
 		}
-		
-		this.completed = true;
+		return result;
 	}
+	
 
 	/* (non-Javadoc)
 	 * @see org.condast.commons.ui.wizard.xml.IWizardBuilder#complete()
 	 */
-	@Override
 	public boolean complete() {
 		this.completed = true;
 		return completed;
 	}
 
 	/* (non-Javadoc)
-	 * @see net.osgi.jp2p.chaupal.xml.IFactoryBuilder#isCompleted()
-	 */
-	/* (non-Javadoc)
 	 * @see org.condast.commons.ui.wizard.xml.IWizardBuilder#isCompleted()
 	 */
-	@Override
 	public boolean isCompleted() {
 		return completed;
 	}
@@ -204,7 +178,6 @@ public class ModuleBuilder<T extends Object> implements IWizardBuilder<T>{
 	/* (non-Javadoc)
 	 * @see org.condast.commons.ui.wizard.xml.IWizardBuilder#hasFailed()
 	 */
-	@Override
 	public boolean hasFailed() {
 		return failed;
 	}
@@ -220,14 +193,16 @@ public class ModuleBuilder<T extends Object> implements IWizardBuilder<T>{
 		public static final int MAX_COUNT = 200;	
 		
 		private Stack<Nodes> stored;
-		private IXmlFlowWizard<T> wizard;
-		private Buttons button;
 		
-		public XmlHandler( IXmlFlowWizard<T> wizard ) {
+		private SequenceNode root, current;
+		private SequenceNode parent;
+		private int index;
+		
+		public XmlHandler( ) {
 			stored = new Stack<Nodes>();
-			this.wizard = wizard;
+			this.index = 0;
 		}
-		
+	
 		@Override
 		public void startElement(String uri, String localName, String qName, 
 				Attributes attributes) throws SAXException {
@@ -238,68 +213,96 @@ public class ModuleBuilder<T extends Object> implements IWizardBuilder<T>{
 				return;
 			
 			String id = attributes.getValue( AttributeNames.ID.toXmlStyle());
-			String type_str = attributes.getValue( AttributeNames.TYPE.toXmlStyle());
+			String type = attributes.getValue( AttributeNames.TYPE.toXmlStyle());
 			String title = attributes.getValue( AttributeNames.TITLE.toXmlStyle());
+			String name = attributes.getValue( AttributeNames.NAME.toXmlStyle());
 			String description = attributes.getValue( AttributeNames.DESCRIPTION.toXmlStyle());
-			String comp_clss = attributes.getValue( AttributeNames.CLASS.toXmlStyle());
-			String urlstr = attributes.getValue( AttributeNames.URI.toXmlStyle());
-			String source = attributes.getValue( AttributeNames.SOURCE.toXmlStyle());
-			IndexStore is = wizard.getCurrent();
-			ContainerTypes type = ContainerTypes.HEADLESS;
+			String url = attributes.getValue( AttributeNames.URI.toXmlStyle());
+			String index_str = attributes.getValue( AttributeNames.INDEX.toXmlStyle());
+			String from = attributes.getValue( AttributeNames.FROM.toXmlStyle());
+			String to = attributes.getValue( AttributeNames.TO.toXmlStyle());
+			if( !StringUtils.isEmpty(index_str))
+				index = Integer.parseInt(index_str);
 			Nodes node = Nodes.valueOf(componentName);
-			Nodes parent = getParent(node);
 			switch( node ){
 			case COURSE:
+				index = 0;
+				current = new SequenceNode( node, id, name, index, title);
+				root= current;
 				if( !StringUtils.isEmpty(title ))
-					wizard.setWindowTitle(title);
-					//ClientFileLoader loader = RWT.getClient().getService( ClientFileLoader.class );
-					//loader.requireCss( stylesheet );
+					current.setTitle(title);
+				break;
+			case MODULES:
+				index = 0;
+				parent = current;
+				current = new SequenceNode(node, id, name, index);
 				break;
 			case MODULE:
-				type = StringUtils.isEmpty( type_str )? ContainerTypes.HEADLESS: 
-					ContainerTypes.valueOf( StringStyler.styleToEnum( type_str ));		
-				String message = attributes.getValue( AttributeNames.MESSAGE.toXmlStyle());
-				if( !StringUtils.isEmpty( message))
-					message = title;
-				
-				String onCancel = attributes.getValue( AttributeNames.CANCEL.toXmlStyle());
-				boolean cancel = StringUtils.isEmpty( onCancel )?false: Boolean.parseBoolean( onCancel );
-				String onFinish = attributes.getValue( AttributeNames.FINISH.toXmlStyle());
-				boolean finish = StringUtils.isEmpty( onFinish )?false: Boolean.parseBoolean( onFinish );
-				//wizard.addPage(id, description, message, type, cancel, finish );
-				is = wizard.getCurrent();
-				if( !StringUtils.isEmpty( urlstr)){
-					is.url = urlstr;
-				}
-				if( !StringUtils.isEmpty( source)){
-					if( !StringUtils.isEmpty( urlstr ))
-						throw new SAXException( S_ERR_SOURCE + "[ " + urlstr + ", " + source + "]" );
-					is.source = source;
-				}
+				current = new SequenceNode(node, id, name, index);
+				index++;
 				break;
-			case BUTTONS:
+			case VIEW:
+				index=0;
+				current = new SequenceNode(node, id, name, index);
+				if( !StringUtils.isEmpty(type))
+					current.setType(type);
 				break;
-			case BUTTON:
-				button = Buttons.valueOf(type_str);
-				String visstr = attributes.getValue( AttributeNames.VISIBLE.toXmlStyle());
-				boolean visible = StringUtils.isEmpty( visstr )? true: Boolean.parseBoolean( visstr );
-				String enstr = attributes.getValue( AttributeNames.ENABLED.toXmlStyle());
-				boolean enabled = StringUtils.isEmpty( enstr )? true: Boolean.parseBoolean( enstr );
-				is = wizard.getCurrent();
-				if( is != null )
-					is.addButtonInfo( button, visible, enabled);
+			case PARTS:
+				index=0;
+				current = new SequenceNode(node, id, name, index);
+				completeFromTo(current, from, to);
+				break;	
+			case PART:
+				current = new SequenceNode(node, id, name, index);
+				index++;
+				break;	
+			case CONTROLLER:
+				index=0;
+				current = new SequenceNode(node, id, name, index);
+				break;	
+			case SEQUENCE:
+				index=0;
+				current = new SequenceNode(node, id, name, index);
+				break;	
+			case STEP:
+				current = new SequenceNode(node, id, name, index);
+				if( !StringUtils.isEmpty(name))
+					current.setTitle(name);
 				break;	
 			default:
 				break;
 			}
+			if(( parent != null ) && ( !parent.equals(current))) {
+				parent.addChild(current);
+			}else if( parent == null )
+				parent = current;
+
+			if(!StringUtils.isEmpty(url))
+				current.setUri(url);
+			if(!StringUtils.isEmpty( description))
+				current.setUri(description);
 			stored.push(node);
+			parent = current;
 		}
 		
-		private Nodes getParent( Nodes child ){
-			if( stored.isEmpty() )
-				return null;
-			int index = stored.indexOf(child );
-			return ( index <= 0)? null: stored.get( index-1);
+		protected void completeFromTo( SequenceNode node, String from, String to ) {
+			SequenceNode view = find( this.root, Nodes.VIEW);
+			SequenceNode parts= find( view, Nodes.PARTS);
+			SequenceNode frm_seq = null;
+			if( !StringUtils.isEmpty(from)) {
+				frm_seq = find( parts, from );
+			};
+			if( frm_seq != null ) {
+				SequenceNode to_seq = StringUtils.isEmpty(to)? parts.lastChild(): parts.find( to );
+				int index = parts.getChildren().indexOf(frm_seq);
+				int last = parts.getChildren().indexOf(to_seq);
+				if( last < index)
+					last = parts.getChildren().size()-1;
+				for( int i=index; i<last; i++ ) {
+					current.addChild(parts.getChildren().get(i));
+				}
+			}
+			
 		}
 		
 		@Override
@@ -310,12 +313,13 @@ public class ModuleBuilder<T extends Object> implements IWizardBuilder<T>{
 				return;
 			Nodes node = Nodes.valueOf(componentName);
 			switch( node ){
-			case BUTTON:
-				button = null;
+			case MODULES:
 				break;
 			default:
 				break;
 			}
+			if(( parent != null ) && ( parent.getParent() != null ))
+				parent = parent.getParent();
 			stored.pop();
 		}
 
@@ -326,9 +330,7 @@ public class ModuleBuilder<T extends Object> implements IWizardBuilder<T>{
 				return;
 			Nodes current = stored.lastElement();
 			switch( current ){
-			case PUSH:
-				IndexStore is = wizard.getCurrent();
-				is.addPushPage( button, value );
+			case PART:
 				break;
 			default:
 				break;
@@ -357,13 +359,30 @@ public class ModuleBuilder<T extends Object> implements IWizardBuilder<T>{
 			print(arg0);
 			super.warning(arg0);
 		}
-		
-		private class ModuleIndexStore extends IndexStore{
-
-			ModuleIndexStore(String pageName, String description, String message, ContainerTypes type, int index) {
-				super(pageName, description, message, type, index);
-			}
-			
-		}
 	}
+	
+	public static SequenceNode find( SequenceNode current, String id ) {
+		if(( current == null ) || ( id.equals(current.getId())))
+			return current;
+		for( SequenceNode child: current.getChildren()) {
+			SequenceNode find = find( child, id);
+			if( find != null )
+				return find;
+		}
+		return null;
+	}
+
+
+	public static SequenceNode find( SequenceNode current, Nodes node ) {
+		if(( current == null ) || node.equals( current.getNode() ))
+			return current;
+		
+		for( SequenceNode child: current.getChildren()) {
+			SequenceNode find = find( child, node);
+			if( find != null )
+				return find;
+		}
+		return null;		
+	}
+
 }
