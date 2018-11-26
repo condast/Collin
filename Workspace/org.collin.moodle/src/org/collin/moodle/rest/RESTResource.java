@@ -1,14 +1,17 @@
 package org.collin.moodle.rest;
 
-import java.util.logging.Logger;
+import java.io.InputStream;import java.util.logging.Logger;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
+import javax.ws.rs.core.Response.Status;
 import org.collin.moodle.core.Dispatcher;
+import org.condast.commons.io.IOUtils;
+import org.condast.commons.messaging.rest.RESTUtils;
+import org.condast.commons.strings.StringUtils;
 
 // Plain old Java Object it does not extend as class or implements
 // an interface
@@ -17,10 +20,8 @@ import org.collin.moodle.core.Dispatcher;
 // Using the @Produces annotation, it defines that it can deliver several MIME types,
 // text, XML and HTML.
 
-// The browser requests per default the HTML MIME type.
-
-//Sets the path to base URL + /smash
-@Path("/rest")
+//Sets the path to alias + path
+@Path("/module")
 public class RESTResource{
 
 	public static final String S_ERR_UNKNOWN_REQUEST = "An invalid request was rertrieved: ";
@@ -28,7 +29,29 @@ public class RESTResource{
 	
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
-	//private Dispatcher dispatcher = Dispatcher.getInstance();
+	private Dispatcher dispatcher = Dispatcher.getInstance();
+
+	public RESTResource() {
+	}
+
+	// This method is called if TEXT_PLAIN is requested
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/lesson")
+	public Response addLesson( @QueryParam("id") long id, @QueryParam("token") String token, @QueryParam("path") String path ) {
+
+		try{
+			boolean response = RESTUtils.checkString(id, token, path);
+			if( !response )
+				return StringUtils.isEmpty(path)? Response.noContent().build(): Response.status( Status.UNAUTHORIZED ).build();
+			long lessonId = dispatcher.addLesson(path); 
+				return (lessonId > 0)? Response.ok( String.valueOf(lessonId)).build(): Response.noContent().build();
+		}
+		catch( Exception ex ){
+			ex.printStackTrace();
+			return Response.serverError().build();
+		}
+	}
 
 	// This method is called if TEXT_PLAIN is requested
 	@GET
@@ -37,7 +60,6 @@ public class RESTResource{
 	public Response getModules( @QueryParam("id") long id, @QueryParam("token") String token ) {
 
 		try{
-			Dispatcher dispatcher = Dispatcher.getInstance();
 			String result = dispatcher.getModules();
 			return Response.ok( result ).build();
 		}
@@ -55,12 +77,36 @@ public class RESTResource{
 			@QueryParam("module") long moduleId, @QueryParam("submodule") int subModule) {
 
 		try{
-			Dispatcher dispatcher = Dispatcher.getInstance();
 			return Response.ok().build();
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();
 			return Response.serverError().build();
+		}
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/advice")
+	public Response getLesson( @QueryParam("id") long id, @QueryParam("token") String token, @QueryParam("lesson") long lessonId, @QueryParam("module") long moduleId, @QueryParam("progress") double progress ) {
+
+		InputStream stream = null;
+		try{
+			boolean response = RESTUtils.checkId(id, token, lessonId);
+			if( !response )
+				return ( lessonId < 0 )? Response.noContent().build(): Response.status( Status.UNAUTHORIZED ).build();
+			response = RESTUtils.checkId(id, token, moduleId);
+			if( !response )
+				return ( moduleId < 0 )? Response.noContent().build(): Response.status( Status.UNAUTHORIZED ).build();
+			String result = dispatcher.getAdvice( lessonId, moduleId, progress);
+			return StringUtils.isEmpty(result)? Response.noContent().build(): Response.ok( result ).build();
+		}
+		catch( Exception ex ){
+			ex.printStackTrace();
+			return Response.serverError().build();
+		}
+		finally {
+			IOUtils.closeQuietly(stream);
 		}
 	}
 

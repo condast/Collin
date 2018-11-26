@@ -19,15 +19,29 @@ public class TetraNode<D extends Object> implements ITetraNode<D>{
 	
 	private D data;
 	
+	private ITetraNode.Nodes type;
+	
+	private ITetra<D> parent;
+
 	private int selected;
 
 	private Collection<ITetraListener<D>> listeners;
-	
-	public TetraNode( String id, D data ) {
+		
+	public TetraNode( ITetra<D> parent, String id, ITetraNode.Nodes type, D data ) {
 		super();
+		this.parent = parent;
 		this.id = id;
+		this.type = type;
 		this.selected = 0;
 		this.listeners = new ArrayList<ITetraListener<D>>();
+	}
+
+	public TetraNode(ITetra<D> parent, String id, ITetraNode.Nodes type) {
+		this( parent, id, type, null );
+	}
+
+	protected TetraNode(String id, ITetraNode.Nodes type) {
+		this( null, id, type, null );
 	}
 
 	@Override
@@ -35,6 +49,10 @@ public class TetraNode<D extends Object> implements ITetraNode<D>{
 		return id;
 	}
 
+	@Override
+	public Nodes getType() {
+		return type;
+	}
 
 	@Override
 	public D getData() {
@@ -42,16 +60,21 @@ public class TetraNode<D extends Object> implements ITetraNode<D>{
 	}
 
 	@Override
-	public void addTetraListener( ITetraListener<D> listener ) {
-		this.listeners.add( listener);
+	public ITetra<D> getParent() {
+		return parent;
 	}
 
 	@Override
-	public void removeTetraListener( ITetraListener<D> listener ) {
-		this.listeners.remove( listener);
+	public boolean addTetraListener( ITetraListener<D> listener ) {
+		return this.listeners.add( listener);
+	}
+
+	@Override
+	public boolean removeTetraListener( ITetraListener<D> listener ) {
+		return this.listeners.remove( listener);
 	}
 	
-	protected void notifyTetraListeners( TetraEvent<D> event ) {
+	void notifyTetraListeners( TetraEvent<D> event ) {
 		for( ITetraListener<D> listener: this.listeners )
 			listener.notifyNodeSelected(event);
 	}
@@ -71,8 +94,8 @@ public class TetraNode<D extends Object> implements ITetraNode<D>{
 	 * @see org.collin.core.essence.ITetraNode#select()
 	 */
 	@Override
-	public void select() {
+	public void select( TetraEvent<D> event ) {
 		this.selected++;
-		notifyTetraListeners( new TetraEvent<D>( this, data, this.selected ));
+		notifyTetraListeners( event );
 	}
 }

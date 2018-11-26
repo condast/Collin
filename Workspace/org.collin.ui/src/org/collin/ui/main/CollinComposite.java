@@ -29,7 +29,7 @@ public class CollinComposite extends Composite {
 	
 	private Browser browser;
 	private PlayerComposite<String> playerBar;
-	private Sequence<?> builder;
+	private Sequence builder;
 	
 	private int index;
 	
@@ -67,7 +67,7 @@ public class CollinComposite extends Composite {
 
 	public void setInput( Class<?> clss) {
 		try {
-			builder = new Sequence<String>( clss);
+			builder = new Sequence( clss);
 			SequenceNode se = builder.start();
 			String uri = "/ponte?path=" + se.getUri();
 			browser.setUrl( uri );		

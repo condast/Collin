@@ -18,11 +18,32 @@ public class Plane<D extends Object> implements IPlane<D> {
 		nodes = new HashMap<ITetraNode.Nodes, ITetraNode<D>>();
 	}
 
-	public Plane( String label, ITetraNode.Nodes ns1, D node1, ITetraNode.Nodes ns2, D node2, ITetraNode.Nodes ns3, D node3) {
-		this( label );
-		this.nodes.put( ns1, new TetraNode<D>( ns1.toString(), node1 ));
-		this.nodes.put( ns2, new TetraNode<D>( ns2.toString(), node2 ));
-		this.nodes.put( ns3, new TetraNode<D>( ns3.toString(), node3 ));
+	public Plane( Planes plane, ITetra<D> tetra ) {
+		this( plane.name() );
+		switch( plane ) {
+		case AMBITION:
+			this.nodes.put( ITetraNode.Nodes.GOAL, tetra.getNode(ITetraNode.Nodes.GOAL));
+			this.nodes.put( ITetraNode.Nodes.SOLUTION, tetra.getNode(ITetraNode.Nodes.SOLUTION));
+			this.nodes.put( ITetraNode.Nodes.FUNCTION, tetra.getNode(ITetraNode.Nodes.FUNCTION));
+			break;
+		case LEARNING:
+			this.nodes.put( ITetraNode.Nodes.GOAL, tetra.getNode(ITetraNode.Nodes.GOAL));
+			this.nodes.put( ITetraNode.Nodes.TASK, tetra.getNode(ITetraNode.Nodes.TASK));
+			this.nodes.put( ITetraNode.Nodes.FUNCTION, tetra.getNode(ITetraNode.Nodes.FUNCTION));
+			break;
+		case OPERATION:
+			this.nodes.put( ITetraNode.Nodes.TASK, tetra.getNode(ITetraNode.Nodes.TASK));
+			this.nodes.put( ITetraNode.Nodes.SOLUTION, tetra.getNode(ITetraNode.Nodes.SOLUTION));
+			this.nodes.put( ITetraNode.Nodes.FUNCTION, tetra.getNode(ITetraNode.Nodes.FUNCTION));
+			break;
+		case RECOVERY:
+			this.nodes.put( ITetraNode.Nodes.GOAL, tetra.getNode(ITetraNode.Nodes.GOAL));
+			this.nodes.put( ITetraNode.Nodes.SOLUTION, tetra.getNode(ITetraNode.Nodes.SOLUTION));
+			this.nodes.put( ITetraNode.Nodes.TASK, tetra.getNode(ITetraNode.Nodes.TASK));
+			break;
+		default:
+			break;
+		}
 	}
 	
 	@Override

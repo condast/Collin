@@ -7,7 +7,6 @@
  *******************************************************************************/
 package org.collin.moodle.xml;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -22,8 +21,8 @@ import org.xml.sax.Attributes;
 
 public class ModuleBuilder extends AbstractXMLBuilder<IModule, ModuleBuilder.Elements> {
 	
-	public static String S_DEFAULT_MODULE_FOLDER = "/modules";
-	public static String S_DEFAULT_MODULE_FILE = "modules.xml";
+	public static String S_DEFAULT_MODULE_FOLDER = "/lessons";
+	public static String S_DEFAULT_MODULE_FILE = "lesson.xml";
 
 	public enum Elements{
 		FEEDBACK,
@@ -39,7 +38,7 @@ public class ModuleBuilder extends AbstractXMLBuilder<IModule, ModuleBuilder.Ele
 	}
 
 	public ModuleBuilder(  Class<?> clss ) {
-		super( new XMLHandler( clss ), clss.getResource( S_DEFAULT_MODULE_FOLDER + File.separator + S_DEFAULT_MODULE_FILE) );
+		super( new XMLHandler( clss ), clss.getResource(  getDefaultModuleLocation() ));
 		this.clss = clss;
 	}
 
@@ -63,6 +62,10 @@ public class ModuleBuilder extends AbstractXMLBuilder<IModule, ModuleBuilder.Ele
 		return getHandler().getUnits();
 	}
 	
+	public static final String getDefaultModuleLocation() {
+		return S_DEFAULT_MODULE_FOLDER + "/" + S_DEFAULT_MODULE_FILE;
+	}
+	
 	private static class XMLHandler extends AbstractXmlHandler<IModule, ModuleBuilder.Elements>{
 		
 		private Collection<Module> modules;
@@ -72,7 +75,7 @@ public class ModuleBuilder extends AbstractXMLBuilder<IModule, ModuleBuilder.Ele
 		private IModule current;
 		
 		public XMLHandler( Class<?> clss) {
-			super( EnumSet.allOf( ModuleBuilder.Elements.class));
+			super( EnumSet.allOf( ModuleBuilder.Elements.class ));
 			this.modules = new ArrayList<>();
 			this.clss = clss;
 			this.id = 1;

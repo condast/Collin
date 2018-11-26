@@ -1,28 +1,17 @@
 package org.collin.core.essence;
 
-import java.util.Collection;
 import java.util.Map;
 
 import org.collin.core.def.IPlane;
 import org.collin.core.def.ITetraNode;
-import org.collin.core.def.ITetraNode.Nodes;
 
-public interface ITetra<D extends Object> {
+public interface ITetra<D extends Object> extends ITetraNode<D> {
 
-	public enum Planes{
-		AMBITION,
-		LEARNING,
-		OPERATION,
-		RECOVERY;
-	}
+	void init();
 
-	String getLabel();
+	Map<IPlane.Planes, IPlane<D>> getPlanes();
 
-	Map<Planes, IPlane<D>> getPlanes();
-
-	void select(ITetraNode.Nodes node);
-	
-	public Collection<ITetraNode<D>> getNodes();
+	public   ITetraNode<D>[] getNodes();
 
 	ITetraNode<D> getNode(Nodes type);
 

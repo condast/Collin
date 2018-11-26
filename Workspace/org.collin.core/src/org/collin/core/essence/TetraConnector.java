@@ -57,7 +57,7 @@ public class TetraConnector<D extends Object> {
 				//Prevent a double selection event
 				block = true;
 				ITetraNode<D> other = getOther( (ITetraNode<D>) event.getSource() );
-				other.select();
+				other.select( event );
 				block = false;
 			}
 		};

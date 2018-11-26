@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Stack;
 import java.util.logging.Logger;
 
@@ -26,7 +27,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class ModuleBuilder<T extends Object>{
+public class ModuleBuilder{
 
 	public static String S_DEFAULT_FOLDER = "/design";
 	public static String S_DEFAULT_FILE = "lesson.xml";
@@ -68,6 +69,8 @@ public class ModuleBuilder<T extends Object>{
 		ENABLED,
 		TYPE,
 		INDEX,
+		LOCALE,
+		PROGRESS,
 		SOURCE,
 		URI,
 		FROM,
@@ -83,14 +86,14 @@ public class ModuleBuilder<T extends Object>{
 		}
 	}
 	
-	private XmlHandler<T> handler;
+	private XmlHandler handler;
 
 	private Collection<ISequenceEventListener> listeners;
 	
 	private Logger logger = Logger.getLogger( ModuleBuilder.class.getName() );
 
 	public ModuleBuilder( Class<?> clss ) throws IOException {
-		this( clss, S_DEFAULT_FOLDER + File.separator + S_DEFAULT_FILE);
+		this( clss, getDefaultModuleLocation());
 	}
 	
 	public ModuleBuilder( Class<?> clss, String fileName ) throws IOException {
@@ -149,7 +152,7 @@ public class ModuleBuilder<T extends Object>{
 			
 			//saxParser.setProperty(JAXP_SCHEMA_LANGUAGE, W3C_XML_SCHEMA); 
 			//saxParser.setProperty(JAXP_SCHEMA_SOURCE, new File(JP2P_XSD_SCHEMA)); 
-			handler = new XmlHandler<T>();
+			handler = new XmlHandler();
 			saxParser.parse( in, handler);
 			result = handler.root;
 		}
@@ -187,8 +190,12 @@ public class ModuleBuilder<T extends Object>{
 			return defaultLocation;
 		return defaultLocation;
 	}
-	
-	public static class XmlHandler<T extends Object> extends DefaultHandler{
+
+	public static final String getDefaultModuleLocation() {
+		return S_DEFAULT_FOLDER + "/" + S_DEFAULT_FILE;
+	}
+
+	public static class XmlHandler extends DefaultHandler{
 		
 		public static final int MAX_COUNT = 200;	
 		
@@ -197,15 +204,20 @@ public class ModuleBuilder<T extends Object>{
 		private SequenceNode root, current;
 		private SequenceNode parent;
 		private int index;
+		private Locale locale;
 		
 		public XmlHandler( ) {
 			stored = new Stack<Nodes>();
 			this.index = 0;
+			this.locale = Locale.getDefault();
 		}
 	
 		@Override
 		public void startElement(String uri, String localName, String qName, 
 				Attributes attributes) throws SAXException {
+			if(( current != null ) &&  Nodes.TEXT.equals( current.getNode()))
+				return;
+					
 			String componentName = StringStyler.styleToEnum( qName );
 			
 			//The name is not a group. try the default JP2P components
@@ -221,13 +233,20 @@ public class ModuleBuilder<T extends Object>{
 			String index_str = attributes.getValue( AttributeNames.INDEX.toXmlStyle());
 			String from = attributes.getValue( AttributeNames.FROM.toXmlStyle());
 			String to = attributes.getValue( AttributeNames.TO.toXmlStyle());
+			String progress_str = attributes.getValue( AttributeNames.PROGRESS.toXmlStyle());
+			float progress = StringUtils.isEmpty(progress_str)?0: Float.valueOf(progress_str);  
+			String locale_str = attributes.getValue( AttributeNames.LOCALE.toXmlStyle());
+			if(!StringUtils.isEmpty(locale_str)) {
+				String[] split = locale_str.split("[-]");
+				locale = new Locale(split[0], split[1]);
+			}
 			if( !StringUtils.isEmpty(index_str))
 				index = Integer.parseInt(index_str);
 			Nodes node = Nodes.valueOf(componentName);
 			switch( node ){
 			case COURSE:
 				index = 0;
-				current = new SequenceNode( node, id, name, index, title);
+				current = new SequenceNode( node, locale, id, name, index, title);
 				root= current;
 				if( !StringUtils.isEmpty(title ))
 					current.setTitle(title);
@@ -235,39 +254,47 @@ public class ModuleBuilder<T extends Object>{
 			case MODULES:
 				index = 0;
 				parent = current;
-				current = new SequenceNode(node, id, name, index);
+				current = new SequenceNode(node, locale, id, name, index);
 				break;
 			case MODULE:
-				current = new SequenceNode(node, id, name, index);
+				current = new SequenceNode(node, locale, id, name, index);
 				index++;
 				break;
 			case VIEW:
 				index=0;
-				current = new SequenceNode(node, id, name, index);
+				current = new SequenceNode(node, locale, id, name, index);
 				if( !StringUtils.isEmpty(type))
 					current.setType(type);
 				break;
 			case PARTS:
 				index=0;
-				current = new SequenceNode(node, id, name, index);
+				current = new SequenceNode(node, locale, id, name, index);
 				completeFromTo(current, from, to);
 				break;	
 			case PART:
-				current = new SequenceNode(node, id, name, index);
+				current = new SequenceNode(node, locale, id, name, index);
 				index++;
 				break;	
 			case CONTROLLER:
 				index=0;
-				current = new SequenceNode(node, id, name, index);
+				current = new SequenceNode(node, locale, id, name, index);
 				break;	
 			case SEQUENCE:
 				index=0;
-				current = new SequenceNode(node, id, name, index);
+				current = new SequenceNode(node, locale, id, name, index);
 				break;	
 			case STEP:
-				current = new SequenceNode(node, id, name, index);
+				current = new SequenceNode(node, locale, id, name, index);
 				if( !StringUtils.isEmpty(name))
 					current.setTitle(name);
+				break;	
+			case ADVICE:
+				current = new SequenceNode(node, locale, id, name, index);
+				current.setProgress( progress);
+				current.setType(type);
+				break;	
+			case TEXT:
+				current = new SequenceNode(node, locale, id, name, index);
 				break;	
 			default:
 				break;
@@ -310,6 +337,8 @@ public class ModuleBuilder<T extends Object>{
 			String componentName = StringStyler.styleToEnum( qName );		
 			//The name is not a node.
 			if( !Nodes.isNode( componentName ))
+				return;
+			if( stored.isEmpty())
 				return;
 			Nodes node = Nodes.valueOf(componentName);
 			switch( node ){
@@ -373,7 +402,7 @@ public class ModuleBuilder<T extends Object>{
 	}
 
 
-	public static SequenceNode find( SequenceNode current, Nodes node ) {
+	protected static SequenceNode find( SequenceNode current, Nodes node ) {
 		if(( current == null ) || node.equals( current.getNode() ))
 			return current;
 		
@@ -384,5 +413,4 @@ public class ModuleBuilder<T extends Object>{
 		}
 		return null;		
 	}
-
 }

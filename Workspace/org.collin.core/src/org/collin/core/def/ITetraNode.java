@@ -1,25 +1,33 @@
 package org.collin.core.def;
 
+import org.collin.core.essence.ITetra;
 import org.collin.core.essence.ITetraListener;
+import org.collin.core.essence.TetraEvent;
 
 public interface ITetraNode<D extends Object> {
 
 	public enum Nodes{
+		START,
 		GOAL,
 		TASK,
-		STRUCTURE,
-		FUNCTION;
+		SOLUTION,
+		FUNCTION,
+		COMPLETE;
 	}
 
 	public String getId();
 	
-	void addTetraListener(ITetraListener<D> listener);
+	public Nodes getType();
 
-	void removeTetraListener(ITetraListener<D> listener);
-	
+	public ITetra<D> getParent();
+
+	boolean addTetraListener(ITetraListener<D> listener);
+
+	boolean removeTetraListener(ITetraListener<D> listener);
+		
 	public D getData();
 
-	void select();
+	void select( TetraEvent<D> event );
 
 	int getSelected();
 

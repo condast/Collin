@@ -1,6 +1,7 @@
 package org.collin.core.xml;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
@@ -9,9 +10,9 @@ import org.collin.core.xml.ModuleBuilder.SequenceEvents;
 import org.collin.core.xml.SequenceNode.Nodes;
 import org.condast.commons.Utils;
 
-public class Sequence<D extends Object> {
+public class Sequence {
 
-	private ModuleBuilder<D> builder;
+	private ModuleBuilder builder;
 	private SequenceNode root;
 	private SequenceNode current;
 	
@@ -19,7 +20,13 @@ public class Sequence<D extends Object> {
 
 	public Sequence( Class<?> clss) throws IOException {
 		super();
-		builder = new ModuleBuilder<D>( clss);
+		builder = new ModuleBuilder( clss);
+		root = builder.build();
+	}
+
+	public Sequence( InputStream in) throws IOException {
+		super();
+		builder = new ModuleBuilder( in );
 		root = builder.build();
 	}
 
@@ -126,6 +133,11 @@ public class Sequence<D extends Object> {
 			if( find != null )
 				return find;
 		}
+		return null;
+	}
+
+	public String getAdvice(long moduleId, double progress) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 

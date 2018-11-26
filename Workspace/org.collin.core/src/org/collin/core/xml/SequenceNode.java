@@ -2,6 +2,7 @@ package org.collin.core.xml;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.condast.commons.Utils;
 import org.condast.commons.strings.StringStyler;
@@ -19,6 +20,8 @@ public class SequenceNode {
 		PARTS,
 		PART,
 		SEQUENCE,
+		ADVICE,
+		TEXT,
 		STEP;
 
 		@Override
@@ -37,32 +40,54 @@ public class SequenceNode {
 		}
 	}
 
+	public enum Types{
+		NONE,
+		DELAY;
+
+		@Override
+		public String toString() {
+			return StringStyler.prettyString( super.toString() );
+		}
+	}
+	
 	private Nodes node;
 	private String id;
 	private String name;
 	private int index;
+	private String locale;
 
 	//optional
 	private String title;
 	private String description;
 	private String type;
 	private String uri;
+	private float progress;
 
 	private SequenceNode parent;
 
 	private List<SequenceNode> children;
 
 	public SequenceNode( Nodes node, String id, String name, int index, String title) {
-		this( node, id, name, index );
+		this( node, Locale.ENGLISH, id, name, index );
+	}
+	
+	public SequenceNode( Nodes node, Locale locale, String id, String name, int index, String title) {
+		this( node, locale, id, name, index );
 		this.title = title;
 	}
 
 	public SequenceNode( Nodes node, String id, String name, int index ) {
+		this( node, Locale.ENGLISH, id, name, index );
+	}
+	
+	public SequenceNode( Nodes node, Locale locale, String id, String name, int index ) {
 		super();
 		this.node = node;
+		this.locale = locale.toString();
 		this.id = id;
 		this.name = name;
 		this.index = index;
+		this.locale = Locale.ENGLISH.toString();
 		this.children = new ArrayList<>();
 	}
 
@@ -90,8 +115,8 @@ public class SequenceNode {
 		return description;
 	}
 
-	public String getType() {
-		return type;
+	public Types getType() {
+		return Types.valueOf( type );
 	}
 
 	public void setTitle(String title) {
@@ -112,6 +137,18 @@ public class SequenceNode {
 
 	public void setUri(String uri) {
 		this.uri = uri;
+	}
+
+	public float getProgress() {
+		return progress;
+	}
+
+	public void setProgress(float progress) {
+		this.progress = progress;
+	}
+
+	public String getLocale() {
+		return locale;
 	}
 
 	public SequenceNode getParent() {
