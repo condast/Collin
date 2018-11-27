@@ -8,10 +8,12 @@ import java.util.Map;
 
 import org.collin.core.def.ITetraNode;
 import org.collin.core.def.ITetraNode.Nodes;
+import org.condast.commons.Utils;
 
 public class Compass<D extends Object> {
 
 	public enum Tetras{
+		UNDEFINED,
 		PRODUCER,
 		CONSUMER,
 		PRODUCT,
@@ -26,7 +28,11 @@ public class Compass<D extends Object> {
 	
 	private List<Compass<D>> children;
 	
+	private Compass<D> parent;
+	
 	private int progress;
+	
+	private String description;
 	
 	private ITetraListener<D> listener = new ITetraListener<D>() {
 
@@ -45,14 +51,44 @@ public class Compass<D extends Object> {
 	};
 	
 	private Collection<ITetraListener<D>> listeners;
+	
+	private String title;
+	private String id;
 
-	public Compass() {
+	public Compass( String id, String title) {
+		this( null, id, title );
+	}
+	
+	public Compass( Compass<D> parent, String id, String title) {
+		this.parent = parent;
+		this.id = id;
+		this.title = title;
 		tetras = new HashMap<Tetras, ITetra<D>>();
 		connectors = new TetraConnector<D>();
 		children = new ArrayList<>();
 		listeners = new ArrayList<>();
 		listeners.add(listener);
 		this.progress = 0;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public Compass<D> getParent() {
+		return parent;
 	}
 
 	public void addListener( ITetraListener<D> listener ) {
@@ -78,13 +114,19 @@ public class Compass<D extends Object> {
 		child.removeListener(listener);
 	}
 	
+	public boolean hasChildren() {
+		return !Utils.assertNull(children);
+	}
 	@SuppressWarnings("unchecked")
-	protected Compass<D>[] getChildren() {
+	public Compass<D>[] getChildren() {
 		return this.children.toArray( new Compass[this.children.size()] );
 	}
 
 	public void addTetra( Tetras type, ITetra<D> tetra ) {
 		removeTetra(type);
+		this.tetras.put(type, tetra);
+		if( this.tetras.size() <=1)
+			return;
 		ITetraNode<D> task = tetra.getNode( Nodes.TASK );
 		ITetraNode<D> goal = tetra.getNode( Nodes.GOAL );
 		ITetraNode<D> solution = tetra.getNode( Nodes.SOLUTION );
@@ -92,51 +134,75 @@ public class Compass<D extends Object> {
 		switch( type ) {
 		case PRODUCT:
 			other = tetras.get(Tetras.PRODUCER);
-			connectors.connect(task, other.getNode( Nodes.GOAL));
-			connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			if( other != null ) {
+				connectors.connect(task, other.getNode( Nodes.GOAL));
+				connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			}
 			other = tetras.get(Tetras.PROCESS );
-			connectors.connect(goal, other.getNode( Nodes.TASK));
-			connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			if( other != null ) {
+				connectors.connect(goal, other.getNode( Nodes.TASK));
+				connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			}
 			break;
 		case PROCESS:
 			other = tetras.get(Tetras.PRODUCT);
-			connectors.connect(task, other.getNode( Nodes.GOAL));
-			connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			if( other != null ) {
+				connectors.connect(task, other.getNode( Nodes.GOAL));
+				connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			}
 			other = tetras.get(Tetras.CONSUMER );
-			connectors.connect(goal, other.getNode( Nodes.TASK));
-			connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			if( other != null ) {
+				connectors.connect(goal, other.getNode( Nodes.TASK));
+				connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			}
 			break;
 		case CONSUMER:
 			other = tetras.get(Tetras.COACH_PROCESS);
-			connectors.connect(task, other.getNode( Nodes.GOAL));
-			connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			if( other != null ) {
+				connectors.connect(task, other.getNode( Nodes.GOAL));
+				connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			}
 			other = tetras.get(Tetras.PROCESS);
-			connectors.connect(goal, other.getNode( Nodes.TASK));
-			connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			if( other != null ) {
+				connectors.connect(goal, other.getNode( Nodes.TASK));
+				connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			}
 			break;
 		case COACH_PROCESS:
 			other = tetras.get(Tetras.CONSUMER);
-			connectors.connect(task, other.getNode( Nodes.GOAL));
-			connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			if( other != null ) {
+				connectors.connect(task, other.getNode( Nodes.GOAL));
+				connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			}
 			other = tetras.get(Tetras.COACH_PRODUCT);
-			connectors.connect(goal, other.getNode( Nodes.TASK));
-			connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			if( other != null ) {
+				connectors.connect(goal, other.getNode( Nodes.TASK));
+				connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			}
 			break;		
 		case COACH_PRODUCT:
 			other = tetras.get(Tetras.PRODUCER);
-			connectors.connect(task, other.getNode( Nodes.GOAL));
-			connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			if( other != null ) {
+				connectors.connect(task, other.getNode( Nodes.GOAL));
+				connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			}
 			other = tetras.get(Tetras.COACH_PROCESS);
-			connectors.connect(goal, other.getNode( Nodes.TASK));
-			connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			if( other != null ) {
+				connectors.connect(goal, other.getNode( Nodes.TASK));
+				connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			}
 			break;
 		case PRODUCER:
 			other = tetras.get(Tetras.COACH_PRODUCT);
-			connectors.connect(task, other.getNode( Nodes.GOAL));
-			connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			if( other != null ) {
+				connectors.connect(task, other.getNode( Nodes.GOAL));
+				connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			}
 			other = tetras.get(Tetras.PRODUCT);
-			connectors.connect(goal, other.getNode( Nodes.TASK));
-			connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			if( other != null ) {
+				connectors.connect(goal, other.getNode( Nodes.TASK));
+				connectors.connect(solution, other.getNode( Nodes.SOLUTION));
+			}
 			break;
 		default:
 			break;
@@ -152,11 +218,16 @@ public class Compass<D extends Object> {
 			tetras.remove(type);
 		}
 	}
-	
+
 	public ITetra<D> getTetra( Tetras type ){
 		return this.tetras.get(type);
 	}
-	
+
+	@SuppressWarnings("unchecked")
+	public ITetra<D>[] getTetras(){
+		return this.tetras.values().toArray( new ITetra[ this.tetras.size()]);
+	}
+
 	public void start( TetraEvent<D> event ) {
 		ITetra<D> tetra = null;
 		if( this.children.isEmpty() ) {
@@ -166,5 +237,10 @@ public class Compass<D extends Object> {
 			tetra = child.getTetra(Tetras.CONSUMER);
 		}
 		tetra.select( new TetraEvent<D>( this, null, null, 0));
+	}
+
+	@Override
+	public String toString() {
+		return this.id;
 	}
 }

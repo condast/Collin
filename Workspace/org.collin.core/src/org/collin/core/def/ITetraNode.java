@@ -7,6 +7,7 @@ import org.collin.core.essence.TetraEvent;
 public interface ITetraNode<D extends Object> {
 
 	public enum Nodes{
+		UNDEFINED,
 		START,
 		GOAL,
 		TASK,
@@ -32,5 +33,9 @@ public interface ITetraNode<D extends Object> {
 	int getSelected();
 
 	int balance(int offset);
+
+	String getDescription();
+
+	void setDescription(String description);
 
 }

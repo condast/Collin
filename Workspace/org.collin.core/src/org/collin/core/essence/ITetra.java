@@ -15,4 +15,10 @@ public interface ITetra<D extends Object> extends ITetraNode<D> {
 
 	ITetraNode<D> getNode(Nodes type);
 
+	void addNode(ITetraNode<D> node);
+
+	void removeNode(ITetraNode<D> node);
+
+	String getName();
+
 }

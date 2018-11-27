@@ -23,5 +23,7 @@ Import-Package: com.google.gson;version="2.7.0",
 Bundle-ActivationPolicy: lazy
 Export-Package: org.collin.core.authentication,
  org.collin.core.data,
+ org.collin.core.def,
+ org.collin.core.essence,
  org.collin.core.xml
 Require-Bundle: org.condast.commons.data;bundle-version="1.0.0"

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.collin.core.def.ITetraNode;
+import org.condast.commons.strings.StringUtils;
 
 /**
  * A Tetra node is the core atom of tetralogic. It serves as a placeholder for the tetra. 
@@ -24,6 +25,8 @@ public class TetraNode<D extends Object> implements ITetraNode<D>{
 	private ITetra<D> parent;
 
 	private int selected;
+	
+	private String description;
 
 	private Collection<ITetraListener<D>> listeners;
 		
@@ -52,6 +55,16 @@ public class TetraNode<D extends Object> implements ITetraNode<D>{
 	@Override
 	public Nodes getType() {
 		return type;
+	}
+
+	@Override
+	public String getDescription() {
+		return description;
+	}
+
+	@Override
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	@Override
@@ -97,5 +110,14 @@ public class TetraNode<D extends Object> implements ITetraNode<D>{
 	public void select( TetraEvent<D> event ) {
 		this.selected++;
 		notifyTetraListeners( event );
+	}
+	
+	@Override
+	public String toString() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append( this.type.toString() + ": ");
+		if( !StringUtils.isEmpty( this.id ))
+			buffer.append(this.id);
+		return buffer.toString();
 	}
 }

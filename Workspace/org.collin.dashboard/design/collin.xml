@@ -1,34 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <collin id="org.collin.dashboard.test" name="Collin Test"
 	title="HowAComputer.Thinks">
-	<units>
-		<unit id="org.collin.dashboard.test">
+	<compasses>
+		<compass id="org.collin.dashboard.test">
 			<!-- This tetra describes the approach of the provider -->
-			<tetra type="moodle-course">
+			<tetra type="consumer" name="moodle-course">
 				<nodes>
 					<function type="supplier" activity="1.1"></function>
 					<goal type="module">Introduction in the area</goal>
-					<task type="paragraph" time="1 hr" progress="80"/>
+					<task id="multi-tasking" type="paragraph" class="org.condast.collin.">
+						<tetras>
+							<tetra>
+							</tetra>
+						</tetras>
+					</task>
 				</nodes>				
-				<ambition id="module.introduction" description="Describes the ambition"/>
-				<operation name="development" description="Describes the approach">
-						<function type="Course Programming"></function>
-						<task></task>
-						<solution></solution>
-				</operation>
-				<learning description="Describes the goals of learnng">
-						<function></function>
-						<goal></goal>
-						<task></task>
-				</learning>
-				<recovery type="knowledge" description="Describes the reflection afterwards">
-						<goal></goal>
-						<task></task>
-						<solution></solution>
-				</recovery>
   		</tetra>
   		<!-- This tetra monitors the student -->
- 			<tetra type="moodle" name="student">
+ 			<tetra type="producer" name="student">
 				<nodes>
 					<function type="subject"></function>
 					<goal type="question">What is your goal</goal>
@@ -41,7 +30,7 @@
 				<recovery type="knowledge" question="reflect?"/>
  		</tetra>
   		<!-- This tetra provides the coach of the supplier, with a focus on achieving the goals -->
- 			<tetra type="team zodiac" name="tutor">
+ 			<tetra type="product" name="tutor">
 				<nodes>
 					<function type="coach-supplier"></function>
 					<goal></goal>
@@ -54,7 +43,7 @@
 				<recovery/>
   		</tetra>
    		<!-- This tetra provides the coach of the consumer, with a focus on keeping the student happy -->
- 			<tetra type="team Zodiac" name="support">
+ 			<tetra type="process" name="support">
 				<nodes>
 					<function type="coach-subject"></function>
 					<goal></goal>
@@ -67,7 +56,7 @@
 				<recovery/>
   		</tetra>
   		<!-- This tetra provides the product of the supplier -->
- 			<tetra type="product" name="exam">
+ 			<tetra type="coach-product" name="exam">
 				<nodes>
 					<function type="product"></function>
 					<goal></goal>
@@ -80,7 +69,7 @@
 				<recovery/>
   		</tetra>
   		<!-- This tetra provides the process of the student -->
- 			<tetra type="project plan">
+ 			<tetra type="coach_process">
 				<nodes>
 					<function type="process"></function>
 					<goal></goal>
@@ -92,6 +81,11 @@
 				<operation/>
 				<recovery/>
   		</tetra>
-   	</unit>
-  </units>
+   	</compass>
+   	<compass>
+		<compasses>
+		  <compass></compass>
+		</compasses>   	
+   	</compass>
+  </compasses>
 </collin>
