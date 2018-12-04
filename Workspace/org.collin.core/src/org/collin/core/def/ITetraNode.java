@@ -7,13 +7,30 @@ import org.collin.core.essence.TetraEvent;
 public interface ITetraNode<D extends Object> {
 
 	public enum Nodes{
-		UNDEFINED,
-		START,
-		GOAL,
-		TASK,
-		SOLUTION,
-		FUNCTION,
-		COMPLETE;
+		UNDEFINED(0),
+		GOAL(1),
+		TASK(2),
+		SOLUTION(3),
+		FUNCTION(4);
+		
+		private int index;
+
+		private Nodes( int index ) {
+			this.index = index;
+		}
+
+		public int getIndex() {
+			return index;
+		}
+		
+		public static Nodes getNode( int index ) {
+			for( Nodes node: values()) {
+				if( node.getIndex() == index )
+					return node;
+			}
+			return Nodes.UNDEFINED;
+		}
+
 	}
 
 	public String getId();

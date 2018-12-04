@@ -1,57 +1,64 @@
 package org.collin.core.essence;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.EventObject;
-
-import org.collin.core.def.ITetraNode;
 
 public class TetraEvent<D extends Object> extends EventObject {
 	private static final long serialVersionUID = 1L;
 
 	public enum States{
-		START,
-		COMPLETE;
+		UNDEFINED(0),
+		START(1),
+		GOAL(2),
+		TASK(3),
+		SOLUTION(4),   
+		COMPLETE(9);
+		
+		private int index;
+
+		private States( int index ) {
+			this.index = index;
+		}
+
+		public int getIndex() {
+			return index;
+		}
+		
+		public static States getState( int index ) {
+			for( States node: values()) {
+				if( node.getIndex() == index )
+					return node;
+			}
+			return States.UNDEFINED;
+		}
+
+		public static States next( States current ) {
+			int next = (current.getIndex() + 1);
+			return getState( next );
+		}
+
+
 	}
 	
 	private D data;
-	
-	private int selected;
-	
-	private ITetraNode<D> node;
-	
+		
 	private States state;
 	
-	public TetraEvent( Object source, ITetraNode<D> node, D data, int selected ) {
+	private double progress;
+	
+	private Date create;
+
+	public TetraEvent( Object source, D data ) {
+		this( source, data, 0);
+	}
+
+	public TetraEvent( Object source, D data, double progress ) {
 		super(source);
-		this.node = node;
 		this.data = data;
-		this.selected = selected;
 		this.state = States.START;
-	}
-
-	public TetraEvent( ITetraNode<D> source, D data, int selected ) {
-		this( source, source, data, selected);
-	}
-
-	public TetraEvent( ITetraNode<D> source, D data ) {
-		this( source, source, data, 0);
-	}
-
-	/**
-	 * Events can be propagated. This ensures that the original source is
-	 * known all the time
-	 * @param source
-	 * @param event
-	 */
-	public TetraEvent( ITetraNode<D> source, TetraEvent<D> event ) {
-		this( event, source, event.getData(), event.getSelected());
-	}
-	
-	public ITetraNode<D> getNode(){
-		return node;
-	}
-	
-	public ITetraNode.Nodes getType(){
-		return node.getType();
+		this.progress = progress;
+		this.create = Calendar.getInstance().getTime();
 	}
 	
 	public D getData() {
@@ -66,7 +73,15 @@ public class TetraEvent<D extends Object> extends EventObject {
 		this.state = state;
 	}
 
-	public int getSelected() {
-		return selected;
+	public double getProgress() {
+		return progress;
+	}
+
+	public void setProgress(double progress) {
+		this.progress = progress;
+	}
+
+	public Date getCreate() {
+		return create;
 	}
 }
