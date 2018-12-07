@@ -44,6 +44,14 @@
 					</layout-data>
 				</composite>
 			</item>
+			<item name="Tetra">
+				<composite class="org.collin.ui.main.TetraViewer" name="Authentication-composite">
+					<layout-data type="grid-data">
+						<horizontal spacing="fill" grab-excess="true" columns="1" />
+						<vertical spacing="fill" />
+					</layout-data>
+				</composite>
+			</item>
 			<item name="Debug" >
 			</item>
 			<item name="Log">

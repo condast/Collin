@@ -4,88 +4,73 @@
 	<compasses>
 		<compass id="org.collin.dashboard.test">
 			<!-- This tetra describes the approach of the provider -->
-			<tetra type="consumer" name="moodle-course">
+			<tetra type="consumer" id="moodle-course">
 				<nodes>
 					<function type="supplier" activity="1.1"></function>
 					<goal type="module">Introduction in the area</goal>
-					<task id="multi-tasking" type="paragraph" class="org.condast.collin.">
+					<task id="multi-tasking" type="paragraph"
+						class="org.condast.collin.">
 						<tetras>
 							<tetra>
 							</tetra>
 						</tetras>
 					</task>
-				</nodes>				
-  		</tetra>
-  		<!-- This tetra monitors the student -->
- 			<tetra type="producer" name="student">
+				</nodes>
+			</tetra>
+			<!-- This tetra monitors the student -->
+			<tetra type="producer" name="student">
 				<nodes>
 					<function type="subject"></function>
 					<goal type="question">What is your goal</goal>
 					<task type="question">How will you achieve this</task>
 					<solution></solution>
 				</nodes>
-				<ambition id="module.introduction" question="why, where?"/>
-				<learning question="how?"/>
-				<operation name="development" question="what, when?"/>
-				<recovery type="knowledge" question="reflect?"/>
- 		</tetra>
-  		<!-- This tetra provides the coach of the supplier, with a focus on achieving the goals -->
- 			<tetra type="product" name="tutor">
+				<ambition id="module.introduction" question="why, where?" />
+				<learning question="how?" />
+				<operation name="development" question="what, when?" />
+				<recovery type="knowledge" question="reflect?" />
+			</tetra>
+			<!-- This tetra provides the coach of the supplier, with a focus on achieving 
+				the goals -->
+			<tetra type="product" name="tutor">
 				<nodes>
-					<function type="coach-supplier"></function>
+					<function type="coach"></function>
 					<goal></goal>
 					<task></task>
 					<solution></solution>
 				</nodes>
-				<ambition id="coach.ponte"/>
-				<learning/>
-				<operation/>
-				<recovery/>
-  		</tetra>
-   		<!-- This tetra provides the coach of the consumer, with a focus on keeping the student happy -->
- 			<tetra type="process" name="support">
+				<ambition id="coach.ponte" />
+				<learning />
+				<operation />
+				<recovery />
+			</tetra>
+			<!-- This tetra provides the coach of the consumer, with a focus on keeping 
+				the student happy -->
+			<tetra type="process" name="support">
 				<nodes>
-					<function type="coach-subject"></function>
+					<function type="coach"></function>
 					<goal></goal>
 					<task></task>
 					<solution></solution>
 				</nodes>
-				<ambition id="coach.ponte"/>
-				<learning/>
-				<operation/>
-				<recovery/>
-  		</tetra>
-  		<!-- This tetra provides the product of the supplier -->
- 			<tetra type="coach-product" name="exam">
+				<ambition id="coach.ponte" />
+				<learning />
+				<operation />
+				<recovery />
+			</tetra>
+			<!-- This tetra provides the coach -->
+			<tetra type="coach" name="exam">
 				<nodes>
 					<function type="product"></function>
 					<goal></goal>
 					<task></task>
 					<solution></solution>
 				</nodes>
-				<ambition id="certification"/>
-				<learning/>
-				<operation/>
-				<recovery/>
-  		</tetra>
-  		<!-- This tetra provides the process of the student -->
- 			<tetra type="coach_process">
-				<nodes>
-					<function type="process"></function>
-					<goal></goal>
-					<task></task>
-					<solution></solution>
-				</nodes>
-				<ambition id="pva"/>
-				<learning description="planning"/>
-				<operation/>
-				<recovery/>
-  		</tetra>
-   	</compass>
-   	<compass>
-		<compasses>
-		  <compass></compass>
-		</compasses>   	
-   	</compass>
-  </compasses>
+				<ambition id="certification" />
+				<learning />
+				<operation />
+				<recovery />
+			</tetra>
+		</compass>
+	</compasses>
 </collin>

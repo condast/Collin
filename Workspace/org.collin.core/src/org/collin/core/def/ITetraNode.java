@@ -30,7 +30,6 @@ public interface ITetraNode<D extends Object> {
 			}
 			return Nodes.UNDEFINED;
 		}
-
 	}
 
 	public String getId();
@@ -45,7 +44,7 @@ public interface ITetraNode<D extends Object> {
 		
 	public D getData();
 
-	void select( TetraEvent<D> event );
+	boolean select( TetraEvent<D> event );
 
 	int getSelected();
 
@@ -54,5 +53,7 @@ public interface ITetraNode<D extends Object> {
 	String getDescription();
 
 	void setDescription(String description);
+
+	String getName();
 
 }

@@ -21,4 +21,8 @@ public interface ITetra<D extends Object> extends ITetraNode<D> {
 
 	String getName();
 
+	void addDeepListener(ITetraListener<D> listener);
+
+	void removeDeepListener(ITetraListener<D> listener);
+
 }

@@ -41,6 +41,7 @@ public class CollinBuilder<D extends Object>{
 
 	//private static final String S_ERR_NO_SCHEMA_FOUND = "The XML Schema was not found";
 	private static final String S_WRN_NOT_NAMESPACE_AWARE = "The parser is not validating or is not namespace aware";
+	private static final String S_WRN_NULL_TYPE = "This Tetra has a null type: ";	
 	
 	static final String S_DOCUMENT_ROOT = "DOCUMENT_ROOT";
 
@@ -98,7 +99,7 @@ public class CollinBuilder<D extends Object>{
 
 	private Collection<ISequenceEventListener> listeners;
 	
-	private Logger logger = Logger.getLogger( CollinBuilder.class.getName() );
+	private static Logger logger = Logger.getLogger( CollinBuilder.class.getName() );
 
 	public CollinBuilder( Class<?> clss ) throws IOException {
 		this( clss, getDefaultModuleLocation());
@@ -171,7 +172,6 @@ public class CollinBuilder<D extends Object>{
 		return (Compass<D>[]) result.toArray( new Compass<?>[ result.size()]);
 	}
 	
-
 	/* (non-Javadoc)
 	 * @see org.condast.commons.ui.wizard.xml.IWizardBuilder#complete()
 	 */
@@ -206,8 +206,8 @@ public class CollinBuilder<D extends Object>{
 
 	public static class XmlHandler<D extends Object> extends DefaultHandler{
 		
-		public static final int MAX_COUNT = 200;	
-		
+		public static final int MAX_COUNT = 200;
+
 		private Collection<Compass<D>> compasses;
 		
 		private Compass<D> currentCompass;
@@ -236,9 +236,9 @@ public class CollinBuilder<D extends Object>{
 			String title = attributes.getValue( AttributeNames.TITLE.toXmlStyle());
 			String name = attributes.getValue( AttributeNames.NAME.toXmlStyle());
 			String description = attributes.getValue( AttributeNames.DESCRIPTION.toXmlStyle());
-			String url = attributes.getValue( AttributeNames.URI.toXmlStyle());
+			//String url = attributes.getValue( AttributeNames.URI.toXmlStyle());
 			String index_str = attributes.getValue( AttributeNames.INDEX.toXmlStyle());
-			String progress_str = attributes.getValue( AttributeNames.PROGRESS.toXmlStyle());
+			//String progress_str = attributes.getValue( AttributeNames.PROGRESS.toXmlStyle());
 			String locale_str = attributes.getValue( AttributeNames.LOCALE.toXmlStyle());
 			if(!StringUtils.isEmpty(locale_str)) {
 				String[] split = locale_str.split("[-]");
@@ -246,6 +246,8 @@ public class CollinBuilder<D extends Object>{
 			}
 			if( !StringUtils.isEmpty(index_str))
 				index = Integer.parseInt(index_str);
+			String tid = null;
+
 			ITetra<D> parent;
 			CollinNodes node = CollinNodes.valueOf(componentName);
 			switch( node ){
@@ -259,8 +261,9 @@ public class CollinBuilder<D extends Object>{
 				Compass<D>compass = new Compass<D>( currentCompass, id, title );
 				if( currentCompass != null )
 					currentCompass.addChild(compass);
-				else
+				else {
 					compasses.add(compass);
+				}
 				currentCompass = compass;	
 				if( !StringUtils.isEmpty(description))
 					compass.setDescription(description);
@@ -268,22 +271,27 @@ public class CollinBuilder<D extends Object>{
 				break;
 			case TETRA:
 				index=0;
+				if( StringUtils.isEmpty(type)) {
+					logger.warning( S_WRN_NULL_TYPE + id);
+					return;
+				}
 				Compass.Tetras ttype = StringUtils.isEmpty(type)? Compass.Tetras.UNDEFINED: 
 					Compass.Tetras.valueOf( StringStyler.styleToEnum(type));
+				tid = StringUtils.isEmpty(id)?Compass.createId(currentCompass, ttype): id;
 				ITetra<D> tetra;
 				if( currentNode == null ) {
-					tetra = new Tetra<D>( ttype.name(), name );
+					tetra = new Tetra<D>( tid, ttype.toString() );
 					tetra.init();
 					currentCompass.addTetra(ttype, tetra);
 				}else if( currentNode instanceof ITetra ){
 					parent = (ITetra<D>) currentNode;
 					ITetraNode.Nodes tnode = StringUtils.isEmpty(type)? ITetraNode.Nodes.UNDEFINED: ITetraNode.Nodes.valueOf( StringStyler.styleToEnum(type ));
-					tetra = new Tetra<D>( parent, ttype.name(), name, tnode, null );
+					tetra = new Tetra<D>( parent, tid, ttype.toString(), tnode, null );
 					tetra.init();
 					parent.addNode(tetra);
 				}else{
 					parent = (ITetra<D>) currentNode.getParent();
-					String tname = Compass.Tetras.UNDEFINED.equals(ttype)? parent.getName(): ttype.name();
+					String tname = Compass.Tetras.UNDEFINED.equals(ttype)? parent.getName(): ttype.toString();
 					tetra = new Tetra<D>( tname, currentNode );
 					tetra.init();
 					parent.addNode( tetra );
@@ -301,7 +309,9 @@ public class CollinBuilder<D extends Object>{
 			case SOLUTION:
 				parent = (ITetra<D>) currentNode;
 				ITetraNode.Nodes tnode = ITetraNode.Nodes.valueOf( componentName ); 
-				currentNode = new TetraNode<D>( parent, id, tnode );
+				tid = StringUtils.isEmpty(id)?TetraNode.createId(parent, tnode): id;
+				String tname = StringUtils.isEmpty(name)?TetraNode.createName(parent, tnode): name;
+				currentNode = new TetraNode<D>( parent, tid, tname, tnode );
 				parent.addNode( currentNode );
 				if( !StringUtils.isEmpty(description))
 					currentNode.setDescription(description);
@@ -323,6 +333,7 @@ public class CollinBuilder<D extends Object>{
 			CollinNodes node = CollinNodes.valueOf(componentName);
 			switch( node ){
 			case COMPASS:
+				currentCompass.init();
 				currentCompass = currentCompass.getParent();
 				break;
 			case TETRA:

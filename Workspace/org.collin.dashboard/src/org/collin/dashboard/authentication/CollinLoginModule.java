@@ -11,7 +11,7 @@ import javax.security.auth.callback.TextOutputCallback;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
-import org.collin.dashboard.ds.Dispatcher;
+import org.collin.dashboard.ds.AuthenticationDispatcher;
 
 /*
 *
@@ -117,7 +117,7 @@ public class CollinLoginModule implements LoginModule {
     }
 
     public boolean logout() throws LoginException {
-    	Dispatcher.getInstance().logoutRequest();
+    	AuthenticationDispatcher.getInstance().logoutRequest();
     	return true;
     }
 }

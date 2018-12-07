@@ -1,8 +1,10 @@
 package org.collin.dashboard;
 
-import org.collin.dashboard.ds.Dispatcher;
+import org.collin.dashboard.core.Dispatcher;
+import org.collin.dashboard.ds.AuthenticationDispatcher;
 import org.collin.ui.main.CollinComposite;
 import org.collin.ui.main.CollinViewerComposite;
+import org.collin.ui.main.TetraViewer;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 import org.condast.commons.ui.xml.XMLFactoryBuilder;
@@ -26,6 +28,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 		MAIN,
 		TEST,
 		CO_L_L_I_N,
+		TETRA,
 		DEBUG;
 
 		@Override
@@ -34,26 +37,31 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 		}
 	}
 	
+	private AuthenticationDispatcher adispatcher = AuthenticationDispatcher.getInstance();
 	private Dispatcher dispatcher = Dispatcher.getInstance();
-	
-	private CollinComposite ccomposite;
-	private CollinViewerComposite vccomposite;
-	
+		
 	private IBuildListener<Widget> listener = new IBuildListener<Widget>(){
 
 		@Override
 		public void notifyTestEvent(BuildEvent<Widget> event) {
 			try {
 				if( event.getData() instanceof CollinComposite ) {
-					ccomposite=  (CollinComposite) event.getData();
+					CollinComposite ccomposite=  (CollinComposite) event.getData();
 					ccomposite.setInput( Activator.class);
+					dispatcher.setCcomposite(ccomposite);
 					//ccomposite.setLoginProvider( dispatcher);
 				}else if( event.getData() instanceof CollinViewerComposite ) {
-					vccomposite=  (CollinViewerComposite) event.getData();
+					CollinViewerComposite vccomposite=  (CollinViewerComposite) event.getData();
 					vccomposite.setInput( Activator.class);
+					dispatcher.setVccomposite(vccomposite);
+				}else if( event.getData() instanceof TetraViewer ) {
+					TetraViewer tetraViewer=  (TetraViewer) event.getData();
+					//tetraViewer.setInput( Activator.class);
 					//ccomposite.setLoginProvider( dispatcher);
+					dispatcher.setTetraViewer(tetraViewer);
 				}else if( event.getData() instanceof TabFolder ) {
 					TabFolder folder =  ( TabFolder) event.getData();
+					folder.removeSelectionListener(slistener);
 					folder.addSelectionListener(slistener);
 				}
 			}
@@ -73,9 +81,11 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 				return;
 			switch( Tabs.valueOf( StringStyler.styleToEnum( item.getText()))){
 			case MAIN:
+				CollinComposite ccomposite=  dispatcher.getCcomposite();
 				ccomposite.setInput( Activator.class);
 				break;
 			case CO_L_L_I_N:
+				CollinViewerComposite vccomposite= dispatcher.getVccomposite();
 				vccomposite.setInput( Activator.class);
 				break;
 			default:
@@ -92,6 +102,6 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 		builder.addListener(listener);
 		builder.build();
 		builder.removeListener(listener);
-		dispatcher.setMainComposite(parent);
+		adispatcher.setMainComposite(parent);
 	}
 }

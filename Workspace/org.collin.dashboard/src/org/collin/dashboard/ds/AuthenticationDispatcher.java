@@ -8,17 +8,17 @@ import org.eclipse.swt.widgets.Composite;
  * @author Kees
  *
  */
-public class Dispatcher extends AbstractLoginClient{
+public class AuthenticationDispatcher extends AbstractLoginClient{
 
-	private static Dispatcher dispatcher = new Dispatcher();
+	private static AuthenticationDispatcher dispatcher = new AuthenticationDispatcher();
 	
 	private Composite main; 
 
-	public static Dispatcher getInstance(){
+	public static AuthenticationDispatcher getInstance(){
 		return dispatcher;
 	}
 	
-	private Dispatcher() {
+	private AuthenticationDispatcher() {
 		super();
 	}
 

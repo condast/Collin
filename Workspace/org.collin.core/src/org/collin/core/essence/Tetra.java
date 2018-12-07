@@ -1,5 +1,7 @@
 package org.collin.core.essence;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,36 +16,52 @@ public class Tetra<D extends Object> extends TetraNode<D> implements ITetra<D> {
 
 	private Map<ITetraNode.Nodes, ITetraNode<D>> nodes;
 	
+	private Collection<ITetraListener<D>> deepListeners;
+	
 	private IOperator<D> operator;
 	
-	private String name;
-
-	public Tetra( String name, String label ) {
-		this( name, label, ITetraNode.Nodes.UNDEFINED);
+	public Tetra( String id, String name ) {
+		this( id, name, ITetraNode.Nodes.UNDEFINED);
 	}
 
-	public Tetra( String name, String label, ITetraNode.Nodes type ) {
-		this( null, name, label, type, null );
+	public Tetra( String id, String name, ITetraNode.Nodes type ) {
+		this( null, id, name, type, null );
 	}
-	public Tetra( ITetra<D> parent, String name, String label, ITetraNode.Nodes type, D data ) {				
-		this( parent, name, label, type, data, null);
+	public Tetra( ITetra<D> parent, String id, String name, ITetraNode.Nodes type, D data ) {				
+		this( parent, id, name, type, data, null);
 		this.operator = new DefaultOperator<D>();
 	}
 
 	public Tetra( String name, ITetraNode<D> node ) {				
-		this( node.getParent(), name, node.getId(), node.getType(), node.getData());
+		this( node.getParent(), node.getId(), name, node.getType(), node.getData());
 	}
 
-	protected Tetra( ITetra<D> parent, String name, String label, ITetraNode.Nodes type, D data, DefaultOperator<D> operator ) {
-		super( parent, label, type, data );
+	protected Tetra( ITetra<D> parent, String id, String name, ITetraNode.Nodes type, D data, DefaultOperator<D> operator ) {
+		super( parent, id, !StringUtils.isEmpty(name)? name: type.toString(), type, data );
 		nodes = new HashMap<>();
-		this.name = !StringUtils.isEmpty(name)? name: type.toString();
 		this.operator = operator; 
+		this.deepListeners = new ArrayList<>();
 	}
-		
-	@Override                                                
-	public String getName() {
-		return name;
+
+	@Override
+	public void init() {
+		Set<Nodes> set = EnumSet.of(Nodes.FUNCTION, Nodes.GOAL, Nodes.TASK, Nodes.SOLUTION);
+		for( Nodes node: set) {
+			if(!nodes.containsKey(node )) {
+				String name = createName(this, node );
+				ITetraNode<D> tn = new TetraNode<D>(this, createId(this, node), name, node );
+				addNode( tn );
+			}
+		}
+		this.deepListeners.clear();
+		for( ITetraNode<D> node: this.nodes.values()) {
+			if( node instanceof ITetra<?>) {
+				ITetra<D> tetra = (ITetra<D>) node;
+				for( ITetraListener<D> listener: this.deepListeners )
+					tetra.addDeepListener(listener);
+				tetra.init();
+			}
+		}
 	}
 
 	protected IOperator<D> getOperator() {
@@ -55,17 +73,6 @@ public class Tetra<D extends Object> extends TetraNode<D> implements ITetra<D> {
 	}
 
 	@Override
-	public void init() {
-		Set<Nodes> set = EnumSet.of(Nodes.FUNCTION, Nodes.GOAL, Nodes.TASK, Nodes.SOLUTION);
-		for( Nodes node: set) {
-			if(!nodes.containsKey(node )) {
-				ITetraNode<D> tn = new TetraNode<D>(this, node.toString(), node );
-				addNode( tn );
-			}
-		}
-	}
-
-	@Override
 	public void addNode( ITetraNode<D> node ) {
 		this.nodes.put(node.getType(), node );
 	}
@@ -73,6 +80,16 @@ public class Tetra<D extends Object> extends TetraNode<D> implements ITetra<D> {
 	@Override
 	public void removeNode( ITetraNode<D> node ) {
 		this.nodes.remove(node.getType() );
+	}
+
+	@Override
+	public void addDeepListener( ITetraListener<D> listener ) {
+		this.deepListeners.add( listener );
+	}
+
+	@Override
+	public void removeDeepListener( ITetraListener<D> listener ) {
+		this.deepListeners.remove( listener );
 	}
 
 	@Override
@@ -133,38 +150,40 @@ public class Tetra<D extends Object> extends TetraNode<D> implements ITetra<D> {
 	 * @see org.collin.core.essence.ITetra#select(org.collin.core.def.ITetraNode.Nodes)
 	 */
 	@Override
-	public void select( TetraEvent<D> event ) {
+	public boolean select( TetraEvent<D> event ) {
 		ITetraNode<D> node = null;
+		boolean result = false;
 		switch( event.getState()) {
 		case START:
 			node = getNode( Nodes.GOAL);
 			if( operator.select(node, event))
-				node.select(event);
+				result = node.select(event);
 		case GOAL:
 			node = getNode( Nodes.GOAL);
 			if( operator.select(node, event)) {
 				node = getNode( Nodes.TASK);
 				event.setState(States.TASK);
-				node.select(event);
+				result = node.select(event);
 			}
 		case TASK:
 			node = getNode( Nodes.TASK);
 			if( operator.select(node, event)) {
 				node = getNode( Nodes.SOLUTION);
 				event.setState(States.SOLUTION);
-				node.select(event);
+				result = node.select(event);
 			}
 		case SOLUTION:
 			node = getNode( Nodes.SOLUTION);
 			if( operator.select(node, event)) {
 				event.setState(States.COMPLETE);
-				notifyTetraListeners(event);
 			}
+			result = true;
 			break;
 		default:
 			break;
 		}
-		super.notifyTetraListeners(event);
+ 		super.notifyTetraListeners(event);
+		return result;
 	}
 
 	@Override
@@ -179,6 +198,7 @@ public class Tetra<D extends Object> extends TetraNode<D> implements ITetra<D> {
 
 	@Override
 	public String toString() {
-		return this.name + ":" + super.getId();
+		return StringUtils.isEmpty(getName())? super.getId(): super.getName();
 	}
+
 }

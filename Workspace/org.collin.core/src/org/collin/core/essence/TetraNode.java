@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.collin.core.def.ITetraNode;
+import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 
 /**
@@ -17,6 +18,7 @@ import org.condast.commons.strings.StringUtils;
 public class TetraNode<D extends Object> implements ITetraNode<D>{
 
 	private String id;
+	private String name;
 	
 	private D data;
 	
@@ -30,26 +32,32 @@ public class TetraNode<D extends Object> implements ITetraNode<D>{
 
 	private Collection<ITetraListener<D>> listeners;
 		
-	public TetraNode( ITetra<D> parent, String id, ITetraNode.Nodes type, D data ) {
+	public TetraNode( ITetra<D> parent, String id, String name, ITetraNode.Nodes type, D data ) {
 		super();
 		this.parent = parent;
 		this.id = id;
+		this.name = StringUtils.isEmpty( name )? id: name;
 		this.type = type;
 		this.selected = 0;
-		this.listeners = new ArrayList<ITetraListener<D>>();
+		this.listeners = new ArrayList<>();
 	}
 
-	public TetraNode(ITetra<D> parent, String id, ITetraNode.Nodes type) {
-		this( parent, id, type, null );
+	public TetraNode(ITetra<D> parent, String id, String name, ITetraNode.Nodes type) {
+		this( parent, id, name, type, null );
 	}
 
-	protected TetraNode(String id, ITetraNode.Nodes type) {
-		this( null, id, type, null );
+	protected TetraNode(String id, String name, ITetraNode.Nodes type) {
+		this( null, id, name, type, null );
 	}
 
 	@Override
 	public String getId() {
 		return id;
+	}
+
+	@Override                                                
+	public String getName() {
+		return name;
 	}
 
 	@Override
@@ -87,7 +95,8 @@ public class TetraNode<D extends Object> implements ITetraNode<D>{
 		return this.listeners.remove( listener);
 	}
 	
-	void notifyTetraListeners( TetraEvent<D> event ) {
+	protected void notifyTetraListeners( TetraEvent<D> event ) {
+		event.addHistory(this);
 		for( ITetraListener<D> listener: this.listeners )
 			listener.notifyNodeSelected(event);
 	}
@@ -107,17 +116,41 @@ public class TetraNode<D extends Object> implements ITetraNode<D>{
 	 * @see org.collin.core.essence.ITetraNode#select()
 	 */
 	@Override
-	public void select( TetraEvent<D> event ) {
+	public boolean select( TetraEvent<D> event ) {
+		if( this.equals( event.getPropagate()) || event.hasBeenProcessed(this ))
+			return false;
 		this.selected++;
 		notifyTetraListeners( event );
+		return true;
 	}
 	
 	@Override
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append( this.type.toString() + ": ");
-		if( !StringUtils.isEmpty( this.id ))
-			buffer.append(this.id);
+		if( !StringUtils.isEmpty( this.name ))
+			buffer.append(this.name);
 		return buffer.toString();
 	}
+
+	/**
+	 * Create a default id
+	 * @param parent
+	 * @param node
+	 * @return
+	 */
+	public static String createId( ITetra<?> parent, ITetraNode.Nodes node) {
+		return parent.getId() + "." + StringStyler.toMethodString(node.name());
+	}
+
+	/**
+	 * Create a default name
+	 * @param parent
+	 * @param node
+	 * @return
+	 */
+	public static String createName( ITetraNode<?> parent, ITetraNode.Nodes node) {
+		return parent.getName() + "." + StringStyler.toMethodString(node.name());
+	}
+
 }
