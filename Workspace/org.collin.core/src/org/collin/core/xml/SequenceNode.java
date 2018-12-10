@@ -17,6 +17,15 @@ public class SequenceNode {
 		CONTROLLER,
 		MODULES,
 		MODULE,
+		ACTIVITIES,
+		ACTIVITY,
+		FUNCTION,
+		GOAL,
+		TASK,
+		SOLUTION,
+		QUESTIONS,
+		QUESTION,
+		ANSWER,
 		PARTS,
 		PART,
 		SEQUENCE,
@@ -62,25 +71,34 @@ public class SequenceNode {
 	private String type;
 	private String uri;
 	private float progress;
+	private long totalTime;
 
 	private SequenceNode parent;
 
 	private List<SequenceNode> children;
 
-	public SequenceNode( Nodes node, String id, String name, int index, String title) {
-		this( node, Locale.ENGLISH, id, name, index );
+	public SequenceNode( Nodes node, Locale locale, String id, String name, int index, String title) {
+		this( node, locale, id, name, index, -1 );
 	}
 	
-	public SequenceNode( Nodes node, Locale locale, String id, String name, int index, String title) {
-		this( node, locale, id, name, index );
+	public SequenceNode( Nodes node, String id, String name, int index, String title, long totalTime) {
+		this( node, Locale.ENGLISH, id, name, index, totalTime );
+	}
+	
+	public SequenceNode( Nodes node, Locale locale, String id, String name, int index, String title, long totalTime) {
+		this( node, locale, id, name, index, totalTime );
 		this.title = title;
 	}
 
-	public SequenceNode( Nodes node, String id, String name, int index ) {
-		this( node, Locale.ENGLISH, id, name, index );
+	public SequenceNode( Nodes node, String id, String name, int index, long totalTime ) {
+		this( node, Locale.ENGLISH, id, name, index, totalTime );
+	}
+
+	public SequenceNode( Nodes node, Locale locale, String id, String name, int index ) {
+		this( node, locale, id, name, index, -1 );
 	}
 	
-	public SequenceNode( Nodes node, Locale locale, String id, String name, int index ) {
+	public SequenceNode( Nodes node, Locale locale, String id, String name, int index, long totalTime ) {
 		super();
 		this.node = node;
 		this.locale = locale.toString();
@@ -88,6 +106,7 @@ public class SequenceNode {
 		this.name = name;
 		this.index = index;
 		this.locale = Locale.ENGLISH.toString();
+		this.totalTime = totalTime;
 		this.children = new ArrayList<>();
 	}
 
@@ -153,6 +172,10 @@ public class SequenceNode {
 
 	public SequenceNode getParent() {
 		return parent;
+	}
+
+	public long getTotalTime() {
+		return totalTime;
 	}
 
 	private void setParent(SequenceNode parent) {

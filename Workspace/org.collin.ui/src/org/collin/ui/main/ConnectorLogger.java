@@ -28,8 +28,7 @@ public class ConnectorLogger<D extends Object> extends Composite {
 		ORIGIN(1),
 		TYPE(2),
 		DESTINATION(3),
-		DEST_ID(4),
-		STATE(5);
+		DEST_ID(4);
 		
 		private int index;
 
@@ -161,8 +160,6 @@ public class ConnectorLogger<D extends Object> extends Composite {
 					break;
 				case TYPE:
 					text = data.getOrigin().getType().toString();					
-					break;
-				case STATE:
 					break;
 				default:
 					break;

@@ -26,5 +26,8 @@ Export-Package: org.collin.core.authentication,
  org.collin.core.data,
  org.collin.core.def,
  org.collin.core.essence,
+ org.collin.core.operator,
+ org.collin.core.transaction,
+ org.collin.core.util,
  org.collin.core.xml
 Require-Bundle: org.condast.commons.data;bundle-version="1.0.0"

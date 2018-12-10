@@ -6,25 +6,28 @@ import java.util.logging.Logger;
 
 import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.ITetra;
-import org.collin.core.essence.ITetraListener;
-import org.collin.core.essence.TetraEvent;
+import org.collin.core.operator.DefaultOperatorFactory;
+import org.collin.core.operator.IOperator;
+import org.collin.core.transaction.TetraTransaction;
 
 public class TetraConnector<O,D extends Object> {
 
-	private Collection<Connector> connectors;
-	
+	private Collection<IConnector<O,D>> connectors;
+
 	private Collection<IConnectorListener<O,D>> listeners;
-	
+
 	private TetraConnector<O,D> connector;
-	
+	private ConnectorFactory factory;
+
 	private O owner;
-	
+
 	private Logger logger = Logger.getLogger( this.getClass().getName());
-		
-	public TetraConnector( O owner ) {
+
+	public TetraConnector( Class<?> clss, O owner ) {
 		this.owner = owner;
 		this.connector = this;
-		connectors = new ArrayList<Connector>();
+		factory = new ConnectorFactory(clss);
+		connectors = new ArrayList<>();
 		this.listeners = new ArrayList<>();
 	}
 
@@ -39,18 +42,21 @@ public class TetraConnector<O,D extends Object> {
 	public boolean removeConnectorListener( IConnectorListener<O,D> listener ) {
 		return this.listeners.remove( listener);
 	}
-	
+
 	protected void notifyConnectorListeners( ConnectorEvent<O,D> event ) {
 		for( IConnectorListener<O,D> listener: this.listeners )
 			listener.notifyConnectorFired(event);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void connect( ITetraNode<D> node1, ITetraNode<D> node2) {
-		connectors.add( new Connector( node1, node2 ));
+		if(( node1 == null ) ||( node2 == null ))
+			return;
+		connectors.add( (IConnector<O, D>) factory.createOperator(null, node1, node2 ));
 	}
 
 	public boolean disconnect( ITetraNode<D> node1, ITetraNode<D> node2) {
-		for( Connector connector: this.connectors ) {
+		for( IConnector<O,D> connector: this.connectors ) {
 			if( !connector.isEqual(node1, node2))
 				continue;
 			return this.connectors.remove( connector );
@@ -59,8 +65,8 @@ public class TetraConnector<O,D extends Object> {
 	}
 
 	public boolean remove( ITetraNode<D> node1 ) {
-		Collection<Connector> temp = new ArrayList<Connector>();
-		for( Connector connector: this.connectors ) {
+		Collection<IConnector<O,D>> temp = new ArrayList<>();
+		for( IConnector<O,D> connector: this.connectors ) {
 			if( !connector.contains( node1 ))
 				temp.add( connector );
 		}
@@ -76,78 +82,62 @@ public class TetraConnector<O,D extends Object> {
 			connector.dispose();
 	}
 
-	private class Connector implements IConnector<O,D>{
+	private class ConnectorFactory extends DefaultOperatorFactory<D>{
+
+		public ConnectorFactory( Class<?> clss) {
+			super( clss );
+		}
 		
-		private ITetraNode<D>[] nodes;
-		
-		private ITetraListener<D> listener = new ITetraListener<D>() {
+		@Override
+		public IOperator<D> createOperator(String className, ITetraNode<D> origin, ITetraNode<D> destination) {
+			return new Connector( origin, destination);
+		}
+
+		private class Connector extends DefaultOperator implements IConnector<O,D>{
+
+			public Connector(ITetraNode<D> origin, ITetraNode<D> destination) {
+				super(origin, destination);
+			}
 
 			@Override
-			public void notifyNodeSelected(TetraEvent<D> event) {
-				ITetraNode<D> node = getOther(event.getPropagate());
-				logger.info("Event from: " + event.getPropagate() + " to " + node);
+			public TetraConnector<O,D> getOwner() {
+				return connector;
+			}
+
+			/* (non-Javadoc)
+			 * @see org.collin.core.connector.IConnector#isEqual(org.collin.core.def.ITetraNode, org.collin.core.def.ITetraNode)
+			 */
+			@Override
+			public boolean isEqual( ITetraNode<D> node1, ITetraNode<D> node2 ) {
+				boolean result = origin.equals(node1) && destination.equals( node2 );
+				return result? result: origin.equals(node2) && destination.equals( node1 );
+			}
+
+			@Override
+			public boolean select( ITetraNode<D> source, TetraTransaction<D> event) {
+				ITetraNode<D> node = getOther(source);
+				logger.info("Event from: " + source + " to " + node);
 				if( node != null ){
 					ITetra<D> tetra = node.getParent();
-					if(tetra.select( new TetraEvent<D>(event)))
-						notifyConnectorListeners(new ConnectorEvent<O,D>( connector, event.getPropagate(), node ));
+					if(tetra.select( source.getType(), event))
+						notifyConnectorListeners(new ConnectorEvent<O,D>( connector, source, node ));
 				}else {
-					logger.severe("NULL event: " + event.getPropagate().getId());
+					logger.severe("NULL event: " + source.getId());
 				}
+				return true;///return super.select(event);
 			}
-		};
 
-		@SuppressWarnings("unchecked")
-		public Connector( ITetraNode<D> nd1, ITetraNode<D> nd2) {
-			nodes = new ITetraNode[2];
-			nodes[0] = nd1;
-			nd1.addTetraListener(listener);
-			nodes[1] = nd2;
-			nd2.addTetraListener(listener);
-		}
-		
-		@Override
-		public TetraConnector<O,D> getOwner() {
-			return connector;
-		}
-		
-		/* (non-Javadoc)
-		 * @see org.collin.core.connector.IConnector#contains(org.collin.core.def.ITetraNode)
-		 */
-		@Override
-		public boolean contains( ITetraNode<D> node ) {
-			return nodes[0].equals(node ) || nodes[1].equals( node );
-		}
-		
-		/* (non-Javadoc)
-		 * @see org.collin.core.connector.IConnector#isEqual(org.collin.core.def.ITetraNode, org.collin.core.def.ITetraNode)
-		 */
-		@Override
-		public boolean isEqual( ITetraNode<D> node1, ITetraNode<D> node2 ) {
-			boolean result = nodes[0].equals(node1) && nodes[1].equals( node2 );
-			return result? result: nodes[0].equals(node2) && nodes[1].equals( node1 );
-		}
+			@Override
+			public void dispose() {
+				// TODO Auto-generated method stub
 
-		/* (non-Javadoc)
-		 * @see org.collin.core.connector.IConnector#getOther(org.collin.core.def.ITetraNode)
-		 */
-		@Override
-		public ITetraNode<D> getOther( ITetraNode<D> node ) {
-			return nodes[0].equals(node)? nodes[1]: nodes[1].equals( node )?nodes[0]: null;
-		}
+			}
 
-		/* (non-Javadoc)
-		 * @see org.collin.core.connector.IConnector#dispose()
-		 */
-		@Override
-		public void dispose() {
-			nodes[0].removeTetraListener(listener);
-			nodes[1].removeTetraListener(listener);
-		}
-
-		@Override
-		public String toString() {
-			return nodes[0].getName() + "(" + nodes[0].getType()  + ")-" + 
-					nodes[1].getName() + "(" +	nodes[1].getType() + ")";
+			@Override
+			public boolean contains(ITetraNode<D> node) {
+				// TODO Auto-generated method stub
+				return false;
+			}
 		}
 	}
 }

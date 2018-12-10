@@ -1,11 +1,12 @@
 package org.collin.core.essence;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import org.collin.core.def.ITetraNode;
+import org.collin.core.operator.IOperator;
+import org.collin.core.transaction.TetraTransaction;
 import org.condast.commons.strings.StringStyler;
-import org.condast.commons.strings.StringUtils;
+import org.xml.sax.Attributes;
 
 /**
  * A Tetra node is the core atom of tetralogic. It serves as a placeholder for the tetra. 
@@ -15,49 +16,31 @@ import org.condast.commons.strings.StringUtils;
  *
  * @param <D>
  */
-public class TetraNode<D extends Object> implements ITetraNode<D>{
+public class TetraNode<D extends Object> extends AbstractCollINSelector<D> implements ITetraNode<D>{
 
-	private String id;
-	private String name;
-	
-	private D data;
-	
 	private ITetraNode.Nodes type;
 	
 	private ITetra<D> parent;
 
-	private int selected;
-	
 	private String description;
+	
+	private IOperator<D> operator;
 
-	private Collection<ITetraListener<D>> listeners;
-		
-	public TetraNode( ITetra<D> parent, String id, String name, ITetraNode.Nodes type, D data ) {
-		super();
-		this.parent = parent;
-		this.id = id;
-		this.name = StringUtils.isEmpty( name )? id: name;
-		this.type = type;
-		this.selected = 0;
-		this.listeners = new ArrayList<>();
+	public TetraNode( ITetra<D> parent, String id, String name, ITetraNode.Nodes type ) {
+		this( parent, id, name, type, new DefaultOperator<D>() ) ;
+		DefaultOperator<D> dop = (DefaultOperator<D>) this.operator;
+		dop.setOwner(this);
 	}
-
-	public TetraNode(ITetra<D> parent, String id, String name, ITetraNode.Nodes type) {
-		this( parent, id, name, type, null );
+	
+	public TetraNode( ITetra<D> parent, String id, String name, ITetraNode.Nodes type, IOperator<D> operator ) {
+		super( id, name);
+		this.parent = parent;
+		this.type = type;
+		this.operator = operator;
 	}
 
 	protected TetraNode(String id, String name, ITetraNode.Nodes type) {
-		this( null, id, name, type, null );
-	}
-
-	@Override
-	public String getId() {
-		return id;
-	}
-
-	@Override                                                
-	public String getName() {
-		return name;
+		this( null, id, name, type );
 	}
 
 	@Override
@@ -76,60 +59,46 @@ public class TetraNode<D extends Object> implements ITetraNode<D>{
 	}
 
 	@Override
-	public D getData() {
-		return this.data;
-	}
-
-	@Override
 	public ITetra<D> getParent() {
 		return parent;
 	}
 
 	@Override
-	public boolean addTetraListener( ITetraListener<D> listener ) {
-		return this.listeners.add( listener);
+	public void setOperator(IOperator<D> operator) {
+		this.operator = operator;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public boolean removeTetraListener( ITetraListener<D> listener ) {
-		return this.listeners.remove( listener);
-	}
-	
-	protected void notifyTetraListeners( TetraEvent<D> event ) {
-		event.addHistory(this);
-		for( ITetraListener<D> listener: this.listeners )
-			listener.notifyNodeSelected(event);
-	}
-
-	@Override
-	public int getSelected() {
-		return selected;
+	public ITetraListener<D>[] getListeners(){
+		Collection<ITetraListener<D>> listeners = super.getTetraListeners();
+		return listeners.toArray( new ITetraListener[listeners.size()]);
 	}
 	
 	@Override
-	public int balance( int offset ) {
-		this.selected -= offset;
-		return this.selected;
+	public boolean fire(TetraTransaction<D> event) {
+		return select( getType(), event );
 	}
 
 	/* (non-Javadoc)
 	 * @see org.collin.core.essence.ITetraNode#select()
 	 */
 	@Override
-	public boolean select( TetraEvent<D> event ) {
-		if( this.equals( event.getPropagate()) || event.hasBeenProcessed(this ))
-			return false;
-		this.selected++;
-		notifyTetraListeners( event );
-		return true;
+	public boolean select( ITetraNode.Nodes type , TetraTransaction<D> event ) {
+		boolean result = this.operator.select(this, event);
+		if( !result )
+			return result;
+		
+		result = event.updateTransaction(this, event);
+		notifyTetraListeners(event);
+		return result;
 	}
 	
 	@Override
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append( this.type.toString() + ": ");
-		if( !StringUtils.isEmpty( this.name ))
-			buffer.append(this.name);
+		buffer.append( super.toString());
 		return buffer.toString();
 	}
 
@@ -153,4 +122,38 @@ public class TetraNode<D extends Object> implements ITetraNode<D>{
 		return parent.getName() + "." + StringStyler.toMethodString(node.name());
 	}
 
+	private static class DefaultOperator<D extends Object> implements IOperator<D>{
+
+		private TetraNode<D> owner;
+		
+		public DefaultOperator() {
+			super();
+		}
+
+		public void setOwner(TetraNode<D> owner) {
+			this.owner = owner;
+		}
+
+		@Override
+		public void setParameters(Attributes attrs) {
+			// TODO Auto-generated method stub
+			
+		}
+				
+		@Override
+		public boolean select( ITetraNode<D> source, TetraTransaction<D> event) {
+			if( event.hasBeenProcessed( source ))
+				return false;
+			owner.notifyTetraListeners( event );
+			return true;
+		}
+
+		@Override
+		public boolean contains(ITetraNode<D> node) {
+			return owner.equals(node);
+		}
+
+		@Override
+		public void dispose() { /* NOTHING */}
+	}
 }

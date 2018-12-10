@@ -1,13 +1,14 @@
-package org.collin.core.xml;
+package org.collin.moodle.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Logger;
 
-import org.collin.core.xml.ModuleBuilder.SequenceEvents;
+import org.collin.core.xml.SequenceEvent;
+import org.collin.core.xml.SequenceNode;
 import org.collin.core.xml.SequenceNode.Nodes;
+import org.collin.moodle.xml.ModuleBuilder.SequenceEvents;
 import org.condast.commons.Utils;
 
 public class Sequence {
@@ -16,8 +17,6 @@ public class Sequence {
 	private SequenceNode root;
 	private SequenceNode current;
 	
-	private Logger logger = Logger.getLogger( this.getClass().getName() );
-
 	public Sequence( Class<?> clss) throws IOException {
 		super();
 		builder = new ModuleBuilder( clss);

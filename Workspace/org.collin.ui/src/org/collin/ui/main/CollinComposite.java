@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.EnumSet;
 import java.util.logging.Logger;
 
-import org.collin.core.xml.Sequence;
 import org.collin.core.xml.SequenceNode;
+import org.collin.moodle.xml.Sequence;
 import org.condast.commons.ui.player.PlayerImages;
 import org.condast.commons.ui.widgets.AbstractButtonBar;
 import org.eclipse.swt.SWT;
@@ -69,7 +69,7 @@ public class CollinComposite extends Composite {
 		try {
 			builder = new Sequence( clss);
 			SequenceNode se = builder.start();
-			String uri = "/ponte?path=" + se.getUri();
+			String uri = "/ponte?path=" + se.getUri() + " target=\"_blank\"";
 			browser.setUrl( uri );		
 		} catch (IOException e) {
 			e.printStackTrace();

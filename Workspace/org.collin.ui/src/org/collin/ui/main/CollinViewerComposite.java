@@ -10,7 +10,7 @@ import org.collin.core.connector.IConnector;
 import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.Compass;
 import org.collin.core.essence.ITetra;
-import org.collin.core.essence.TetraEvent;
+import org.collin.core.transaction.TetraTransaction;
 import org.collin.core.xml.CollinBuilder;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -68,7 +68,7 @@ public class CollinViewerComposite extends Composite {
 				}else if( selection.getFirstElement() instanceof ITetra ) {
 					logger.clear();
 					ITetra<?> tetra = (ITetra<?>) selection.getFirstElement();
-					TetraEvent<Object> tevent = new TetraEvent<Object>( tetra, new Object( ));
+					TetraTransaction<Object> tevent = new TetraTransaction<Object>( tetra, new Object( ));
 					for( Compass<Object> compass: compasses )
 						compass.fire(tevent);
 					eventWidget.setInput(tevent);
@@ -110,7 +110,11 @@ public class CollinViewerComposite extends Composite {
 	public void setInput( Class<?> clss) {
 		try {
 			builder = new CollinBuilder<Object>( clss);
-			compasses = (Compass<Object>[]) builder.build();
+			//compasses = new Compass[1];//(Compass<Object>[]) builder.build();
+			//Compass<Object> compass = new Compass<Object>("test", "test");
+			//compass.init();
+			//compasses[0] = compass;
+			compasses = (Compass<Object>[]) builder.build();	
 			viewer.setInput(compasses);
 			logger.setInput(compasses[0]);
 		} catch (IOException e) {

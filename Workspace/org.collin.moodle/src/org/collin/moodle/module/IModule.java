@@ -1,7 +1,5 @@
 package org.collin.moodle.module;
 
-import org.collin.moodle.xml.ModuleBuilder.SubModule;
-
 public interface IModule {
 
 	/* (non-Javadoc)
@@ -9,9 +7,9 @@ public interface IModule {
 	 */
 	long getId();
 
-	SubModule addChild(int id, String name);
+	IModule addChild(int id, String name);
 
-	SubModule removeChild(int id);
+	IModule removeChild(int id);
 
 	String getModuleId();
 

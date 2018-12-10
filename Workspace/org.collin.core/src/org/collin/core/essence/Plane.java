@@ -55,20 +55,4 @@ public class Plane<D extends Object> implements IPlane<D> {
 	public ITetraNode<D> getNode(ITetraNode.Nodes node) {
 		return nodes.get(node);
 	}
-
-	/* (non-Javadoc)
-	 * @see org.collin.core.essence.IPlane#getBalance()
-	 */
-	@Override
-	public int getBalance() {
-		int min = Integer.MAX_VALUE;
-		int max = 0;
-		for( ITetraNode<D> nd: this.nodes.values()) {
-			if( nd.getSelected() < min )
-				min = nd.getSelected();
-			if( nd.getSelected() > max )
-				max = nd.getSelected();
-		}	
-		return (max - min );
-	}
 }

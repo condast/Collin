@@ -1,7 +1,9 @@
 package org.collin.ui.main;
 
+import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.ITetra;
-import org.collin.core.essence.TetraEvent;
+import org.collin.core.transaction.TetraTransaction;
+import org.condast.commons.Utils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -9,7 +11,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
@@ -31,7 +35,7 @@ public class TetraViewer extends Composite {
 	 */
 	public TetraViewer(Composite parent, int style) {
 		super(parent, style);
-		setLayout( new GridLayout(2, false));
+		setLayout( new GridLayout(2, true));
 		
 		viewer = new TreeViewer(this, SWT.BORDER);
 		Tree tree = viewer.getTree();
@@ -39,14 +43,21 @@ public class TetraViewer extends Composite {
         viewer.setContentProvider(new TreeContentProvider());
         viewer.getTree().setHeaderVisible(true);
         viewer.getTree().setLinesVisible(true);
+        viewer.addSelectionChangedListener( new ISelectionChangedListener() {
+			
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				//viewer.getTree().pack();
+			}
+		});
 
         TreeViewerColumn viewerColumn = new TreeViewerColumn(viewer, SWT.NONE);
-        viewerColumn.getColumn().setWidth(300);
+        viewerColumn.getColumn().setWidth(500);
         viewerColumn.getColumn().setText("Names");
         viewerColumn.setLabelProvider(new ColumnLabelProvider());
 
         eventWidget = new TetraEventWidget<>(this, style);
-		eventWidget.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
+		eventWidget.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -57,8 +68,8 @@ public class TetraViewer extends Composite {
 		viewer.setInput(arr);
 		if( tetra == null )
 			return;
-		TetraEvent<Object> event = new TetraEvent<Object>( this, new Object( ));
-		this.tetra.select(event);
+		TetraTransaction<Object> event = new TetraTransaction<Object>( this, new Object( ));
+		this.tetra.fire(event);
 		eventWidget.setInput(event);
 		requestLayout();
 	}
@@ -73,16 +84,19 @@ public class TetraViewer extends Composite {
 
 		@Override
 	    public boolean hasChildren(Object element) {
-	    	if(!( element instanceof ITetra ))
-	    		return false;
-	    	
+	    	if( element instanceof ITetra )
+	    		return true;
+	    	else if ( element instanceof ITetraNode ) {
+	    		ITetraNode<?> tn = (ITetraNode<?>) element;
+	    		return !Utils.assertNull( tn.getListeners());
+	    	}
 		    return true;
 	    }
 
 	    @Override
 	    public Object getParent(Object element) {
-	    	if( element instanceof ITetra<?> ) {
-	    		ITetra<?> tetra = (ITetra<?>) element;
+	    	if( element instanceof ITetraNode<?> ) {
+	    		ITetraNode<?> tetra = (ITetraNode<?>) element;
 	    		return tetra.getParent();
 	    	}
 	    	return null;
@@ -98,6 +112,9 @@ public class TetraViewer extends Composite {
 	    	if( parentElement instanceof ITetra ) {
 	    		ITetra<?> node = (ITetra<?>) parentElement;
 	    		return node.getNodes();
+	    	}else if( parentElement instanceof ITetraNode ) {
+	    		ITetraNode<?> node = (ITetraNode<?>) parentElement;
+	    		return node.getListeners();
 	    	}
 	    	return null;
 	    }

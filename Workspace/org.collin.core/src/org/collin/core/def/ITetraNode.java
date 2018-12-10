@@ -2,9 +2,10 @@ package org.collin.core.def;
 
 import org.collin.core.essence.ITetra;
 import org.collin.core.essence.ITetraListener;
-import org.collin.core.essence.TetraEvent;
+import org.collin.core.operator.IOperator;
+import org.collin.core.transaction.TetraTransaction;
 
-public interface ITetraNode<D extends Object> {
+public interface ITetraNode<D extends Object> extends ICollINSelector<D>{
 
 	public enum Nodes{
 		UNDEFINED(0),
@@ -32,28 +33,18 @@ public interface ITetraNode<D extends Object> {
 		}
 	}
 
-	public String getId();
-	
 	public Nodes getType();
 
 	public ITetra<D> getParent();
-
-	boolean addTetraListener(ITetraListener<D> listener);
-
-	boolean removeTetraListener(ITetraListener<D> listener);
-		
-	public D getData();
-
-	boolean select( TetraEvent<D> event );
-
-	int getSelected();
-
-	int balance(int offset);
 
 	String getDescription();
 
 	void setDescription(String description);
 
-	String getName();
+	ITetraListener<D>[] getListeners();
+
+	boolean select(Nodes type, TetraTransaction<D> event);
+
+	void setOperator(IOperator<D> operator);
 
 }

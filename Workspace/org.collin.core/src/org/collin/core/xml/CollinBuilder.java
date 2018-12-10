@@ -9,6 +9,7 @@ package org.collin.core.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
@@ -22,6 +23,7 @@ import org.collin.core.essence.Compass;
 import org.collin.core.essence.ITetra;
 import org.collin.core.essence.Tetra;
 import org.collin.core.essence.TetraNode;
+import org.collin.core.operator.IOperator;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 import org.xml.sax.Attributes;
@@ -79,8 +81,10 @@ public class CollinBuilder<D extends Object>{
 		TYPE,
 		INDEX,
 		LOCALE,
+		OPERATOR,
 		PROGRESS,
 		SOURCE,
+		TETRA,
 		URI,
 		FROM,
 		TO;
@@ -99,6 +103,8 @@ public class CollinBuilder<D extends Object>{
 
 	private Collection<ISequenceEventListener> listeners;
 	
+	private Class<?> clss;
+	
 	private static Logger logger = Logger.getLogger( CollinBuilder.class.getName() );
 
 	public CollinBuilder( Class<?> clss ) throws IOException {
@@ -106,7 +112,7 @@ public class CollinBuilder<D extends Object>{
 	}
 	
 	public CollinBuilder( Class<?> clss, String fileName ) throws IOException {
-		this( clss.getResource( fileName ).openStream() );
+		this( clss, clss.getResource( fileName ).openStream() );
 	}
 
 	/**
@@ -116,8 +122,9 @@ public class CollinBuilder<D extends Object>{
 	 * @param location
 	 * @param builder
 	 */
-	public CollinBuilder( InputStream in) {
+	public CollinBuilder( Class<?> clss, InputStream in) {
 		this.in = in;
+		this.clss = clss;
 		this.completed = false;
 		this.failed = false;
 		this.listeners = new ArrayList<>();
@@ -162,7 +169,7 @@ public class CollinBuilder<D extends Object>{
 			
 			//saxParser.setProperty(JAXP_SCHEMA_LANGUAGE, W3C_XML_SCHEMA); 
 			//saxParser.setProperty(JAXP_SCHEMA_SOURCE, new File(JP2P_XSD_SCHEMA)); 
-			handler = new XmlHandler<D>();
+			handler = new XmlHandler<D>( clss );
 			saxParser.parse( in, handler);
 			result = handler.compasses;
 		}
@@ -214,9 +221,11 @@ public class CollinBuilder<D extends Object>{
 		private ITetraNode<D> currentNode;
 		private int index;
 		private Locale locale;
+		private Class<?> clss;
 		
-		public XmlHandler( ) {
+		public XmlHandler(	Class<?> clss ) {
 			this.index = 0;
+			this.clss = clss;
 			this.locale = Locale.getDefault();
 			this.compasses = new ArrayList<>();
 		}
@@ -240,6 +249,9 @@ public class CollinBuilder<D extends Object>{
 			String index_str = attributes.getValue( AttributeNames.INDEX.toXmlStyle());
 			//String progress_str = attributes.getValue( AttributeNames.PROGRESS.toXmlStyle());
 			String locale_str = attributes.getValue( AttributeNames.LOCALE.toXmlStyle());
+			String tetra_str = attributes.getValue( AttributeNames.TETRA.toXmlStyle());
+			String operator_str = attributes.getValue( AttributeNames.OPERATOR.toXmlStyle());
+			boolean isTetra = StringUtils.isEmpty( tetra_str )?false: Boolean.parseBoolean(tetra_str);			
 			if(!StringUtils.isEmpty(locale_str)) {
 				String[] split = locale_str.split("[-]");
 				locale = new Locale(split[0], split[1]);
@@ -258,7 +270,7 @@ public class CollinBuilder<D extends Object>{
 				index = 0;
 				break;
 			case COMPASS:
-				Compass<D>compass = new Compass<D>( currentCompass, id, title );
+				Compass<D>compass = new Compass<D>( clss, currentCompass, id, title );
 				if( currentCompass != null )
 					currentCompass.addChild(compass);
 				else {
@@ -281,19 +293,16 @@ public class CollinBuilder<D extends Object>{
 				ITetra<D> tetra;
 				if( currentNode == null ) {
 					tetra = new Tetra<D>( tid, ttype.toString() );
-					tetra.init();
 					currentCompass.addTetra(ttype, tetra);
 				}else if( currentNode instanceof ITetra ){
 					parent = (ITetra<D>) currentNode;
 					ITetraNode.Nodes tnode = StringUtils.isEmpty(type)? ITetraNode.Nodes.UNDEFINED: ITetraNode.Nodes.valueOf( StringStyler.styleToEnum(type ));
-					tetra = new Tetra<D>( parent, tid, ttype.toString(), tnode, null );
-					tetra.init();
+					tetra = new Tetra<D>( parent, tid, ttype.toString(), tnode );
 					parent.addNode(tetra);
 				}else{
 					parent = (ITetra<D>) currentNode.getParent();
 					String tname = Compass.Tetras.UNDEFINED.equals(ttype)? parent.getName(): ttype.toString();
 					tetra = new Tetra<D>( tname, currentNode );
-					tetra.init();
 					parent.addNode( tetra );
 				}
 				if( !StringUtils.isEmpty(description))
@@ -311,7 +320,14 @@ public class CollinBuilder<D extends Object>{
 				ITetraNode.Nodes tnode = ITetraNode.Nodes.valueOf( componentName ); 
 				tid = StringUtils.isEmpty(id)?TetraNode.createId(parent, tnode): id;
 				String tname = StringUtils.isEmpty(name)?TetraNode.createName(parent, tnode): name;
-				currentNode = new TetraNode<D>( parent, tid, tname, tnode );
+				if( isTetra ) {
+				currentNode = new Tetra<D>( parent, tid, tname, tnode );
+				}else{
+					currentNode = new TetraNode<D>( parent, tid, tname, tnode );
+					if( !StringUtils.isEmpty(operator_str)) {
+						constructOperator(clss, operator_str, attributes, currentNode );
+					}
+				}
 				parent.addNode( currentNode );
 				if( !StringUtils.isEmpty(description))
 					currentNode.setDescription(description);
@@ -337,6 +353,12 @@ public class CollinBuilder<D extends Object>{
 				currentCompass = currentCompass.getParent();
 				break;
 			case TETRA:
+				if( currentNode instanceof ITetra<?>) {
+					ITetra<?> tetra = (ITetra<?>) currentNode;
+					tetra.init();
+					currentNode = currentNode.getParent();
+				}
+				break;
 			case FUNCTION:
 			case GOAL:
 			case TASK:
@@ -353,6 +375,24 @@ public class CollinBuilder<D extends Object>{
 		@Override
 		public void characters(char ch[], int start, int length) throws SAXException {
 			String value = new String(ch, start, length);
+		}
+
+		@SuppressWarnings("unchecked")
+		public static <D> IOperator<D> constructOperator( Class<?> clss, String className, Attributes attrs, ITetraNode<D> origin){
+			if( StringUtils.isEmpty( className ))
+				return null;
+			Class<IOperator<D>> builderClass;
+			IOperator<D> operator = null;
+			try {
+				builderClass = (Class<IOperator<D>>) clss.getClassLoader().loadClass( className );
+				Constructor<IOperator<D>> constructor = builderClass.getConstructor();
+				operator = constructor.newInstance();
+				origin.setOperator(operator);
+				operator.setParameters(attrs);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return operator;
 		}
 
 		private void print(SAXParseException x)

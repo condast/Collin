@@ -4,19 +4,28 @@
   	<unit>
   		<model type="moodle">
   			<modules>
-  				<module id="lesson1" index="0" uri="http://www.condast.com">
-  					<modules type="activity">
-  						<module id="Activity1" index="1" uri="http://www.condast.com"></module>
-  						<module id="Activity2" index="2" uri="http://www.condast.com"></module>
-  						<module id="Activity3" index="3" uri="http://www.condast.com"></module>
-		  			</modules>
+  				<module id="1" name="lesson1" index="0" uri="http://www.condast.com">
+  					<activities>
+  						<activity id="1" name="Activity1" index="1" uri="http://www.condast.com">
+  						   <task time="900"/>
+  						   <solution proceed="1">
+  						   		<questions>
+  						   			<question answer="D">Welke uitspraak is correct?\nA: keuze A\nB: Keuze B\nC: Keuze C\nD: Keuze D</question>
+  						   		</questions>
+  						   </solution>
+  						</activity>
+  						<activity id="2" name="Activity2" index="2" uri="http://www.condast.com">
+						   <task time="900"/>
+  						</activity>
+  						<activity id="3" name="Activity3" index="3" uri="http://www.condast.com"></activity>
+		  			</activities>
   				</module>	
-  				<module id="lesson2" index="1" uri="http://www.condast.com"></module>	
-		  		<module id="lesson3" index="2" uri="http://www.condast.com"></module>
-  				<module id="lesson4" index="3" uri="http://www.condast.com"></module>
-  				<module id="lesson5" index="4" uri="http://www.condast.com"></module>
-  				<module id="lesson6" index="5" uri="http://www.condast.com"></module>
-  				<module id="lesson7" index="6" uri="http://www.condast.com"></module>
+  				<module id="2" name="lesson2" index="1" uri="http://www.condast.com"></module>	
+		  		<module id="3" name="lesson3" index="2" uri="http://www.condast.com"></module>
+  				<module id="4" name="lesson4" index="3" uri="http://www.condast.com"></module>
+  				<module id="5" name="lesson5" index="4" uri="http://www.condast.com"></module>
+  				<module id="6" name="lesson6" index="5" uri="http://www.condast.com"></module>
+  				<module id="7" name="lesson7" index="6" uri="http://www.condast.com"></module>
   			</modules>
   		</model>
   		<view type="story">
