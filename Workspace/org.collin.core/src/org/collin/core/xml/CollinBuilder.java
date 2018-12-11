@@ -356,15 +356,20 @@ public class CollinBuilder<D extends Object>{
 				if( currentNode instanceof ITetra<?>) {
 					ITetra<?> tetra = (ITetra<?>) currentNode;
 					tetra.init();
-					currentNode = currentNode.getParent();
+ 					currentNode = currentNode.getParent();
 				}
 				break;
 			case FUNCTION:
 			case GOAL:
 			case TASK:
 			case SOLUTION:
-				if( currentNode != null )
-					currentNode = currentNode.getParent();
+				if( currentNode == null )
+					break;
+				if( currentNode instanceof ITetra<?>) {
+					ITetra<?> tetra = (ITetra<?>) currentNode;
+					tetra.init();
+				}
+				currentNode = currentNode.getParent();
 				break;
 			default:
 				break;

@@ -48,11 +48,20 @@ public class TetraConnector<O,D extends Object> {
 			listener.notifyConnectorFired(event);
 	}
 
+	protected boolean isConnected( ITetraNode<D> node1, ITetraNode<D> node2) {
+		for( IConnector<O,D> connector: connectors ) {
+			if( connector.isEqual(node1, node2))
+				return true;
+		}
+		return false;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public void connect( ITetraNode<D> node1, ITetraNode<D> node2) {
 		if(( node1 == null ) ||( node2 == null ))
 			return;
-		connectors.add( (IConnector<O, D>) factory.createOperator(null, node1, node2 ));
+		if(!isConnected(node1, node2))
+			connectors.add( (IConnector<O, D>) factory.createOperator(null, node1, node2 ));
 	}
 
 	public boolean disconnect( ITetraNode<D> node1, ITetraNode<D> node2) {

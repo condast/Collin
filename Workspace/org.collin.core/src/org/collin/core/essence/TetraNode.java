@@ -22,8 +22,6 @@ public class TetraNode<D extends Object> extends AbstractCollINSelector<D> imple
 	
 	private ITetra<D> parent;
 
-	private String description;
-	
 	private IOperator<D> operator;
 
 	public TetraNode( ITetra<D> parent, String id, String name, ITetraNode.Nodes type ) {
@@ -46,16 +44,6 @@ public class TetraNode<D extends Object> extends AbstractCollINSelector<D> imple
 	@Override
 	public Nodes getType() {
 		return type;
-	}
-
-	@Override
-	public String getDescription() {
-		return description;
-	}
-
-	@Override
-	public void setDescription(String description) {
-		this.description = description;
 	}
 
 	@Override
@@ -85,12 +73,13 @@ public class TetraNode<D extends Object> extends AbstractCollINSelector<D> imple
 	 */
 	@Override
 	public boolean select( ITetraNode.Nodes type , TetraTransaction<D> event ) {
-		boolean result = this.operator.select(this, event);
-		if( !result )
+    		boolean result = this.operator.select(this, event);
+		if( !result ) {
+			notifyTetraListeners(event, true);
 			return result;
-		
+		}
 		result = event.updateTransaction(this, event);
-		notifyTetraListeners(event);
+		notifyTetraListeners(event, false);
 		return result;
 	}
 	
@@ -144,7 +133,7 @@ public class TetraNode<D extends Object> extends AbstractCollINSelector<D> imple
 		public boolean select( ITetraNode<D> source, TetraTransaction<D> event) {
 			if( event.hasBeenProcessed( source ))
 				return false;
-			owner.notifyTetraListeners( event );
+			owner.notifyTetraListeners( event, false );
 			return true;
 		}
 

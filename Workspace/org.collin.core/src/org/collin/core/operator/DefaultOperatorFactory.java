@@ -75,8 +75,9 @@ public class DefaultOperatorFactory<D extends Object> implements IOperatorFactor
 
 			@SuppressWarnings("unchecked")
 			@Override
-			public void notifyNodeSelected(Object source, TetraTransaction<D> event) {
-				select((ITetraNode<D>) source, event);
+			public void notifyNodeSelected(Object source, TetraTransaction<D> event, boolean blockLocal) {
+				if(!blockLocal )
+					select((ITetraNode<D>) source, event);
 			}
 			
 			@Override

@@ -178,7 +178,7 @@ public class Tetra<D extends Object> extends TetraNode<D> implements ITetra<D> {
 			break;
 		case SOLUTION:
 			node = getNode( Nodes.SOLUTION);
-	 		super.notifyTetraListeners(event);
+	 		super.notifyTetraListeners(event, false);
 			result = true;
 			break;
 		default:

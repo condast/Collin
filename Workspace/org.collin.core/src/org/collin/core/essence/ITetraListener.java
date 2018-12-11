@@ -9,6 +9,7 @@ public interface ITetraListener<D extends Object> {
 	 * Add the direct source that propagates the event
 	 * @param source
 	 * @param event
+	 * @param blockLocal
 	 */
-	public void notifyNodeSelected( Object source, TetraTransaction<D> event );
+	public void notifyNodeSelected( Object source, TetraTransaction<D> event, boolean blockLocal );
 }

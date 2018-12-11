@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.collin.core.def.ICollINSelector;
+import org.collin.core.def.ITetraImplementation;
 import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.AbstractCollINSelector;
 import org.collin.core.essence.ITetra;
@@ -11,7 +12,7 @@ import org.collin.core.essence.ITetraListener;
 import org.collin.core.transaction.ITransactionListener;
 import org.collin.core.transaction.TetraTransaction;
 
-public abstract class AbstractTetraImplementation<D extends Object> extends AbstractCollINSelector<D> {
+public abstract class AbstractTetraImplementation<D extends Object> extends AbstractCollINSelector<D> implements ITetraImplementation<D> {
 
 	private ITetra<D> tetra;
 	
@@ -36,7 +37,7 @@ public abstract class AbstractTetraImplementation<D extends Object> extends Abst
 	private ITetraListener<D> listener = new ITetraListener<D>() {
 
 		@Override
-		public void notifyNodeSelected(Object source, TetraTransaction<D> event) {
+		public void notifyNodeSelected(Object source, TetraTransaction<D> event, boolean blockLocal) {
 			onTetraEventReceived(event);
 		}
 	};
@@ -62,20 +63,33 @@ public abstract class AbstractTetraImplementation<D extends Object> extends Abst
 		return progress.get(selector);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.collin.core.util.ITetraImplementation#fire(org.collin.core.transaction.TetraTransaction)
+	 */
 	@Override
 	public boolean fire(TetraTransaction<D> event) {
-		event.addTransactionListener(tlistener);
 		this.tetra.fire(event);
 		for( ICollINSelector<D> selector: event.getHistory()) {
 			Integer retval = progress.get(selector);
 			int selected = ( retval == null)?1: retval+1;
 			progress.put(selector, selected);
 		}
-		event.removeTransactionListener(tlistener);
 		return true;
 	}
 
-	public void dispose() {
+	/* (non-Javadoc)
+	 * @see org.collin.core.util.ITetraImplementation#register(org.collin.core.transaction.TetraTransaction)
+	 */
+	@Override
+	public void register( TetraTransaction<D> event ) {
+		event.addTransactionListener(tlistener);		
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.collin.core.util.ITetraImplementation#unregister()
+	 */
+	@Override
+	public void unregister() {
 		this.tetra.removeTetraListener(listener);
 	}
 }

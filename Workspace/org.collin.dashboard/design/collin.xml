@@ -10,10 +10,6 @@
 					<goal type="module">Introduction in the area</goal>
 					<task id="multi-tasking" type="paragraph"
 						operator="org.collin.core.operator.TimedTask" total-time="900">
-						<tetras>
-							<tetra>
-							</tetra>
-						</tetras>
 					</task>
 				</nodes>
 			</tetra>

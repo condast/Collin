@@ -63,10 +63,10 @@ public abstract class AbstractCollINSelector<D extends Object> implements ICollI
 		return this.listeners.remove( listener);
 	}
 	
-	protected void notifyTetraListeners( TetraTransaction<D> event ) {
+	protected void notifyTetraListeners( TetraTransaction<D> event, boolean blockLocal ) {
 		event.addHistory(this);
 		for( ITetraListener<D> listener: this.listeners )
-			listener.notifyNodeSelected( this, event);
+			listener.notifyNodeSelected( this, event, blockLocal);
 	}
 
 	protected Collection<ITetraListener<D>> getTetraListeners() {

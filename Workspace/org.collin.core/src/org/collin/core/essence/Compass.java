@@ -44,9 +44,9 @@ public class Compass<D extends Object> extends AbstractCollINSelector<D>{
 	private ITetraListener<D> listener = new ITetraListener<D>() {
 
 		@Override
-		public void notifyNodeSelected( Object source, TetraTransaction<D> event) {
+		public void notifyNodeSelected( Object source, TetraTransaction<D> event, boolean blockLocal) {
 			if( progress >= children.size())
-				notifyTetraListeners(event);	
+				notifyTetraListeners(event, false);	
 			else {
 				Compass<D> child = children.get(++progress);
 				child.fire(event);
@@ -78,6 +78,12 @@ public class Compass<D extends Object> extends AbstractCollINSelector<D>{
 			ITetra<D> nt = new Tetra<>( tid, tetra.toString() );
 			nt.init();
 			addTetra(tetra, nt);
+		}
+		for( Tetras tetra: Tetras.values()) {
+			if( Tetras.UNDEFINED.equals(tetra))
+				continue;
+			ITetra<D> tn = this.tetras.get( tetra);
+			addConnector(tetra, tn);
 		}
 	}
 	
@@ -124,8 +130,11 @@ public class Compass<D extends Object> extends AbstractCollINSelector<D>{
 		if( Tetras.UNDEFINED.equals( type ))
 			return;
 		this.tetras.put(type, tetra);
+	}
+
+	protected boolean addConnector( Tetras type, ITetra<D> tetra ) {
 		if( this.tetras.size() <=1)
-			return;
+			return false;
 		ITetraNode<D> task = tetra.getNode( Nodes.TASK );
 		ITetraNode<D> goal = tetra.getNode( Nodes.GOAL );
 		ITetra<D> other = null;
@@ -184,6 +193,7 @@ public class Compass<D extends Object> extends AbstractCollINSelector<D>{
 		default:
 			break;
 		}
+		return true;
 	}
 
 	public void removeTetra( Tetras type ) {
