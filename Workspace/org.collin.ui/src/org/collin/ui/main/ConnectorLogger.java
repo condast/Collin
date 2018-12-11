@@ -67,10 +67,10 @@ public class ConnectorLogger<D extends Object> extends Composite {
 	
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
-	private IConnectorListener<Compass<D>, D> listener = new IConnectorListener<Compass<D>,D>() {
+	private IConnectorListener<D> listener = new IConnectorListener<D>() {
 
 		@Override
-		public void notifyConnectorFired(ConnectorEvent<Compass<D>, D> event) {
+		public void notifyConnectorFired(ConnectorEvent<D> event) {
 			DataObject data = new DataObject( event, logs.size());
 			logs.add( data);
 			logger.info("Adding log: " + event.getOrigin().getName() + " - " + 
@@ -144,7 +144,7 @@ public class ConnectorLogger<D extends Object> extends Composite {
 			Columns column = Columns.values()[ columnIndex ];
 			try{
 				DataObject datao = (ConnectorLogger<D>.DataObject) element;
-				ConnectorEvent<Compass<D>, D>data = datao.event;
+				ConnectorEvent<D>data = datao.event;
 				switch( column ){
 				case INDEX:
 					text = String.valueOf( datao.index);
@@ -180,9 +180,9 @@ public class ConnectorLogger<D extends Object> extends Composite {
 	}	
 	
 	private class DataObject{
-		ConnectorEvent<Compass<D>, D> event;
+		ConnectorEvent<D> event;
 		int index;
-		public DataObject(ConnectorEvent<Compass<D>, D> event, int index) {
+		public DataObject(ConnectorEvent<D> event, int index) {
 			super();
 			this.event = event;
 			this.index = index;

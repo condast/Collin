@@ -1,6 +1,6 @@
 package org.collin.core.transaction;
 
-import org.collin.core.def.ICollINSelector;
+import org.collin.core.graph.ICollINVertex;
 import org.collin.core.transaction.TetraTransaction;
 
 public interface ITransactionListener<D extends Object> {
@@ -12,5 +12,5 @@ public interface ITransactionListener<D extends Object> {
 	 * @param event
 	 * @return true if one of the listeners has successfully updated the transaction
 	 */
-	public boolean transactionUpdateRequest( ICollINSelector<D> source, TetraTransaction<D> event );
+	public boolean transactionUpdateRequest( ICollINVertex<D> source, TetraTransaction<D> event );
 }

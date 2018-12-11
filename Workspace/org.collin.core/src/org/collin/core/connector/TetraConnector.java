@@ -6,91 +6,93 @@ import java.util.logging.Logger;
 
 import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.ITetra;
+import org.collin.core.essence.ITetraListener;
+import org.collin.core.graph.AbstractEdge;
+import org.collin.core.graph.ICollINShape;
+import org.collin.core.graph.IEdge;
 import org.collin.core.operator.DefaultOperatorFactory;
 import org.collin.core.operator.IOperator;
 import org.collin.core.transaction.TetraTransaction;
 
-public class TetraConnector<O,D extends Object> {
+public class TetraConnector<D extends Object> {
 
-	private Collection<IConnector<O,D>> connectors;
+	private Collection<IConnectorListener<D>> listeners;
 
-	private Collection<IConnectorListener<O,D>> listeners;
-
-	private TetraConnector<O,D> connector;
 	private ConnectorFactory factory;
 
-	private O owner;
+	private ICollINShape<D> owner;
 
 	private Logger logger = Logger.getLogger( this.getClass().getName());
 
-	public TetraConnector( Class<?> clss, O owner ) {
-		this.owner = owner;
-		this.connector = this;
+	public TetraConnector( Class<?> clss, ICollINShape<D> owner ) {
+		this.owner = owner;this.listeners = new ArrayList<>();
 		factory = new ConnectorFactory(clss);
-		connectors = new ArrayList<>();
-		this.listeners = new ArrayList<>();
 	}
 
-	public O getOwner() {
+	public ICollINShape<D> getOwner() {
 		return owner;
 	}
 
-	public boolean addConnectorListener( IConnectorListener<O,D> listener ) {
+	public boolean addConnectorListener( IConnectorListener<D> listener ) {
 		return this.listeners.add( listener);
 	}
 
-	public boolean removeConnectorListener( IConnectorListener<O,D> listener ) {
+	public boolean removeConnectorListener( IConnectorListener<D> listener ) {
 		return this.listeners.remove( listener);
 	}
 
-	protected void notifyConnectorListeners( ConnectorEvent<O,D> event ) {
-		for( IConnectorListener<O,D> listener: this.listeners )
+	protected void notifyConnectorListeners( ConnectorEvent<D> event ) {
+		for( IConnectorListener<D> listener: this.listeners )
 			listener.notifyConnectorFired(event);
 	}
 
 	protected boolean isConnected( ITetraNode<D> node1, ITetraNode<D> node2) {
-		for( IConnector<O,D> connector: connectors ) {
-			if( connector.isEqual(node1, node2))
+		for( IEdge<D> edge: owner.getEdges() ) {
+			if( edge.isEqual(node1, node2))
 				return true;
 		}
 		return false;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public void connect( ITetraNode<D> node1, ITetraNode<D> node2) {
 		if(( node1 == null ) ||( node2 == null ))
 			return;
-		if(!isConnected(node1, node2))
-			connectors.add( (IConnector<O, D>) factory.createOperator(null, node1, node2 ));
+		if(!isConnected(node1, node2)) {
+			Edge edge = new Edge( getOwner() , null, null, node1, node2);
+			IOperator<D> operator = factory.createOperator(null, edge);
+			edge.setOperator(operator);
+			owner.addEdge((IEdge<D>) edge );
+		}
 	}
 
 	public boolean disconnect( ITetraNode<D> node1, ITetraNode<D> node2) {
-		for( IConnector<O,D> connector: this.connectors ) {
+		for( IEdge<D> connector: owner.getEdges() ) {
 			if( !connector.isEqual(node1, node2))
 				continue;
-			return this.connectors.remove( connector );
+			return owner.removeEdge( connector );
 		}
 		return false;
 	}
 
-	public boolean remove( ITetraNode<D> node1 ) {
-		Collection<IConnector<O,D>> temp = new ArrayList<>();
-		for( IConnector<O,D> connector: this.connectors ) {
-			if( !connector.contains( node1 ))
-				temp.add( connector );
+	private class Edge extends AbstractEdge<D>{
+
+		public Edge(ICollINShape<D> owner, String id, String name, ITetraNode<D> origin, ITetraNode<D> destination ) {
+			super(owner, id, name, origin, destination, null);
 		}
-		return this.connectors.removeAll( temp );
-	}
-	@SuppressWarnings("unchecked")
-	public IConnector<O,D>[] getConnectors() {
-		return this.connectors.toArray( new IConnector[ this.connectors.size()]);
-	}
+	
+		@Override
+		public void setOperator(IOperator<D> operator) {
+			// TODO Auto-generated method stub
+			super.setOperator(operator);
+		}
 
-	public void dispose() {
-		for( IConnector<O,D> connector: this.connectors )
-			connector.dispose();
+		@Override
+		public boolean fire(TetraTransaction<D> event) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
 	}
-
 	private class ConnectorFactory extends DefaultOperatorFactory<D>{
 
 		public ConnectorFactory( Class<?> clss) {
@@ -98,20 +100,16 @@ public class TetraConnector<O,D extends Object> {
 		}
 		
 		@Override
-		public IOperator<D> createOperator(String className, ITetraNode<D> origin, ITetraNode<D> destination) {
-			return new Connector( origin, destination);
+		public IOperator<D> createOperator(String className, IEdge<D> edge) {
+			return new Connector( edge);
 		}
 
-		private class Connector extends DefaultOperator implements IConnector<O,D>{
+		private class Connector extends DefaultOperator implements IOperator<D>{
 
-			public Connector(ITetraNode<D> origin, ITetraNode<D> destination) {
-				super(origin, destination);
+			public Connector(IEdge<D> edge) {
+				super((ITetraNode<D>) edge.getOrigin(), (ITetraNode<D>)edge.getDestination());
 			}
 
-			@Override
-			public TetraConnector<O,D> getOwner() {
-				return connector;
-			}
 
 			/* (non-Javadoc)
 			 * @see org.collin.core.connector.IConnector#isEqual(org.collin.core.def.ITetraNode, org.collin.core.def.ITetraNode)
@@ -123,17 +121,17 @@ public class TetraConnector<O,D extends Object> {
 			}
 
 			@Override
-			public boolean select( ITetraNode<D> source, TetraTransaction<D> event) {
+			public boolean select( ITetraNode<D> source, ITetraListener.Results result, TetraTransaction<D> event) {
 				ITetraNode<D> node = getOther(source);
 				logger.info("Event from: " + source + " to " + node);
 				if( node != null ){
-					ITetra<D> tetra = node.getParent();
+					ITetra<D> tetra = (ITetra<D>) node.getParent();
 					if(tetra.select( source.getType(), event))
-						notifyConnectorListeners(new ConnectorEvent<O,D>( connector, source, node ));
+						notifyConnectorListeners(new ConnectorEvent<D>( owner, source, node ));
 				}else {
 					logger.severe("NULL event: " + source.getId());
 				}
-				return true;///return super.select(event);
+				return true;
 			}
 
 			@Override

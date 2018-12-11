@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.ITetraListener;
+import org.collin.core.graph.IEdge;
 import org.collin.core.transaction.TetraTransaction;
 import org.condast.commons.strings.StringUtils;
 import org.xml.sax.Attributes;
@@ -22,10 +23,12 @@ public class DefaultOperatorFactory<D extends Object> implements IOperatorFactor
 	}
 
 	@Override
-	public IOperator<D> createOperator( String className, ITetraNode<D> origin, ITetraNode<D> destination) {
+	public IOperator<D> createOperator( String className, IEdge<D> edge ) {
 		IOperator<D> operator = null;
-		if( origin.equals(destination))
+		if( edge.getOrigin().equals(edge.getDestination()))
 			return null;
+		ITetraNode<D> origin = (ITetraNode<D>) edge.getOrigin(); 
+		ITetraNode<D> destination = (ITetraNode<D>) edge.getDestination(); 
 		switch( origin.getType() ) {
 		case FUNCTION:
 			if( ITetraNode.Nodes.GOAL.equals( destination.getType() ))
@@ -75,9 +78,8 @@ public class DefaultOperatorFactory<D extends Object> implements IOperatorFactor
 
 			@SuppressWarnings("unchecked")
 			@Override
-			public void notifyNodeSelected(Object source, TetraTransaction<D> event, boolean blockLocal) {
-				if(!blockLocal )
-					select((ITetraNode<D>) source, event);
+			public void notifyNodeSelected(Object source, ITetraListener.Results result, TetraTransaction<D> event) {
+				select((ITetraNode<D>) source, ITetraListener.Results.SUCCESS, event);
 			}
 			
 			@Override
@@ -94,9 +96,9 @@ public class DefaultOperatorFactory<D extends Object> implements IOperatorFactor
 		public DefaultOperator(ITetraNode<D> origin, ITetraNode<D> destination) {
 			super();
 			this.origin = origin;
-			origin.addTetraListener(listener);
+			origin.addCollINListener(listener);
 			this.destination =  destination;
-			destination.addTetraListener(listener);
+			destination.addCollINListener(listener);
 		}
 
 		
@@ -110,7 +112,6 @@ public class DefaultOperatorFactory<D extends Object> implements IOperatorFactor
 		/* (non-Javadoc)
 		 * @see org.collin.core.connector.IConnector#contains(org.collin.core.def.ITetraNode)
 		 */
-		@Override
 		public boolean contains( ITetraNode<D> node ) {
 			return origin.equals(node ) || destination.equals( node );
 		}
@@ -118,7 +119,6 @@ public class DefaultOperatorFactory<D extends Object> implements IOperatorFactor
 		/* (non-Javadoc)
 		 * @see org.collin.core.connector.IConnector#isEqual(org.collin.core.def.ITetraNode, org.collin.core.def.ITetraNode)
 		 */
-		@SuppressWarnings("unused")
 		protected boolean isEqual( ITetraNode<D> node1, ITetraNode<D> node2 ) {
 			boolean result = origin.equals(node1) && destination.equals( node2 );
 			return result? result: origin.equals(node2) && destination.equals( node1 );
@@ -135,7 +135,7 @@ public class DefaultOperatorFactory<D extends Object> implements IOperatorFactor
 		 * @see org.collin.core.essence.IOperator#select(org.collin.core.essence.TetraEvent)
 		 */
 		@Override
-		public boolean select( ITetraNode<D> source, TetraTransaction<D> event ) {
+		public boolean select( ITetraNode<D> source, ITetraListener.Results result, TetraTransaction<D> event ) {
 			ITetraNode<D> node = getOther( source );
 			if( node == null )
 				return false;
@@ -150,8 +150,8 @@ public class DefaultOperatorFactory<D extends Object> implements IOperatorFactor
 		 */
 		@Override
 		public void dispose() {
-			origin.removeTetraListener(listener);
-			destination.removeTetraListener(listener);
+			origin.removeCollINListener(listener);
+			destination.removeCollINListener(listener);
 		}
 
 		@Override

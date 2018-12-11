@@ -3,6 +3,8 @@ package org.collin.core.essence;
 import java.util.Collection;
 
 import org.collin.core.def.ITetraNode;
+import org.collin.core.graph.AbstractCollINVertex;
+import org.collin.core.graph.ICollINShape;
 import org.collin.core.operator.IOperator;
 import org.collin.core.transaction.TetraTransaction;
 import org.condast.commons.strings.StringStyler;
@@ -16,25 +18,22 @@ import org.xml.sax.Attributes;
  *
  * @param <D>
  */
-public class TetraNode<D extends Object> extends AbstractCollINSelector<D> implements ITetraNode<D>{
+public class TetraNode<D extends Object> extends AbstractCollINVertex<D> implements ITetraNode<D>{
 
 	private ITetraNode.Nodes type;
 	
-	private ITetra<D> parent;
-
-	private IOperator<D> operator;
+	private ICollINShape<D> parent;
 
 	public TetraNode( ITetra<D> parent, String id, String name, ITetraNode.Nodes type ) {
 		this( parent, id, name, type, new DefaultOperator<D>() ) ;
-		DefaultOperator<D> dop = (DefaultOperator<D>) this.operator;
+		DefaultOperator<D> dop = (DefaultOperator<D>) super.getOperator();
 		dop.setOwner(this);
 	}
 	
 	public TetraNode( ITetra<D> parent, String id, String name, ITetraNode.Nodes type, IOperator<D> operator ) {
-		super( id, name);
+		super( id, name, operator);
 		this.parent = parent;
 		this.type = type;
-		this.operator = operator;
 	}
 
 	protected TetraNode(String id, String name, ITetraNode.Nodes type) {
@@ -47,13 +46,13 @@ public class TetraNode<D extends Object> extends AbstractCollINSelector<D> imple
 	}
 
 	@Override
-	public ITetra<D> getParent() {
+	public ICollINShape<D> getParent() {
 		return parent;
 	}
 
 	@Override
 	public void setOperator(IOperator<D> operator) {
-		this.operator = operator;
+		super.setOperator(operator);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -72,17 +71,13 @@ public class TetraNode<D extends Object> extends AbstractCollINSelector<D> imple
 	 * @see org.collin.core.essence.ITetraNode#select()
 	 */
 	@Override
-	public boolean select( ITetraNode.Nodes type , TetraTransaction<D> event ) {
-    		boolean result = this.operator.select(this, event);
-		if( !result ) {
-			notifyTetraListeners(event, true);
-			return result;
-		}
-		result = event.updateTransaction(this, event);
-		notifyTetraListeners(event, false);
-		return result;
+	public boolean select( ITetraNode.Nodes type, TetraTransaction<D> transaction ) {
+		if( transaction.hasBeenProcessed( this ))
+			return false;
+		boolean result = transaction.updateTransaction(this, transaction);
+		return super.getOperator().select(this, ITetraListener.Results.getResult(result), transaction);
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
@@ -125,21 +120,13 @@ public class TetraNode<D extends Object> extends AbstractCollINSelector<D> imple
 
 		@Override
 		public void setParameters(Attributes attrs) {
-			// TODO Auto-generated method stub
-			
+			// NOTHING		
 		}
 				
 		@Override
-		public boolean select( ITetraNode<D> source, TetraTransaction<D> event) {
-			if( event.hasBeenProcessed( source ))
-				return false;
-			owner.notifyTetraListeners( event, false );
+		public boolean select( ITetraNode<D> source, ITetraListener.Results result, TetraTransaction<D> event) {
+			owner.notifyTetraListeners( result, event );
 			return true;
-		}
-
-		@Override
-		public boolean contains(ITetraNode<D> node) {
-			return owner.equals(node);
 		}
 
 		@Override

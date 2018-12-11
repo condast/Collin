@@ -1,11 +1,12 @@
 package org.collin.core.def;
 
-import org.collin.core.essence.ITetra;
 import org.collin.core.essence.ITetraListener;
+import org.collin.core.graph.ICollINShape;
+import org.collin.core.graph.ICollINVertex;
 import org.collin.core.operator.IOperator;
 import org.collin.core.transaction.TetraTransaction;
 
-public interface ITetraNode<D extends Object> extends ICollINSelector<D>{
+public interface ITetraNode<D extends Object> extends ICollINVertex<D>{
 
 	public enum Nodes{
 		UNDEFINED(0),
@@ -35,7 +36,7 @@ public interface ITetraNode<D extends Object> extends ICollINSelector<D>{
 
 	public Nodes getType();
 
-	public ITetra<D> getParent();
+	public ICollINShape<D> getParent();
 
 	String getDescription();
 

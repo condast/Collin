@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.EventObject;
 import java.util.HashSet;
 
-import org.collin.core.def.ICollINSelector;
+import org.collin.core.graph.ICollINVertex;
 import org.condast.commons.strings.StringStyler;
 
 public class TetraTransaction<D extends Object> extends EventObject {
@@ -32,7 +32,7 @@ public class TetraTransaction<D extends Object> extends EventObject {
 	
 	private Date create;
 	
-	private Collection<ICollINSelector<D>> history;
+	private Collection<ICollINVertex<D>> history;
 	
 	private Collection<ITransactionListener<D>> listeners;
 
@@ -70,18 +70,18 @@ public class TetraTransaction<D extends Object> extends EventObject {
 		return ( this.progress >= 100 );
 	}
 
-	public boolean addHistory( ICollINSelector<D> node ) {
+	public boolean addHistory( ICollINVertex<D> node ) {
 		if( hasBeenProcessed(node))
 			return false;
 		return this.history.add(node);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public ICollINSelector<D>[] getHistory(){
-		return this.history.toArray( new ICollINSelector[ this.history.size()]);
+	public ICollINVertex<D>[] getHistory(){
+		return this.history.toArray( new ICollINVertex[ this.history.size()]);
 	}
 	
-	public boolean hasBeenProcessed( ICollINSelector<D> node ) {
+	public boolean hasBeenProcessed( ICollINVertex<D> node ) {
 		if( node == null )
 			return true;
 		return this.history.contains(node);
@@ -106,7 +106,7 @@ public class TetraTransaction<D extends Object> extends EventObject {
 	 * @param event
 	 * @return
 	 */
-	public boolean updateTransaction( ICollINSelector<D> source, TetraTransaction<D> event ) {
+	public boolean updateTransaction( ICollINVertex<D> source, TetraTransaction<D> event ) {
 		boolean result = false;
 		for( ITransactionListener<D> listener: this.listeners )
 			result |= listener.transactionUpdateRequest( source, event);

@@ -2,12 +2,13 @@ package org.collin.core.essence;
 
 import java.util.Map;
 
-import org.collin.core.def.ICollINSelector;
 import org.collin.core.def.IPlane;
 import org.collin.core.def.ITetraNode;
+import org.collin.core.graph.ICollINShape;
+import org.collin.core.graph.ICollINVertex;
 import org.collin.core.transaction.TetraTransaction;
 
-public interface ITetra<D extends Object> extends ITetraNode<D> {
+public interface ITetra<D extends Object> extends ITetraNode<D>, ICollINShape<D> {
 
 	void init();
 
@@ -22,7 +23,7 @@ public interface ITetra<D extends Object> extends ITetraNode<D> {
 	 * @param node
 	 * @return
 	 */
-	boolean isChild(ICollINSelector<D> node);
+	boolean isChild(ICollINVertex<D> node);
 
 	void addNode(ITetraNode<D> node);
 

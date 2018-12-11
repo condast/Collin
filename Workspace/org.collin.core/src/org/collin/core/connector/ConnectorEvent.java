@@ -3,8 +3,9 @@ package org.collin.core.connector;
 import java.util.EventObject;
 
 import org.collin.core.def.ITetraNode;
+import org.collin.core.graph.ICollINShape;
 
-public class ConnectorEvent<O, D extends Object> extends EventObject {
+public class ConnectorEvent<D extends Object> extends EventObject {
 	private static final long serialVersionUID = 1L;
 	private ITetraNode<D> origin, destination;
 	
@@ -12,15 +13,15 @@ public class ConnectorEvent<O, D extends Object> extends EventObject {
 	 * Clones the given event, but resets te state
 	 * @param event
 	 */
-	public ConnectorEvent( TetraConnector<O,D>connector, ITetraNode<D> origin, ITetraNode<D> destination ) {
+	public ConnectorEvent( ICollINShape<D> connector, ITetraNode<D> origin, ITetraNode<D> destination ) {
 		super( connector );
 		this.origin = origin;
 		this.destination = destination;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public TetraConnector<O,D> getConnector() {
-		return (TetraConnector<O,D>) super.getSource();
+	public ICollINShape<D> getConnector() {
+		return (ICollINShape<D>) super.getSource();
 	}
 
 	public ITetraNode<D> getOrigin() {

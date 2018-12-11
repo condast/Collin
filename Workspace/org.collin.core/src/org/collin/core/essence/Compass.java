@@ -9,11 +9,12 @@ import org.collin.core.connector.IConnectorListener;
 import org.collin.core.connector.TetraConnector;
 import org.collin.core.def.ITetraNode;
 import org.collin.core.def.ITetraNode.Nodes;
+import org.collin.core.graph.AbstractShape;
 import org.collin.core.transaction.TetraTransaction;
 import org.condast.commons.Utils;
 import org.condast.commons.strings.StringStyler;
 
-public class Compass<D extends Object> extends AbstractCollINSelector<D>{
+public class Compass<D extends Object> extends AbstractShape<D>{
 
 	public enum Tetras{
 		UNDEFINED,
@@ -31,7 +32,7 @@ public class Compass<D extends Object> extends AbstractCollINSelector<D>{
 
 	private Map<Tetras, ITetra<D>> tetras;
 
-	private TetraConnector<Compass<D>,D> connectors;
+	private TetraConnector<D> connectors;
 	
 	private List<Compass<D>> children;
 	
@@ -44,9 +45,9 @@ public class Compass<D extends Object> extends AbstractCollINSelector<D>{
 	private ITetraListener<D> listener = new ITetraListener<D>() {
 
 		@Override
-		public void notifyNodeSelected( Object source, TetraTransaction<D> event, boolean blockLocal) {
+		public void notifyNodeSelected( Object source, ITetraListener.Results result, TetraTransaction<D> event) {
 			if( progress >= children.size())
-				notifyTetraListeners(event, false);	
+				notifyTetraListeners( result, event);	
 			else {
 				Compass<D> child = children.get(++progress);
 				child.fire(event);
@@ -63,9 +64,9 @@ public class Compass<D extends Object> extends AbstractCollINSelector<D>{
 		super( id, title );
 		this.parent = parent;
 		tetras = new LinkedHashMap<Tetras, ITetra<D>>();
-		connectors = new TetraConnector<Compass<D>,D>( clss, this );
+		connectors = new TetraConnector<D>( clss, this );
 		children = new ArrayList<>();
-		super.addTetraListener(listener);
+		super.addCollINListener(listener);
 		this.progress = 0;
 	}
 
@@ -99,22 +100,22 @@ public class Compass<D extends Object> extends AbstractCollINSelector<D>{
 		return parent;
 	}
 
-	public void addConnectorListener( IConnectorListener<Compass<D>,D> listener ) {
+	public void addConnectorListener( IConnectorListener<D> listener ) {
 		this.connectors.addConnectorListener(listener);
 	}
 
-	public void removeConnectorListener( IConnectorListener<Compass<D>, D> listener ) {
+	public void removeConnectorListener( IConnectorListener<D> listener ) {
 		this.connectors.removeConnectorListener(listener);
 	}
 
 	public void addChild( Compass<D> child ) {
 		this.children.add(child);
-		child.addTetraListener(listener);
+		child.addCollINListener(listener);
 	}
 
 	public void removeChild( Compass<D> child ) {
 		this.children.remove(child);
-		child.removeTetraListener(listener);
+		child.removeCollINListener(listener);
 	}
 	
 	public boolean hasChildren() {
@@ -200,7 +201,7 @@ public class Compass<D extends Object> extends AbstractCollINSelector<D>{
 		ITetra<D> current = this.tetras.get(type);
 		if( current != null ){
 			for( ITetraNode<D> nd: current.getNodes() ) {
-				connectors.remove(nd);
+				removeVertex(nd);
 			}
 			tetras.remove(type);
 		}
@@ -213,10 +214,6 @@ public class Compass<D extends Object> extends AbstractCollINSelector<D>{
 	@SuppressWarnings("unchecked")
 	public ITetra<D>[] getTetras(){
 		return this.tetras.values().toArray( new ITetra[ this.tetras.size()]);
-	}
-
-	public TetraConnector<Compass<D>, D> getConnectors() {
-		return connectors;
 	}
 
 	public boolean fire( Tetras type, TetraTransaction<D> event ) {

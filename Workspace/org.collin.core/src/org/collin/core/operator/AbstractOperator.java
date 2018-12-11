@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.collin.core.def.ITetraNode;
+import org.collin.core.essence.ITetraListener;
 import org.collin.core.transaction.TetraTransaction;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
@@ -66,27 +67,27 @@ public abstract class AbstractOperator<D extends Object> implements IOperator<D>
 	protected abstract boolean onComplete( ITetraNode<D> source, TetraTransaction<D> event);
 
 	@Override
-	public boolean select(ITetraNode<D> source, TetraTransaction<D> event) {
+	public boolean select(ITetraNode<D> source, ITetraListener.Results result, TetraTransaction<D> event) {
 		this.source = source;
 		if(!enabled) {
 			return source.select(source.getType(), event);
 		}
-		boolean result = false;	
+		boolean retval = false;	
 		switch( event.getState()) {
 		case START:
 			start = Calendar.getInstance().getTime();
-			result = onStart(source, event);
+			retval = onStart(source, event);
 			break;
 		case PROGRESS:
-			result = onProgress(source, event.getProgress(), event);
+			retval = onProgress(source, event.getProgress(), event);
 			break;
 		case COMPLETE:
-			result = onComplete(source, event);
+			retval = onComplete(source, event);
 			break;
 		default:
 			break;
 		}
-		return result;
+		return retval;
 	}
 
 	@Override
@@ -94,11 +95,4 @@ public abstract class AbstractOperator<D extends Object> implements IOperator<D>
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	public boolean contains(ITetraNode<D> node) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

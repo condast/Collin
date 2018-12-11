@@ -1,10 +1,12 @@
-package org.collin.core.essence;
+package org.collin.core.graph;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.collin.core.def.ICollINSelector;
 import org.collin.core.def.ITetraNode;
+import org.collin.core.essence.ITetra;
+import org.collin.core.essence.ITetraListener;
+import org.collin.core.operator.IOperator;
 import org.collin.core.transaction.TetraTransaction;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
@@ -17,19 +19,22 @@ import org.condast.commons.strings.StringUtils;
  *
  * @param <D>
  */
-public abstract class AbstractCollINSelector<D extends Object> implements ICollINSelector<D>{
+public abstract class AbstractCollINVertex<D extends Object> implements ICollINVertex<D>{
 
 	private String id;
 	private String name;
 	
 	private String description;
-	
+
+	private IOperator<D> operator;
+
 	private Collection<ITetraListener<D>> listeners;
 
-	protected AbstractCollINSelector( String id, String name ) {
+	protected AbstractCollINVertex( String id, String name, IOperator<D> operator) {
 		super();
 		this.id = id;
 		this.name = StringUtils.isEmpty( name )? id: name;
+		this.operator = operator;
 		this.listeners = new ArrayList<>();
 	}
 
@@ -53,20 +58,28 @@ public abstract class AbstractCollINSelector<D extends Object> implements ICollI
 		this.description = description;
 	}
 
+	public IOperator<D> getOperator() {
+		return operator;
+	}
+
+	protected void setOperator(IOperator<D> operator) {
+		this.operator = operator;
+	}
+
 	@Override
-	public boolean addTetraListener( ITetraListener<D> listener ) {
+	public boolean addCollINListener( ITetraListener<D> listener ) {
 		return this.listeners.add( listener);
 	}
 
 	@Override
-	public boolean removeTetraListener( ITetraListener<D> listener ) {
+	public boolean removeCollINListener( ITetraListener<D> listener ) {
 		return this.listeners.remove( listener);
 	}
 	
-	protected void notifyTetraListeners( TetraTransaction<D> event, boolean blockLocal ) {
+	protected void notifyTetraListeners( ITetraListener.Results result, TetraTransaction<D> event ) {
 		event.addHistory(this);
 		for( ITetraListener<D> listener: this.listeners )
-			listener.notifyNodeSelected( this, event, blockLocal);
+			listener.notifyNodeSelected( this, result, event);
 	}
 
 	protected Collection<ITetraListener<D>> getTetraListeners() {

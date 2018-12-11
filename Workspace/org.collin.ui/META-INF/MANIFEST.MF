@@ -9,6 +9,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.collin.core.connector,
  org.collin.core.def,
  org.collin.core.essence,
+ org.collin.core.graph,
  org.collin.core.transaction,
  org.collin.core.xml,
  org.collin.moodle.xml,

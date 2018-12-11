@@ -1,6 +1,6 @@
 package org.collin.core.operator;
 
-import org.collin.core.def.ITetraNode;
+import org.collin.core.graph.IEdge;
 
 public interface IOperatorFactory<D extends Object> {
 
@@ -11,5 +11,5 @@ public interface IOperatorFactory<D extends Object> {
 	 * @param destination
 	 * @return
 	 */
-	public IOperator<D> createOperator(String className, ITetraNode<D> origin, ITetraNode<D> destination);
+	public IOperator<D> createOperator(String className, IEdge<D>edge );
 }

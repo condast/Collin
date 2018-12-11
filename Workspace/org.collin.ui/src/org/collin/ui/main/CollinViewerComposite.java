@@ -5,11 +5,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.collin.core.connector.TetraConnector;
-import org.collin.core.connector.IConnector;
 import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.Compass;
 import org.collin.core.essence.ITetra;
+import org.collin.core.graph.IEdge;
 import org.collin.core.transaction.TetraTransaction;
 import org.collin.core.xml.CollinBuilder;
 import org.eclipse.swt.SWT;
@@ -138,10 +137,9 @@ public class CollinViewerComposite extends Composite {
 	    		return true;
 	    	}else if( element instanceof ITetraNode )
 	    		return false;
-	    	return ( element instanceof TetraConnector );
+	    	return ( element instanceof IEdge );
 	    }
 
-	    @SuppressWarnings("unchecked")
 		@Override
 	    public Object getParent(Object element) {
 	    	if( element instanceof Compass ) {
@@ -150,11 +148,8 @@ public class CollinViewerComposite extends Composite {
 	    	}else if( element instanceof ITetraNode ) {
 	    		ITetraNode<?> node = (ITetraNode<?>) element;
 	    		return node.getParent();
-	    	}if( element instanceof TetraConnector ) {
-	    		TetraConnector<Compass<?>, ?> connector = (TetraConnector<Compass<?>,?>) element;
-	    		return connector.getOwner();
-	    	}if( element instanceof IConnector ) {
-	    		IConnector<Compass<?>, ?> connector = (IConnector<Compass<?>,?>) element;
+	    	}if( element instanceof IEdge ) {
+	    		IEdge<?> connector = (IEdge<?>) element;
 	    		return connector.getOwner();
 	    	}
 	    	return null;
@@ -172,14 +167,17 @@ public class CollinViewerComposite extends Composite {
 	    		Collection<Object> children = new ArrayList<>();
 	    		children.addAll( Arrays.asList( compass.getChildren() ));
 	    		children.addAll( Arrays.asList( compass.getTetras() ));
-	    		children.add( compass.getConnectors() );
+	    		children.addAll( Arrays.asList( compass.getEdges() ));
 	    		return children.toArray( new Object[ children.size()]);
 	    	}else if( parentElement instanceof ITetra ) {
 	    		ITetra<?> node = (ITetra<?>) parentElement;
 	    		return node.getNodes();
-	    	}else if( parentElement instanceof TetraConnector ) {
-	    		TetraConnector<?,?> connector = (TetraConnector<?,?>) parentElement;
-	    		return connector.getConnectors();
+	    	}else if( parentElement instanceof IEdge<?> ) {
+	    		 IEdge<?> edge = ( IEdge<?>) parentElement;
+	    		 Object[] obj = new Object[2];
+	    		 obj[0] = edge.getOrigin();
+	    		 obj[1] = edge.getDestination();
+	    		return obj;
 	    	}
 	    	return null;
 	    }

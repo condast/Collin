@@ -343,6 +343,7 @@ public class CollinBuilder<D extends Object>{
 		}
 		
 		
+		@SuppressWarnings("unchecked")
 		@Override
 		public void endElement(String uri, String localName, String qName) throws SAXException {
 			String componentName = StringStyler.styleToEnum( qName );		
@@ -356,7 +357,7 @@ public class CollinBuilder<D extends Object>{
 				if( currentNode instanceof ITetra<?>) {
 					ITetra<?> tetra = (ITetra<?>) currentNode;
 					tetra.init();
- 					currentNode = currentNode.getParent();
+ 					currentNode = (ITetraNode<D>) currentNode.getParent();
 				}
 				break;
 			case FUNCTION:
@@ -369,7 +370,7 @@ public class CollinBuilder<D extends Object>{
 					ITetra<?> tetra = (ITetra<?>) currentNode;
 					tetra.init();
 				}
-				currentNode = currentNode.getParent();
+				currentNode = (ITetraNode<D>) currentNode.getParent();
 				break;
 			default:
 				break;
