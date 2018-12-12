@@ -177,19 +177,17 @@ public class Dispatcher {
 		}
 
 		@Override
-		protected boolean onNodeChange(ITetraNode<SequenceNode> node, TetraTransaction<SequenceNode> event) {
-			boolean result = false;
+		protected TetraEvent.Results onNodeChange(ITetraNode<SequenceNode> node, TetraTransaction<SequenceNode> event) {
+			TetraEvent.Results result = TetraEvent.Results.COMPLETE;
 			switch( event.getState()) {
 			case START:
-				result = true;
 				break;
 			case PROGRESS:
 				switch( node.getType()) {
 				case TASK:
-					result = event.isFinished();
+					//result = event.isFinished();
 					break;
 				case SOLUTION:
-					result = true; 
 					break;
 				default:
 					logger.info( "UPDATING TETRA: "+ node.getType().toString() + ":  " + event.getState().toString());
@@ -197,7 +195,6 @@ public class Dispatcher {
 				}
 				break;
 			case COMPLETE:
-				result = true;
 				break;
 			default:
 				break;
@@ -208,7 +205,7 @@ public class Dispatcher {
 		@Override
 		protected TetraEvent.Results onTransactionUpdateRequest(TetraTransaction<SequenceNode> event) {
 			logger.info(event.getState().toString());
-			return Results.CONTINUE;
+			return Results.COMPLETE;
 		}
 
 		@Override
@@ -224,19 +221,17 @@ public class Dispatcher {
 		}
 
 		@Override
-		protected boolean onNodeChange(ITetraNode<SequenceNode> node, TetraTransaction<SequenceNode> event) {
-			boolean result = false;
+		protected TetraEvent.Results onNodeChange(ITetraNode<SequenceNode> node, TetraTransaction<SequenceNode> event) {
+			TetraEvent.Results result = TetraEvent.Results.COMPLETE;
 			switch( event.getState()) {
 			case START:
-				result = true;
 				break;
 			case PROGRESS:
 				switch( node.getType()) {
 				case TASK:
-					result = event.isFinished();
+					//result = event.isFinished();
 					break;
 				case SOLUTION:
-					result = true; 
 					break;
 				default:
 					logger.info( "UPDATING TETRA: "+ node.getType().toString() + ":  " + event.getState().toString());
@@ -244,7 +239,6 @@ public class Dispatcher {
 				}
 				break;
 			case COMPLETE:
-				result = true;
 				break;
 			default:
 				break;
@@ -255,7 +249,7 @@ public class Dispatcher {
 		@Override
 		protected TetraEvent.Results onTransactionUpdateRequest(TetraTransaction<SequenceNode> event) {
 			logger.info(event.getState().toString());
-			return TetraEvent.Results.CONTINUE;
+			return TetraEvent.Results.COMPLETE;
 		}
 
 		@Override

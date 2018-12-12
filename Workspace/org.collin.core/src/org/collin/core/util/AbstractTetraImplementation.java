@@ -25,12 +25,14 @@ public abstract class AbstractTetraImplementation<D extends Object> extends Abst
 		@Override
 		public TetraEvent.Results transactionUpdateRequest(ICollINVertex<D> source, TetraEvent<D> event) {
 			if( !tetra.isChild(source))
-				return Results.CONTINUE;
+				return Results.COMPLETE;
 			
+			TetraEvent.Results result = TetraEvent.Results.COMPLETE;
 			if( source instanceof ITetraNode ) {
 				ITetraNode<D> node = (ITetraNode<D>) source;
 				if( node.getParent().equals(tetra))
-					onNodeChange(node, event.getTransaction());
+					result = onNodeChange(node, event.getTransaction());
+				return result;
 			}
 			return onTransactionUpdateRequest(event.getTransaction());
 		}
@@ -55,7 +57,7 @@ public abstract class AbstractTetraImplementation<D extends Object> extends Abst
 		progress = new LinkedHashMap<>();
 	}
 
-	protected abstract boolean onNodeChange( ITetraNode<D> solution, TetraTransaction<D> event );
+	protected abstract TetraEvent.Results onNodeChange( ITetraNode<D> solution, TetraTransaction<D> event );
 
 	protected abstract TetraEvent.Results onTransactionUpdateRequest( TetraTransaction<D> event );
 

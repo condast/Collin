@@ -78,7 +78,6 @@ public abstract class AbstractCollINVertex<D extends Object> implements ICollINV
 	}
 	
 	protected void notifyListeners( TetraEvent<D> event ) {
-		event.getTransaction().addHistory( this );
 		for( ITetraListener<D> listener: this.listeners )
 			listener.notifyNodeSelected( this, event);
 	}

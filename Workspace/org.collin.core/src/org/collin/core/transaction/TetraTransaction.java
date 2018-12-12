@@ -110,6 +110,7 @@ public class TetraTransaction<D extends Object> extends EventObject {
 	 */
 	public Results updateTransaction( ICollINVertex<D> source, TetraEvent<D> event ) {
 		Results result = hasBeenProcessed(source)? Results.COMPLETE: Results.CONTINUE;
+		addHistory( source );
 		for( ITransactionListener<D> listener: this.listeners ) {
 			Results check = listener.transactionUpdateRequest( source, event);
 			if( check.getIndex() > result.getIndex())
