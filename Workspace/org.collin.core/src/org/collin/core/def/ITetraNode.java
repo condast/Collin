@@ -1,10 +1,10 @@
 package org.collin.core.def;
 
 import org.collin.core.essence.ITetraListener;
+import org.collin.core.essence.TetraEvent;
 import org.collin.core.graph.ICollINShape;
 import org.collin.core.graph.ICollINVertex;
 import org.collin.core.operator.IOperator;
-import org.collin.core.transaction.TetraTransaction;
 
 public interface ITetraNode<D extends Object> extends ICollINVertex<D>{
 
@@ -44,7 +44,7 @@ public interface ITetraNode<D extends Object> extends ICollINVertex<D>{
 
 	ITetraListener<D>[] getListeners();
 
-	boolean select(Nodes type, TetraTransaction<D> event);
+	boolean select(Nodes type, TetraEvent<D> incoming);
 
 	void setOperator(IOperator<D> operator);
 

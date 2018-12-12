@@ -3,6 +3,7 @@ package org.collin.core.essence;
 import java.util.Collection;
 
 import org.collin.core.def.ITetraNode;
+import org.collin.core.essence.TetraEvent.Results;
 import org.collin.core.graph.AbstractCollINVertex;
 import org.collin.core.graph.ICollINShape;
 import org.collin.core.operator.IOperator;
@@ -24,13 +25,17 @@ public class TetraNode<D extends Object> extends AbstractCollINVertex<D> impleme
 	
 	private ICollINShape<D> parent;
 
-	public TetraNode( ITetra<D> parent, String id, String name, ITetraNode.Nodes type ) {
+	public TetraNode( ICollINShape<D> parent, ITetraNode.Nodes type ) {
+		this( parent, type.name(), type.toString(), type );
+	}
+	
+	public TetraNode( ICollINShape<D> parent, String id, String name, ITetraNode.Nodes type ) {
 		this( parent, id, name, type, new DefaultOperator<D>() ) ;
 		DefaultOperator<D> dop = (DefaultOperator<D>) super.getOperator();
 		dop.setOwner(this);
 	}
 	
-	public TetraNode( ITetra<D> parent, String id, String name, ITetraNode.Nodes type, IOperator<D> operator ) {
+	public TetraNode( ICollINShape<D> parent, String id, String name, ITetraNode.Nodes type, IOperator<D> operator ) {
 		super( id, name, operator);
 		this.parent = parent;
 		this.type = type;
@@ -63,21 +68,22 @@ public class TetraNode<D extends Object> extends AbstractCollINVertex<D> impleme
 	}
 	
 	@Override
-	public boolean fire(TetraTransaction<D> event) {
-		return select( getType(), event );
+	public boolean fire(TetraTransaction<D> transaction) {
+		return select( getType(), new TetraEvent<D>( this, transaction ));
 	}
 
 	/* (non-Javadoc)
 	 * @see org.collin.core.essence.ITetraNode#select()
 	 */
 	@Override
-	public boolean select( ITetraNode.Nodes type, TetraTransaction<D> transaction ) {
-		if( transaction.hasBeenProcessed( this ))
-			return false;
-		boolean result = transaction.updateTransaction(this, transaction);
-		return super.getOperator().select(this, ITetraListener.Results.getResult(result), transaction);
+	public boolean select( ITetraNode.Nodes type, TetraEvent<D> incoming ) {
+		TetraTransaction<D> transaction = incoming.getTransaction();
+		Results result = transaction.updateTransaction(this, incoming);		
+		if( Results.COMPLETE.equals(result))
+			return true;			
+		return super.getOperator().select(this, new TetraEvent<D>( this, result, transaction ));
 	}
-
+	
 	@Override
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
@@ -124,8 +130,8 @@ public class TetraNode<D extends Object> extends AbstractCollINVertex<D> impleme
 		}
 				
 		@Override
-		public boolean select( ITetraNode<D> source, ITetraListener.Results result, TetraTransaction<D> event) {
-			owner.notifyTetraListeners( result, event );
+		public boolean select( ITetraNode<D> source, TetraEvent<D> event) {
+			owner.notifyListeners( event );
 			return true;
 		}
 

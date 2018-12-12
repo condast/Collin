@@ -1,5 +1,7 @@
 package org.collin.core.graph;
 
+import org.collin.core.def.ITetraNode;
+import org.collin.core.essence.TetraEvent;
 import org.collin.core.operator.IOperator;
 
 public abstract class AbstractEdge<D extends Object> extends AbstractCollINVertex<D> implements IEdge<D> {
@@ -54,8 +56,36 @@ public abstract class AbstractEdge<D extends Object> extends AbstractCollINVerte
 			return false;
 		return ( this.origin.equals(vertex) || this.destination.equals(vertex));
 	}
-	
+
+	public boolean fire(TetraEvent<D> event) {
+		if( origin.equals( event.getSource())) {
+			return super.getOperator().select( (ITetraNode<D>) origin, event);
+		}
+		if( destination.equals( event.getSource())) {
+			return super.getOperator().select( (ITetraNode<D>) destination, event);
+		}
+		return false;
+	}
+
 	public static String combine( String str1, String str2 ) {
 		return str1 + "-" + str2;
 	}
+	
+	@Override
+	public int hashCode() {	
+		Long total = new Long( this.getOrigin().hashCode()<<32 + this.destination.hashCode());
+		return total.hashCode();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public boolean equals(Object obj) {
+		if( super.equals(obj))
+			return true;
+		if(!( obj instanceof IEdge ))
+			return false;
+		IEdge<D> edge = (IEdge<D>) obj;
+		return this.isEqual(edge.getOrigin(), edge.getDestination());
+	}
+
 }

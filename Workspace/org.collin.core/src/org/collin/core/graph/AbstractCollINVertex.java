@@ -6,6 +6,7 @@ import java.util.Collection;
 import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.ITetra;
 import org.collin.core.essence.ITetraListener;
+import org.collin.core.essence.TetraEvent;
 import org.collin.core.operator.IOperator;
 import org.collin.core.transaction.TetraTransaction;
 import org.condast.commons.strings.StringStyler;
@@ -76,14 +77,21 @@ public abstract class AbstractCollINVertex<D extends Object> implements ICollINV
 		return this.listeners.remove( listener);
 	}
 	
-	protected void notifyTetraListeners( ITetraListener.Results result, TetraTransaction<D> event ) {
-		event.addHistory(this);
+	protected void notifyListeners( TetraEvent<D> event ) {
+		event.getTransaction().addHistory( this );
 		for( ITetraListener<D> listener: this.listeners )
-			listener.notifyNodeSelected( this, result, event);
+			listener.notifyNodeSelected( this, event);
 	}
 
 	protected Collection<ITetraListener<D>> getTetraListeners() {
 		return listeners;
+	}
+	
+	@Override
+	public boolean fire(TetraTransaction<D> transaction) {
+		TetraEvent<D> event = new TetraEvent<D>( this, transaction );
+		notifyListeners(event);
+		return false;
 	}
 
 	@Override

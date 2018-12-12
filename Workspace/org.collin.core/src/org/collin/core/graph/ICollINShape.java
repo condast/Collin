@@ -2,7 +2,7 @@ package org.collin.core.graph;
 
 public interface ICollINShape<D extends Object> {
 
-	void addEdge(IEdge<D> edge);
+	boolean addEdge(IEdge<D> edge);
 
 	boolean removeEdge(IEdge<D> edge);
 

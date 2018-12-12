@@ -12,6 +12,8 @@ import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.Compass;
 import org.collin.core.essence.Compass.Tetras;
 import org.collin.core.essence.ITetra;
+import org.collin.core.essence.TetraEvent;
+import org.collin.core.essence.TetraEvent.Results;
 import org.collin.core.transaction.TetraTransaction;
 import org.collin.core.transaction.TetraTransaction.States;
 import org.collin.core.util.AbstractTetraImplementation;
@@ -204,9 +206,9 @@ public class Dispatcher {
 		}
 
 		@Override
-		protected boolean onTransactionUpdateRequest(TetraTransaction<SequenceNode> event) {
+		protected TetraEvent.Results onTransactionUpdateRequest(TetraTransaction<SequenceNode> event) {
 			logger.info(event.getState().toString());
-			return false;
+			return Results.CONTINUE;
 		}
 
 		@Override
@@ -251,9 +253,9 @@ public class Dispatcher {
 		}
 
 		@Override
-		protected boolean onTransactionUpdateRequest(TetraTransaction<SequenceNode> event) {
+		protected TetraEvent.Results onTransactionUpdateRequest(TetraTransaction<SequenceNode> event) {
 			logger.info(event.getState().toString());
-			return false;
+			return TetraEvent.Results.CONTINUE;
 		}
 
 		@Override

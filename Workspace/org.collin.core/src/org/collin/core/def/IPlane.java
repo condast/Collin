@@ -1,8 +1,8 @@
 package org.collin.core.def;
 
-import org.collin.core.def.ITetraNode.Nodes;
+import org.collin.core.graph.ICollINShape;
 
-public interface IPlane<D extends Object> {
+public interface IPlane<D extends Object> extends ICollINShape<D>{
 
 	public enum Planes{
 		AMBITION,
@@ -10,8 +10,6 @@ public interface IPlane<D extends Object> {
 		OPERATION,
 		RECOVERY;
 	}
-
-	String getLabel();
-
-	ITetraNode<D> getNode(Nodes node);
+	
+	public Planes getType();
 }

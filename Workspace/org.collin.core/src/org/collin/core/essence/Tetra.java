@@ -177,15 +177,15 @@ public class Tetra<D extends Object> extends AbstractShape<D> implements ITetra<
 	 * @see org.collin.core.essence.ITetra#select(org.collin.core.def.ITetraNode.Nodes)
 	 */
 	@Override
-	public boolean fire( TetraTransaction<D> event ) {
-		return select( ITetraNode.Nodes.UNDEFINED, event );
+	public boolean fire( TetraTransaction<D> transaction ) {
+		return select( ITetraNode.Nodes.UNDEFINED, new TetraEvent<D>( this, transaction ));
 	}
 	
 	/* (non-Javadoc)
 	 * @see org.collin.core.essence.ITetra#select(org.collin.core.def.ITetraNode.Nodes)
 	 */
 	@Override
-	public boolean select( ITetraNode.Nodes type, TetraTransaction<D> event ) {
+	public boolean select( ITetraNode.Nodes type, TetraEvent<D> event ) {
 		ITetraNode<D> node = null;
 		boolean result = false;
 		switch( type ) {
@@ -207,7 +207,7 @@ public class Tetra<D extends Object> extends AbstractShape<D> implements ITetra<
 			break;
 		case SOLUTION:
 			node = getNode( Nodes.SOLUTION);
-	 		super.notifyTetraListeners( ITetraListener.Results.SUCCESS, event);
+	 		super.notifyListeners( event);
 			result = true;
 			break;
 		default:
@@ -219,10 +219,10 @@ public class Tetra<D extends Object> extends AbstractShape<D> implements ITetra<
 	@Override
 	public Map<IPlane.Planes, IPlane<D>> getPlanes() {
 		Map<IPlane.Planes, IPlane<D>> planes = new HashMap<>();
-		planes.put(IPlane.Planes.AMBITION, new Plane<>( IPlane.Planes.AMBITION, this ));
-		planes.put(IPlane.Planes.LEARNING, new Plane<>( IPlane.Planes.LEARNING, this ));
-		planes.put(IPlane.Planes.OPERATION, new Plane<>( IPlane.Planes.OPERATION, this ));
-		planes.put(IPlane.Planes.RECOVERY, new Plane<>( IPlane.Planes.RECOVERY, this ));		
+		planes.put(IPlane.Planes.AMBITION, new Plane<>( this, IPlane.Planes.AMBITION ));
+		planes.put(IPlane.Planes.LEARNING, new Plane<>( this, IPlane.Planes.LEARNING ));
+		planes.put(IPlane.Planes.OPERATION, new Plane<>( this, IPlane.Planes.OPERATION ));
+		planes.put(IPlane.Planes.RECOVERY, new Plane<>( this, IPlane.Planes.RECOVERY ));		
 		return null;
 	}
 

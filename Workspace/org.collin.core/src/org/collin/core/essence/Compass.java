@@ -45,12 +45,12 @@ public class Compass<D extends Object> extends AbstractShape<D>{
 	private ITetraListener<D> listener = new ITetraListener<D>() {
 
 		@Override
-		public void notifyNodeSelected( Object source, ITetraListener.Results result, TetraTransaction<D> event) {
+		public void notifyNodeSelected( Object source, TetraEvent<D> event) {
 			if( progress >= children.size())
-				notifyTetraListeners( result, event);	
+				notifyListeners( event);	
 			else {
 				Compass<D> child = children.get(++progress);
-				child.fire(event);
+				child.fire(event.getTransaction());
 			}
 		}
 		

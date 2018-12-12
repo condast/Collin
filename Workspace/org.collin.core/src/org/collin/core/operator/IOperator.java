@@ -1,8 +1,7 @@
 package org.collin.core.operator;
 
 import org.collin.core.def.ITetraNode;
-import org.collin.core.essence.ITetraListener;
-import org.collin.core.transaction.TetraTransaction;
+import org.collin.core.essence.TetraEvent;
 import org.xml.sax.Attributes;
 
 public interface IOperator<D extends Object>{
@@ -15,10 +14,11 @@ public interface IOperator<D extends Object>{
 	 * next phase. It is possible to pass a result from the preprocessing in order
 	 * to make the assessment
 	 * @param 
-	 * @param transaction
+	 * @param event
 	 * @return
 	 */
-	boolean select( ITetraNode<D> source, ITetraListener.Results result, TetraTransaction<D> transaction);
+	boolean select(ITetraNode<D> source, TetraEvent<D> event);
 
 	void dispose();
+
 }

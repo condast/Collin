@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.collin.core.graph.ICollINVertex;
+import org.collin.core.graph.IEdge.Direction;
 import org.condast.commons.strings.StringUtils;
 
 public abstract class AbstractShape<D extends Object> extends AbstractCollINVertex<D> implements ICollINShape<D> {
@@ -17,22 +18,23 @@ public abstract class AbstractShape<D extends Object> extends AbstractCollINVert
 	
 	protected AbstractShape( String id, String name ) {
 		super( id, name, null );
-		this.edges = new ArrayList<>();
+		this.edges = new HashSet<>();
 	}
 
-	
 	/* (non-Javadoc)
 	 * @see org.collin.core.graph.ICollINShape#addEdge(org.collin.core.graph.IEdge)
 	 */
-	@Override
-	public void addEdge(IEdge<D> edge ) {
-		this.edges.add( edge );
+	public boolean addEdge(IEdge<D> edge ) {
+		if( this.edges.contains(edge))
+			return false;
+		if( containsEdge(edge.getOrigin(), edge.getDestination()))
+			return false;
+		return this.edges.add( edge );
 	}
 
 	/* (non-Javadoc)
 	 * @see org.collin.core.graph.ICollINShape#removeEdge(org.collin.core.graph.IEdge)
 	 */
-	@Override
 	public boolean removeEdge( IEdge<D> edge ) {
 		return this.edges.remove( edge );
 	}
@@ -87,6 +89,16 @@ public abstract class AbstractShape<D extends Object> extends AbstractCollINVert
 				temp.add( edge );
 		}
 		return this.edges.removeAll(temp);
+	}
+
+	public boolean containsEdge( ICollINVertex<D> v1, ICollINVertex<D> v2 ) {
+		for( IEdge<D> edge: this.edges ) {
+			if( edge.getOrigin().equals(v1) && edge.getDestination().equals(v2 ))
+				return !Direction.BACKWARD.equals( edge.getDirection());
+			if( edge.getOrigin().equals(v2) && edge.getDestination().equals(v1 ))
+				return !Direction.FORWARD.equals( edge.getDirection());;
+		}
+		return false;
 	}
 
 	@Override

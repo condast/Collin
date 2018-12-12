@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.EventObject;
 import java.util.HashSet;
 
+import org.collin.core.essence.TetraEvent;
+import org.collin.core.essence.TetraEvent.Results;
 import org.collin.core.graph.ICollINVertex;
 import org.condast.commons.strings.StringStyler;
 
@@ -71,7 +73,7 @@ public class TetraTransaction<D extends Object> extends EventObject {
 	}
 
 	public boolean addHistory( ICollINVertex<D> node ) {
-		if( hasBeenProcessed(node))
+		if( this.history.contains(node))
 			return false;
 		return this.history.add(node);
 	}
@@ -81,7 +83,7 @@ public class TetraTransaction<D extends Object> extends EventObject {
 		return this.history.toArray( new ICollINVertex[ this.history.size()]);
 	}
 	
-	public boolean hasBeenProcessed( ICollINVertex<D> node ) {
+	protected boolean hasBeenProcessed( ICollINVertex<D> node ) {
 		if( node == null )
 			return true;
 		return this.history.contains(node);
@@ -101,15 +103,18 @@ public class TetraTransaction<D extends Object> extends EventObject {
 	
 	/**
 	 * Update the transaction. Returns true if the transaction was successfully updated,
-	 * and the next nod can be notified. 
+	 * and the next node can be notified. 
 	 * @param source
 	 * @param event
 	 * @return
 	 */
-	public boolean updateTransaction( ICollINVertex<D> source, TetraTransaction<D> event ) {
-		boolean result = false;
-		for( ITransactionListener<D> listener: this.listeners )
-			result |= listener.transactionUpdateRequest( source, event);
+	public Results updateTransaction( ICollINVertex<D> source, TetraEvent<D> event ) {
+		Results result = hasBeenProcessed(source)? Results.COMPLETE: Results.CONTINUE;
+		for( ITransactionListener<D> listener: this.listeners ) {
+			Results check = listener.transactionUpdateRequest( source, event);
+			if( check.getIndex() > result.getIndex())
+				result = check;
+		}
 		return result;
 	}
 }

@@ -5,8 +5,8 @@ import java.util.logging.Logger;
 
 import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.ITetraListener;
+import org.collin.core.essence.TetraEvent;
 import org.collin.core.graph.IEdge;
-import org.collin.core.transaction.TetraTransaction;
 import org.condast.commons.strings.StringUtils;
 import org.xml.sax.Attributes;
 
@@ -78,8 +78,8 @@ public class DefaultOperatorFactory<D extends Object> implements IOperatorFactor
 
 			@SuppressWarnings("unchecked")
 			@Override
-			public void notifyNodeSelected(Object source, ITetraListener.Results result, TetraTransaction<D> event) {
-				select((ITetraNode<D>) source, ITetraListener.Results.SUCCESS, event);
+			public void notifyNodeSelected(Object source, TetraEvent<D> event) {
+				select((ITetraNode<D>) source, event);
 			}
 			
 			@Override
@@ -135,14 +135,17 @@ public class DefaultOperatorFactory<D extends Object> implements IOperatorFactor
 		 * @see org.collin.core.essence.IOperator#select(org.collin.core.essence.TetraEvent)
 		 */
 		@Override
-		public boolean select( ITetraNode<D> source, ITetraListener.Results result, TetraTransaction<D> event ) {
+		public boolean select( ITetraNode<D> source, TetraEvent<D> event ) {
 			ITetraNode<D> node = getOther( source );
 			if( node == null )
 				return false;
-			if( event.hasBeenProcessed(node))
-				return false;
 			logger.info("Event to node: " + node.getName());
 			return node.select( source.getType(), event );
+		}
+
+		protected long getToken( Object sender ) {
+			long result = hashCode()<<32+sender.hashCode();
+			return result;
 		}
 
 		/* (non-Javadoc)

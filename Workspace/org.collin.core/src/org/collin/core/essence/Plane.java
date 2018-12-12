@@ -1,58 +1,57 @@
 package org.collin.core.essence;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.collin.core.def.IPlane;
 import org.collin.core.def.ITetraNode;
+import org.collin.core.graph.ICollINShape;
+import org.collin.core.operator.DefaultOperatorFactory;
+import org.collin.core.operator.IOperatorFactory;
 
-public class Plane<D extends Object> implements IPlane<D> {
+public class Plane<D extends Object> extends TetraShape<IPlane.Planes, D> implements IPlane<D> {
 
-	private String label;
-	
-	private Map<ITetraNode.Nodes, ITetraNode<D>> nodes;
-
-	public Plane( String label ) {
-		super();
-		this.label = label;
-		nodes = new HashMap<ITetraNode.Nodes, ITetraNode<D>>();
+	public Plane( String id, String name, IPlane.Planes type ) {
+		this( null, id, name, type );
 	}
 
-	public Plane( Planes plane, ITetra<D> tetra ) {
-		this( plane.name() );
-		switch( plane ) {
+	public Plane( ICollINShape<D> parent, IPlane.Planes type ) {
+		this( parent, new DefaultOperatorFactory<D>(), type.name(), type.toString(), type );
+	}
+
+	public Plane( ICollINShape<D> parent, String id, String name, IPlane.Planes type ) {
+		this( parent, new DefaultOperatorFactory<D>(), id, name, type );
+	}
+		
+	public Plane( ICollINShape<D> parent, IOperatorFactory<D> factory, String id, String name, IPlane.Planes type ) {
+		super( parent, factory, id, name, type );
+	}
+
+	@Override
+	public void init() {
+		//First complete the nodes
+		super.init();
+					
+		switch( super.getType() ) {
 		case AMBITION:
-			this.nodes.put( ITetraNode.Nodes.GOAL, tetra.getNode(ITetraNode.Nodes.GOAL));
-			this.nodes.put( ITetraNode.Nodes.SOLUTION, tetra.getNode(ITetraNode.Nodes.SOLUTION));
-			this.nodes.put( ITetraNode.Nodes.FUNCTION, tetra.getNode(ITetraNode.Nodes.FUNCTION));
+			super.addEdge( new Edge( this, getNode( ITetraNode.Nodes.FUNCTION ), getNode(ITetraNode.Nodes.GOAL )));
+			super.addEdge( new Edge( this, getNode( ITetraNode.Nodes.FUNCTION ), getNode(ITetraNode.Nodes.SOLUTION )));
+			super.addEdge( new Edge( this, getNode( ITetraNode.Nodes.GOAL ), getNode(ITetraNode.Nodes.SOLUTION)));
 			break;
 		case LEARNING:
-			this.nodes.put( ITetraNode.Nodes.GOAL, tetra.getNode(ITetraNode.Nodes.GOAL));
-			this.nodes.put( ITetraNode.Nodes.TASK, tetra.getNode(ITetraNode.Nodes.TASK));
-			this.nodes.put( ITetraNode.Nodes.FUNCTION, tetra.getNode(ITetraNode.Nodes.FUNCTION));
+			super.addEdge( new Edge( this, getNode( ITetraNode.Nodes.FUNCTION ), getNode(ITetraNode.Nodes.GOAL )));
+			super.addEdge( new Edge( this, getNode( ITetraNode.Nodes.FUNCTION ), getNode(ITetraNode.Nodes.TASK )));
+			super.addEdge( new Edge( this, getNode( ITetraNode.Nodes.GOAL ), getNode(ITetraNode.Nodes.TASK)));
 			break;
 		case OPERATION:
-			this.nodes.put( ITetraNode.Nodes.TASK, tetra.getNode(ITetraNode.Nodes.TASK));
-			this.nodes.put( ITetraNode.Nodes.SOLUTION, tetra.getNode(ITetraNode.Nodes.SOLUTION));
-			this.nodes.put( ITetraNode.Nodes.FUNCTION, tetra.getNode(ITetraNode.Nodes.FUNCTION));
+			super.addEdge( new Edge( this, getNode( ITetraNode.Nodes.FUNCTION ), getNode(ITetraNode.Nodes.SOLUTION )));
+			super.addEdge( new Edge( this, getNode( ITetraNode.Nodes.FUNCTION ), getNode(ITetraNode.Nodes.TASK )));
+			super.addEdge( new Edge( this, getNode( ITetraNode.Nodes.SOLUTION ), getNode(ITetraNode.Nodes.TASK)));
 			break;
 		case RECOVERY:
-			this.nodes.put( ITetraNode.Nodes.GOAL, tetra.getNode(ITetraNode.Nodes.GOAL));
-			this.nodes.put( ITetraNode.Nodes.SOLUTION, tetra.getNode(ITetraNode.Nodes.SOLUTION));
-			this.nodes.put( ITetraNode.Nodes.TASK, tetra.getNode(ITetraNode.Nodes.TASK));
+			super.addEdge( new Edge( this, getNode( ITetraNode.Nodes.SOLUTION ), getNode(ITetraNode.Nodes.GOAL )));
+			super.addEdge( new Edge( this, getNode( ITetraNode.Nodes.SOLUTION ), getNode(ITetraNode.Nodes.TASK )));
+			super.addEdge( new Edge( this, getNode( ITetraNode.Nodes.GOAL ), getNode(ITetraNode.Nodes.TASK)));
 			break;
 		default:
 			break;
 		}
-	}
-	
-	@Override
-	public String getLabel() {
-		return label;
-	}
-
-	@Override
-	public ITetraNode<D> getNode(ITetraNode.Nodes node) {
-		return nodes.get(node);
 	}
 }

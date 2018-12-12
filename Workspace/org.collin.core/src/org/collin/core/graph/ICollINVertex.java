@@ -20,5 +20,5 @@ public interface ICollINVertex<D extends Object> {
 
 	String getName();
 
-	boolean fire( TetraTransaction<D> event );
+	boolean fire( TetraTransaction<D> transaction );
 }

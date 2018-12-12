@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.ITetra;
-import org.collin.core.essence.ITetraListener;
+import org.collin.core.essence.TetraEvent;
 import org.collin.core.graph.AbstractEdge;
 import org.collin.core.graph.ICollINShape;
 import org.collin.core.graph.IEdge;
@@ -121,7 +121,7 @@ public class TetraConnector<D extends Object> {
 			}
 
 			@Override
-			public boolean select( ITetraNode<D> source, ITetraListener.Results result, TetraTransaction<D> event) {
+			public boolean select( ITetraNode<D> source, TetraEvent<D> event) {
 				ITetraNode<D> node = getOther(source);
 				logger.info("Event from: " + source + " to " + node);
 				if( node != null ){
