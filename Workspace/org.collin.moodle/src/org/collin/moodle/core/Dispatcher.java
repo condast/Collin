@@ -5,27 +5,57 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.collin.core.def.ITetraImplementation;
-import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.Compass;
 import org.collin.core.essence.Compass.Tetras;
-import org.collin.core.essence.ITetra;
-import org.collin.core.essence.TetraEvent;
-import org.collin.core.essence.TetraEvent.Results;
 import org.collin.core.transaction.TetraTransaction;
 import org.collin.core.transaction.TetraTransaction.States;
-import org.collin.core.util.AbstractTetraImplementation;
 import org.collin.core.xml.CollinBuilder;
 import org.collin.core.xml.SequenceNode;
+import org.collin.core.xml.SequenceQuery;
+import org.collin.moodle.model.Coach;
+import org.collin.moodle.model.Student;
 import org.collin.moodle.xml.ModuleBuilder;
 import org.condast.commons.io.IOUtils;
+import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 
 
 public class Dispatcher {
 
+	public enum Actors{
+		UNDEFINED,
+		STUDENT,
+		COACH,
+		SUPPORT,
+		MODULE,
+		STUDY;
+		
+		public static Actors getActor( Tetras tetra ) {
+			switch( tetra ) {
+			case CONSUMER:
+				return STUDENT;
+			case COACH:
+				return COACH;
+			case PROCESS:
+				return STUDY;
+			case PRODUCT:
+				return MODULE;
+			case PRODUCER:
+				return SUPPORT;
+			default:
+				return UNDEFINED;
+			}
+		}
+
+		@Override
+		public String toString() {
+			return StringStyler.xmlStyleString(super.toString());
+		}
+
+		
+	}
 	private static Dispatcher dispatcher = new Dispatcher();
 	
 	private Map<Long, Integer> progress;	
@@ -36,20 +66,23 @@ public class Dispatcher {
 	
 	private SequenceNode node;
 
-	private Logger logger = Logger.getLogger( this.getClass().getName());
-	
 	private Dispatcher() {
 		super();
 		progress = new HashMap<>();
 		this.modules = new HashMap<>();
 		CollinBuilder<SequenceNode> builder;
 		try {
+			node = readModules();
+			SequenceQuery query = new SequenceQuery(node);
+			
 			builder = new CollinBuilder<SequenceNode>( getClass() );
 			Compass<SequenceNode>[] compasses = (Compass<SequenceNode>[]) builder.build();	
 			Compass<SequenceNode> compass = compasses[0];
 			implementations = new HashMap<>();
-			implementations.put( Compass.Tetras.CONSUMER, new Student( compass.getTetra(Tetras.CONSUMER) ));
-			implementations.put( Compass.Tetras.COACH, new Coach( compass.getTetra( Tetras.COACH ) ));
+			SequenceNode actor = query.findCollin(Actors.STUDENT.toString());
+			implementations.put( Compass.Tetras.CONSUMER, new Student( actor, compass.getTetra(Tetras.CONSUMER) ));
+			actor = query.findCollin(Actors.COACH.toString());
+			implementations.put( Compass.Tetras.COACH, new Coach( actor, compass.getTetra( Tetras.COACH ) ));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -83,7 +116,6 @@ public class Dispatcher {
 		InputStream stream = null;
 		String result = null;
 		try {
-			node = readModules();
 			TetraTransaction<SequenceNode> transaction = new TetraTransaction<SequenceNode>(this, node );
 			register( transaction );
 			Student student = (Student) this.implementations.get(Compass.Tetras.CONSUMER);
@@ -168,93 +200,5 @@ public class Dispatcher {
 			ex.printStackTrace();
 		}
 		return node;
-	}
-
-	private class Student extends AbstractTetraImplementation<SequenceNode>{
-
-		public Student(ITetra<SequenceNode> tetra) {
-			super(tetra);
-		}
-
-		@Override
-		protected TetraEvent.Results onNodeChange(ITetraNode<SequenceNode> node, TetraTransaction<SequenceNode> event) {
-			TetraEvent.Results result = TetraEvent.Results.COMPLETE;
-			switch( event.getState()) {
-			case START:
-				break;
-			case PROGRESS:
-				switch( node.getType()) {
-				case TASK:
-					//result = event.isFinished();
-					break;
-				case SOLUTION:
-					break;
-				default:
-					logger.info( "UPDATING TETRA: "+ node.getType().toString() + ":  " + event.getState().toString());
-					break;
-				}
-				break;
-			case COMPLETE:
-				break;
-			default:
-				break;
-			}
-			return result;
-		}
-
-		@Override
-		protected TetraEvent.Results onTransactionUpdateRequest(TetraTransaction<SequenceNode> event) {
-			logger.info(event.getState().toString());
-			return Results.COMPLETE;
-		}
-
-		@Override
-		protected void onTetraEventReceived(TetraTransaction<SequenceNode> event) {
-			logger.info(event.getState().toString());
-		}		
-	}
-
-	private class Coach extends AbstractTetraImplementation<SequenceNode>{
-
-		public Coach(ITetra<SequenceNode> tetra) {
-			super(tetra);
-		}
-
-		@Override
-		protected TetraEvent.Results onNodeChange(ITetraNode<SequenceNode> node, TetraTransaction<SequenceNode> event) {
-			TetraEvent.Results result = TetraEvent.Results.COMPLETE;
-			switch( event.getState()) {
-			case START:
-				break;
-			case PROGRESS:
-				switch( node.getType()) {
-				case TASK:
-					//result = event.isFinished();
-					break;
-				case SOLUTION:
-					break;
-				default:
-					logger.info( "UPDATING TETRA: "+ node.getType().toString() + ":  " + event.getState().toString());
-					break;
-				}
-				break;
-			case COMPLETE:
-				break;
-			default:
-				break;
-			}
-			return result;
-		}
-
-		@Override
-		protected TetraEvent.Results onTransactionUpdateRequest(TetraTransaction<SequenceNode> event) {
-			logger.info(event.getState().toString());
-			return TetraEvent.Results.COMPLETE;
-		}
-
-		@Override
-		protected void onTetraEventReceived(TetraTransaction<SequenceNode> event) {
-			logger.info(event.getState().toString());
-		}	
 	}
 }

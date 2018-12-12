@@ -62,6 +62,7 @@ public class SequenceNode {
 	private Nodes node;
 	private String id;
 	private String name;
+	private String collin;
 	private int index;
 	private String locale;
 
@@ -78,32 +79,37 @@ public class SequenceNode {
 	private List<SequenceNode> children;
 
 	public SequenceNode( Nodes node, Locale locale, String id, String name, int index, String title) {
-		this( node, locale, id, name, index, -1 );
+		this( node, locale, id, name, null, index, -1 );
+	}
+
+	public SequenceNode( Nodes node, Locale locale, String id, String name, String collin, int index, String title) {
+		this( node, locale, id, name, collin, index, -1 );
 	}
 	
-	public SequenceNode( Nodes node, String id, String name, int index, String title, long totalTime) {
-		this( node, Locale.ENGLISH, id, name, index, totalTime );
+	public SequenceNode( Nodes node, String id, String name, String collin, int index, String title, long totalTime) {
+		this( node, Locale.ENGLISH, id, name, collin, index, totalTime );
 	}
 	
-	public SequenceNode( Nodes node, Locale locale, String id, String name, int index, String title, long totalTime) {
-		this( node, locale, id, name, index, totalTime );
+	public SequenceNode( Nodes node, Locale locale, String id, String name, String collin, int index, String title, long totalTime) {
+		this( node, locale, id, name, collin, index, totalTime );
 		this.title = title;
 	}
 
-	public SequenceNode( Nodes node, String id, String name, int index, long totalTime ) {
-		this( node, Locale.ENGLISH, id, name, index, totalTime );
+	public SequenceNode( Nodes node, String id, String name, String collin, int index, long totalTime ) {
+		this( node, Locale.ENGLISH, id, name, collin, index, totalTime );
 	}
 
-	public SequenceNode( Nodes node, Locale locale, String id, String name, int index ) {
-		this( node, locale, id, name, index, -1 );
+	public SequenceNode( Nodes node, Locale locale, String id, String name, String collin, int index ) {
+		this( node, locale, id, name, collin, index, -1 );
 	}
 	
-	public SequenceNode( Nodes node, Locale locale, String id, String name, int index, long totalTime ) {
+	public SequenceNode( Nodes node, Locale locale, String id, String name, String collin, int index, long totalTime ) {
 		super();
 		this.node = node;
 		this.locale = locale.toString();
 		this.id = id;
 		this.name = name;
+		this.collin = collin;
 		this.index = index;
 		this.locale = Locale.ENGLISH.toString();
 		this.totalTime = totalTime;
@@ -120,6 +126,10 @@ public class SequenceNode {
 
 	public String getName() {
 		return name;
+	}
+
+	public String getCollin() {
+		return collin;
 	}
 
 	public int getIndex() {
@@ -198,7 +208,7 @@ public class SequenceNode {
 		}
 		return null;
 	}
-	
+
 	public SequenceNode firstChild() {
 		return ( Utils.assertNull(children)?null: children.get(0)); 
 	}

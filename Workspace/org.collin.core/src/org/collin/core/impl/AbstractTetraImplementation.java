@@ -1,4 +1,4 @@
-package org.collin.core.util;
+package org.collin.core.impl;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

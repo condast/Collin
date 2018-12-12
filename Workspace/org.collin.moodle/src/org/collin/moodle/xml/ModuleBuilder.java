@@ -67,6 +67,8 @@ public class ModuleBuilder{
 		ID,
 		TITLE,
 		NAME,
+		CLASS,
+		COLLIN,
 		DESCRIPTION,
 		ENABLED,
 		TYPE,
@@ -245,8 +247,13 @@ public class ModuleBuilder{
 				String[] split = locale_str.split("[-]");
 				locale = new Locale(split[0], split[1]);
 			}
+			String class_str = attributes.getValue( AttributeNames.CLASS.toXmlStyle());
 			if( !StringUtils.isEmpty(index_str))
 				index = Integer.parseInt(index_str);
+			String collin = attributes.getValue( AttributeNames.COLLIN.toXmlStyle());
+			if( StringUtils.isEmpty(collin) && ( this.current != null )) {
+				collin = this.current.getCollin();
+			}
 			Nodes node = Nodes.valueOf(componentName);
 			switch( node ){
 			case COURSE:
@@ -256,62 +263,74 @@ public class ModuleBuilder{
 				if( !StringUtils.isEmpty(title ))
 					current.setTitle(title);
 				break;
+			case MODEL:
+				index = 0;
+				parent = current;
+				current = new SequenceNode(node, locale, id, name, collin, index);
+				break;
 			case MODULES:
 				index = 0;
 				parent = current;
-				current = new SequenceNode(node, locale, id, name, index);
+				current = new SequenceNode(node, locale, id, name, collin, index);
 				break;
 			case MODULE:
-				current = new SequenceNode(node, locale, id, name, index, totalTime);
+				current = new SequenceNode(node, locale, id, name, collin, index, totalTime);
 				current.setUri(uri);
 				index++;
 				break;
 			case ACTIVITIES:
 				index = 0;
 				parent = current;
-				current = new SequenceNode(node, locale, id, name, index);
+				current = new SequenceNode(node, locale, id, name, collin, index);
 				break;
 			case ACTIVITY:
-				current = new SequenceNode(node, locale, id, name, index, totalTime);
+				current = new SequenceNode(node, locale, id, name, collin, index, totalTime);
 				current.setUri(uri);
 				index++;
 				break;
 			case VIEW:
 				index=0;
-				current = new SequenceNode(node, locale, id, name, index);
+				current = new SequenceNode(node, locale, id, collin, name, index);
 				if( !StringUtils.isEmpty(type))
 					current.setType(type);
 				break;
 			case PARTS:
 				index=0;
-				current = new SequenceNode(node, locale, id, name, index);
+				current = new SequenceNode(node, locale, id, collin, name, index);
 				completeFromTo(current, from, to);
 				break;	
 			case PART:
-				current = new SequenceNode(node, locale, id, name, index);
+				current = new SequenceNode(node, locale, id, collin, name, index);
 				index++;
 				break;	
 			case CONTROLLER:
 				index=0;
-				current = new SequenceNode(node, locale, id, name, index);
+				current = new SequenceNode(node, locale, id, collin, name, index);
 				break;	
 			case SEQUENCE:
 				index=0;
-				current = new SequenceNode(node, locale, id, name, index);
+				current = new SequenceNode(node, locale, id, collin, name, index);
 				break;	
 			case STEP:
-				current = new SequenceNode(node, locale, id, name, index);
+				current = new SequenceNode(node, locale, id, collin, name, index);
 				if( !StringUtils.isEmpty(name))
 					current.setTitle(name);
 				break;	
 			case ADVICE:
-				current = new SequenceNode(node, locale, id, name, index);
+				current = new SequenceNode(node, locale, id, collin, name, index);
 				current.setProgress( progress);
 				current.setType(type);
 				break;	
 			case TEXT:
-				current = new SequenceNode(node, locale, id, name, index);
-				break;	
+				current = new SequenceNode(node, locale, id, name, collin, index);
+				break;
+			case FUNCTION:
+			case GOAL:
+			case TASK:
+			case SOLUTION:
+				current = new SequenceNode(node, locale, id, name, collin, 0, totalTime);
+				current.setUri(uri);
+				break;
 			default:
 				break;
 			}

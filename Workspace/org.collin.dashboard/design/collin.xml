@@ -8,9 +8,7 @@
 				<nodes>
 					<function type="supplier" activity="1.1"></function>
 					<goal type="module">Introduction in the area</goal>
-					<task id="multi-tasking" type="paragraph"
-						operator="org.collin.core.operator.TimedTask" total-time="900">
-					</task>
+					<task id="multi-tasking" type="paragraph"/>
 				</nodes>
 			</tetra>
 			<!-- This tetra provides the coach of the consumer, with a focus on keeping 

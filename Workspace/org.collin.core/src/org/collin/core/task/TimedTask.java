@@ -1,7 +1,8 @@
-package org.collin.core.operator;
+package org.collin.core.task;
 
 import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.TetraEvent;
+import org.collin.core.operator.AbstractOperator;
 
 public class TimedTask<D extends Object> extends AbstractOperator<D> {
 

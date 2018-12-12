@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <course id="org.collin.dashboard.test" name="Collin Test" title="HowAComputer.Thinks">
-  <units>
-  	<unit>
-  		<model type="moodle">
+  <models>
+  		<model type="moodle" collin="student">
   			<modules>
   				<module id="lesson1" index="0" uri="http://www.condast.com">
   					<activities type="activity">
   						<activity id="Activity1" index="1" uri="http://www.condast.com"></activity>
+  								<task class="org.collin.core.task.TimedTask" time="900"></task>
+  								<function></function>
+  								<goal></goal>
+  								<solution></solution>
   						<activity id="Activity2" index="2" uri="http://www.condast.com"></activity>
   						<activity id="Activity3" index="3" uri="http://www.condast.com"></activity>
 		  			</activities>
@@ -49,6 +52,5 @@
   				<step name="conclusion"/>
   			</sequence>
   		</controller>
-  	</unit>
-  </units>
+  </models>
 </course>
