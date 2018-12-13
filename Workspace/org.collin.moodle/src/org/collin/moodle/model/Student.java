@@ -12,7 +12,7 @@ import org.collin.core.impl.SequenceDelegateFactory;
 import org.collin.core.impl.SequenceNode;
 import org.collin.core.transaction.TetraTransaction;
 
-public class Student extends AbstractTetraImplementation<SequenceNode>{
+public class Student extends AbstractTetraImplementation<String, SequenceNode>{
 
 	private Logger logger = Logger.getLogger( this.getClass().getName());
 
@@ -24,14 +24,15 @@ public class Student extends AbstractTetraImplementation<SequenceNode>{
 	protected TetraEvent.Results onNodeChange(ITetraNode<SequenceNode> node, TetraEvent<SequenceNode> event) {
 		TetraEvent.Results result = TetraEvent.Results.COMPLETE;
 		TetraTransaction<SequenceNode> transaction = event.getTransaction();		
-		ICollINDelegate<SequenceNode> delegate = getDelegate( node );
-		result = (delegate == null)? result: delegate.perform(node, transaction );
+		ICollINDelegate<String, SequenceNode> delegate = getDelegate( node );
+		result = (delegate == null)? result: delegate.perform(node, event );
 		switch( transaction.getState()) {
 		case START:
 			getDelegate(node);
 			break;
 		case PROGRESS:
 			logger.info( "UPDATING TETRA ("+ result + "): " + node.getType().toString() + ":  " + transaction.getState().toString());
+			result = ( delegate == null )? Results.COMPLETE: delegate.perform(node, event);
 			break;
 		case COMPLETE:
 			break;

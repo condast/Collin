@@ -151,6 +151,7 @@ public class DefaultOperatorFactory<D extends Object> implements IOperatorFactor
 				break;
 			case FAIL:
 				switch(source.getType() ) {
+				case GOAL:
 				case FUNCTION:
 					break;
 				default:

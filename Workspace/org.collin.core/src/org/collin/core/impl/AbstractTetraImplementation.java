@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.collin.core.def.ICollINDelegate;
+import org.collin.core.def.IDataObject;
 import org.collin.core.def.IDelegateFactory;
 import org.collin.core.def.ITetraImplementation;
 import org.collin.core.def.ITetraNode;
@@ -17,7 +18,7 @@ import org.collin.core.graph.ICollINVertex;
 import org.collin.core.transaction.ITransactionListener;
 import org.collin.core.transaction.TetraTransaction;
 
-public abstract class AbstractTetraImplementation<D extends Object> extends AbstractCollINVertex<D> implements ITetraImplementation<D> {
+public abstract class AbstractTetraImplementation<T extends Object, D extends IDataObject<T>> extends AbstractCollINVertex<D> implements ITetraImplementation<D> {
 
 	private D data;
 	
@@ -25,9 +26,9 @@ public abstract class AbstractTetraImplementation<D extends Object> extends Abst
 	
 	private Map<ICollINVertex<D>, Integer> progress;
 	
-	private IDelegateFactory<D> factory;
+	private IDelegateFactory<T,D> factory;
 
-	private Map<ITetraNode<D>, ICollINDelegate<D>> delegates;
+	private Map<ITetraNode<D>, ICollINDelegate<T,D>> delegates;
 
 	private ITransactionListener<D> tlistener = new ITransactionListener<D>() {
 	
@@ -55,11 +56,11 @@ public abstract class AbstractTetraImplementation<D extends Object> extends Abst
 		}
 	};
 	
-	public AbstractTetraImplementation( ITetra<D> tetra, D data,  IDelegateFactory<D> factory) {
+	public AbstractTetraImplementation( ITetra<D> tetra, D data,  IDelegateFactory<T,D> factory) {
 		this( tetra.getId(), tetra.getName(), tetra, data, factory );
 	}
 	
-	public AbstractTetraImplementation( String id, String name, ITetra<D> tetra, D data, IDelegateFactory<D> factory) {
+	public AbstractTetraImplementation( String id, String name, ITetra<D> tetra, D data, IDelegateFactory<T,D> factory) {
 		super(id, name, null);
 		this.data = data;
 		this.tetra = tetra;
@@ -77,7 +78,7 @@ public abstract class AbstractTetraImplementation<D extends Object> extends Abst
 		return tetra;
 	}
 
-	protected IDelegateFactory<D> getFactory() {
+	protected IDelegateFactory<T,D> getFactory() {
 		return factory;
 	}
 
@@ -121,8 +122,8 @@ public abstract class AbstractTetraImplementation<D extends Object> extends Abst
 		this.tetra.removeCollINListener(listener);
 	}
 	
-	protected ICollINDelegate<D> getDelegate( ITetraNode<D> node ){
-		ICollINDelegate<D> delegate = this.delegates.get(node);
+	protected ICollINDelegate<T,D> getDelegate( ITetraNode<D> node ){
+		ICollINDelegate<T,D> delegate = this.delegates.get(node);
 		if( delegate == null ) {
 			delegate = factory.createDelegate(this.getClass(), node);
 			if( delegate != null )

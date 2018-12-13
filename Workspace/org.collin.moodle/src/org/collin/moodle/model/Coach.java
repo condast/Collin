@@ -1,16 +1,23 @@
 package org.collin.moodle.model;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.util.Random;
 import java.util.logging.Logger;
 
 import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.ITetra;
 import org.collin.core.essence.TetraEvent;
+import org.collin.core.essence.TetraEvent.Results;
 import org.collin.core.impl.AbstractTetraImplementation;
 import org.collin.core.impl.SequenceDelegateFactory;
 import org.collin.core.impl.SequenceNode;
+import org.collin.core.impl.SequenceQuery;
 import org.collin.core.transaction.TetraTransaction;
+import org.collin.moodle.Activator;
+import org.condast.commons.strings.StringUtils;
 
-public class Coach extends AbstractTetraImplementation<SequenceNode>{
+public class Coach extends AbstractTetraImplementation<String, SequenceNode>{
 
 	private Logger logger = Logger.getLogger( this.getClass().getName());
 
@@ -28,15 +35,36 @@ public class Coach extends AbstractTetraImplementation<SequenceNode>{
 		case PROGRESS:
 			switch( node.getType()) {
 			case GOAL:
+				result = event.getResult();
+				break;
+			case TASK:
+				FileFilter filter = new FileFilter() {
+
+					@Override
+					public boolean accept(File pathname) {
+						return pathname.getName().startsWith( event.getResult().name().toLowerCase());
+					}
+					
+				};
+
 				switch( event.getResult()) {
 				case SUCCESS:
-					break;//result = event.isFinished();
 				case FAIL:
-					break;//result = event.isFinished();
+					SequenceQuery query = new SequenceQuery( super.getData());
+					SequenceNode sn = query.find(node.getType());
+					String url = sn.getUri();
+					File file = Activator.getContext().getDataFile(url);
+					if( file.isDirectory()) {
+						Random random = new Random();
+						int choice = (int)random.nextInt( file.listFiles( filter ).length);
+						file = file.listFiles()[ choice ];
+					}
+					super.getData().addDatum( StringUtils.getContent(file));
+					break;
 				default:
 					break;
 				}
-				break;
+				break;				
 			case SOLUTION:
 				break;
 			default:

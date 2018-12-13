@@ -1,63 +1,122 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<course id="org.collin.dashboard.test" name="Collin Test" title="HowAComputer.Thinks">
-  <models>
-  		<model type="moodle" collin="student">
-  			<modules>
-  				<module id="1" name="lesson1" index="0" uri="http://www.condast.com">
-  					<activities>
-  						<activity id="1" name="Activity1" index="1" uri="http://www.condast.com">
-   							<task class="org.collin.core.task.TimedTask" time="900"></task>
-  							<function></function>
-  							<goal></goal>
- 	  						<solution proceed="1">
-  								<questions>
-  									<question answer="D">Welke uitspraak is correct?\nA: keuze A\nB: Keuze B\nC: Keuze C\nD: Keuze D</question>
-  								</questions>
-  							</solution>
-  						</activity>
-  						<activity id="2" name="Activity2" index="2" uri="http://www.condast.com">
-						   <task time="900"/>
-  						</activity>
-  						<activity id="3" name="Activity3" index="3" uri="http://www.condast.com"></activity>
-		  			</activities>
-  				</module>	
-  				<module id="2" name="lesson2" index="1" uri="http://www.condast.com"></module>	
-		  		<module id="3" name="lesson3" index="2" uri="http://www.condast.com"></module>
-  				<module id="4" name="lesson4" index="3" uri="http://www.condast.com"></module>
-  				<module id="5" name="lesson5" index="4" uri="http://www.condast.com"></module>
-  				<module id="6" name="lesson6" index="5" uri="http://www.condast.com"></module>
-  				<module id="7" name="lesson7" index="6" uri="http://www.condast.com"></module>
-  			</modules>
-  		</model>
-  		<view type="story">
-  			<parts>
-  				<part id="org.pillargames.teamzodiac.intro" uri="http://demo.condast.com/TeamZodiac/embed.html"/>
-  				<part id="org.pillargames.teamzodiac.meets.lizard" uri="http://www.plusklas.nu"/>
-  				<part id="org.pillargames.teamzodiac.meets.team"/>
-  				<part id="org.pillargames.teamzodiac.start.quest">
-  					<advice type="delay" character="lizard"/>
-  				</part>
-  				<part id="org.pillargames.teamzodiac.travel.to.temple"/>
-  				<part id="org.pillargames.teamzodiac.at.doors"/>
-  			</parts>
-  		</view>
-  		<controller>
-  			<sequence>
-  				<step name="intro">
-  				  <parts from="org.pillargames.teamzodiac.intro" to="org.pillargames.teamzodiac.at.doors"/>
-  				</step>
-  				<step>
-  				   <modules access="concurrent" from="lesson1" to="lesson3">
-  				   		<advice type="delay">
-  				   			<text locale="en-uk" type="text/html"><html><p>Do you need help with the assignment? Take a look at <a href="https://nl.wikipedia.org/wiki/Pyramid"/></p></html></text>
-  				   		</advice>
-  				   		<advice type="delay" progress="80">
-  				   			<text locale="en-uk" type="text/html"><html><p>Hmm..we have entered the tomb? Take a look at <a href="https://en.wikipedia.org/wiki/Great_Pyramid_of_Giza"/></p></html></text>
-  				   		</advice>
-  				   </modules>
-  				</step>
-  				<step name="conclusion"/>
-  			</sequence>
-  		</controller>
-  </models>
+<course id="org.collin.moodle.test" name="Collin Moodle Test"
+	title="HowAComputer.Thinks">
+	<models type="moodle">
+		<model type="moodle" collin="student">
+			<modules>
+				<module id="1" name="lesson1" index="0"
+					uri="http://www.condast.com">
+					<activities>
+						<activity id="1" name="Activity1" index="1"
+							uri="http://www.condast.com">
+							<task class="org.collin.core.task.TimedTask" time="900"></task>
+							<function></function>
+							<goal></goal>
+							<solution proceed="1">
+								<questions>
+									<question answer="D">Welke uitspraak is correct?\nA: keuze
+										A\nB: Keuze B\nC: Keuze C\nD: Keuze D</question>
+								</questions>
+							</solution>
+						</activity>
+						<activity id="2" name="Activity2" index="2"
+							uri="http://www.condast.com">
+							<task time="900" />
+						</activity>
+						<activity id="3" name="Activity3" index="3"
+							uri="http://www.condast.com"></activity>
+					</activities>
+				</module>
+				<module id="2" name="lesson2" index="1"
+					uri="http://www.condast.com"></module>
+				<module id="3" name="lesson3" index="2"
+					uri="http://www.condast.com"></module>
+				<module id="4" name="lesson4" index="3"
+					uri="http://www.condast.com"></module>
+				<module id="5" name="lesson5" index="4"
+					uri="http://www.condast.com"></module>
+				<module id="6" name="lesson6" index="5"
+					uri="http://www.condast.com"></module>
+				<module id="7" name="lesson7" index="6"
+					uri="http://www.condast.com"></module>
+			</modules>
+		</model>
+		<model type="moodle" collin="coach">
+			<modules>
+				<module id="1" name="lesson1" index="0"
+					uri="http://www.condast.com">
+					<activities>
+						<activity id="1" name="Activity1">
+							<task class="org.collin.core.task.AdviceTask" time="900" uri="resources/advice"></task>
+						</activity>
+						<activity id="2" name="Activity2" index="2"
+							uri="http://www.condast.com">
+							<task time="900" />
+						</activity>
+						<activity id="3" name="Activity3" index="3"
+							uri="http://www.condast.com"></activity>
+					</activities>
+				</module>
+				<module id="2" name="lesson2" index="1"
+					uri="http://www.condast.com"></module>
+				<module id="3" name="lesson3" index="2"
+					uri="http://www.condast.com"></module>
+				<module id="4" name="lesson4" index="3"
+					uri="http://www.condast.com"></module>
+				<module id="5" name="lesson5" index="4"
+					uri="http://www.condast.com"></module>
+				<module id="6" name="lesson6" index="5"
+					uri="http://www.condast.com"></module>
+				<module id="7" name="lesson7" index="6"
+					uri="http://www.condast.com"></module>
+			</modules>
+		</model>
+	</models>
+	<view type="story">
+		<parts>
+			<part id="org.pillargames.teamzodiac.intro"
+				uri="http://demo.condast.com/TeamZodiac/embed.html" />
+			<part id="org.pillargames.teamzodiac.meets.lizard"
+				uri="http://www.plusklas.nu" />
+			<part id="org.pillargames.teamzodiac.meets.team" />
+			<part id="org.pillargames.teamzodiac.start.quest">
+				<advice type="delay" character="lizard" />
+			</part>
+			<part id="org.pillargames.teamzodiac.travel.to.temple" />
+			<part id="org.pillargames.teamzodiac.at.doors" />
+		</parts>
+	</view>
+	<controller>
+		<sequence>
+			<step name="intro">
+				<parts from="org.pillargames.teamzodiac.intro"
+					to="org.pillargames.teamzodiac.at.doors" />
+			</step>
+			<step>
+				<modules access="concurrent" from="lesson1" to="lesson3">
+					<advice type="delay">
+						<text locale="en-uk" type="text/html">
+							<html>
+								<p>
+									Do you need help with the assignment? Take a look at
+									<a href="https://nl.wikipedia.org/wiki/Pyramid" />
+								</p>
+							</html>
+						</text>
+					</advice>
+					<advice type="delay" progress="80">
+						<text locale="en-uk" type="text/html">
+							<html>
+								<p>
+									Hmm..we have entered the tomb? Take a look at
+									<a href="https://en.wikipedia.org/wiki/Great_Pyramid_of_Giza" />
+								</p>
+							</html>
+						</text>
+					</advice>
+				</modules>
+			</step>
+			<step name="conclusion" />
+		</sequence>
+	</controller>
 </course>

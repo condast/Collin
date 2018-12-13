@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<course id="org.collin.dashboard.test" name="Collin Test"
+<course id="org.collin.dashboard.test" name="Collin Test Dashboard"
 	title="HowAComputer.Thinks">
 	<models>
 		<model type="moodle" collin="student">
@@ -27,40 +27,65 @@
 				<module id="lesson7" index="6" uri="http://www.condast.com"></module>
 			</modules>
 		</model>
-		<view type="story">
-			<parts>
-				<part id="org.pillargames.teamzodiac.intro"
-					uri="http://demo.condast.com/TeamZodiac/embed.html" />
-				<part id="org.pillargames.teamzodiac.meets.lizard"
-					uri="http://www.plusklas.nu" />
-				<part id="org.pillargames.teamzodiac.meets.team" />
-				<part id="org.pillargames.teamzodiac.start.quest">
-					<advice type="delay" character="lizard" />
-				</part>
-				<part id="org.pillargames.teamzodiac.travel.to.temple" />
-				<part id="org.pillargames.teamzodiac.at.doors" />
-			</parts>
-		</view>
-		<controller>
-			<sequence>
-				<step name="intro">
-					<parts from="org.pillargames.teamzodiac.intro"
-						to="org.pillargames.teamzodiac.at.doors" />
-				</step>
-				<step>
-					<modules access="concurrent" from="lesson1" to="lesson3">
-						<advice type="delay">
-							<text locale="en-uk" type="text/html">
-							</text>
-						</advice>
-						<advice type="delay" progress="80">
-							<text locale="en-uk" type="text/html">
-							</text>
-						</advice>
-					</modules>
-				</step>
-				<step name="conclusion" />
-			</sequence>
-		</controller>
+		<model type="moodle" collin="coach">
+			<modules>
+				<module id="lesson1" index="0" uri="http://www.condast.com">
+					<activities type="activity">
+						<activity id="Activity1" index="1"
+							uri="http://www.condast.com">
+							<task class="org.collin.core.task.AdviceTask" time="900" uri="resources/advice"></task>
+							<function></function>
+							<goal></goal>
+							<solution></solution>
+						</activity>
+						<activity id="Activity2" index="2"
+							uri="http://www.condast.com"></activity>
+						<activity id="Activity3" index="3"
+							uri="http://www.condast.com"></activity>
+					</activities>
+				</module>
+				<module id="lesson2" index="1" uri="http://www.condast.com"></module>
+				<module id="lesson3" index="2" uri="http://www.condast.com"></module>
+				<module id="lesson4" index="3" uri="http://www.condast.com"></module>
+				<module id="lesson5" index="4" uri="http://www.condast.com"></module>
+				<module id="lesson6" index="5" uri="http://www.condast.com"></module>
+				<module id="lesson7" index="6" uri="http://www.condast.com"></module>
+			</modules>
+		</model>
 	</models>
+	<view type="story">
+		<parts>
+			<part id="org.pillargames.teamzodiac.intro"
+				uri="http://demo.condast.com/TeamZodiac/embed.html" />
+			<part id="org.pillargames.teamzodiac.meets.lizard"
+				uri="http://www.plusklas.nu" />
+			<part id="org.pillargames.teamzodiac.meets.team" />
+			<part id="org.pillargames.teamzodiac.start.quest">
+				<advice type="delay" character="lizard" />
+			</part>
+			<part id="org.pillargames.teamzodiac.travel.to.temple" />
+			<part id="org.pillargames.teamzodiac.at.doors" />
+		</parts>
+	</view>
+	<controller>
+		<sequence>
+			<step name="intro">
+				<parts from="org.pillargames.teamzodiac.intro"
+					to="org.pillargames.teamzodiac.at.doors" />
+			</step>
+			<step>
+				<modules access="concurrent" from="lesson1" to="lesson3">
+					<advice type="delay">
+						<text locale="en-uk" type="text/html">
+						</text>
+					</advice>
+					<advice type="delay" progress="80">
+						<text locale="en-uk" type="text/html">
+						</text>
+					</advice>
+				</modules>
+			</step>
+			<step name="conclusion" />
+		</sequence>
+	</controller>
 </course>

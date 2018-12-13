@@ -269,7 +269,7 @@ public class ModuleBuilder{
 				break;
 			case MODULE:
 				current = new SequenceNode(node, locale, id, name, collin, index, totalTime);
-				current.setUri(uri);
+				current.setUri(url);
 				if( !StringUtils.isEmpty(class_str)) {
 					this.current.setDelegate(class_str);
 				}
@@ -281,7 +281,7 @@ public class ModuleBuilder{
 				break;
 			case ACTIVITY:
 				current = new SequenceNode(node, locale, id, name, collin, index, totalTime);
-				current.setUri(uri);
+				current.setUri(url);
 				if( !StringUtils.isEmpty(class_str)) {
 					this.current.setDelegate(class_str);
 				}
@@ -328,7 +328,7 @@ public class ModuleBuilder{
 			case TASK:
 			case SOLUTION:
 				current = new SequenceNode(node, locale, id, name, collin, 0, totalTime);
-				current.setUri(uri);
+				current.setUri(url);
 				if( !StringUtils.isEmpty(class_str)) {
 					this.current.setDelegate(class_str);
 				}else if( !StringUtils.isEmpty(parent.getDelegate())){
