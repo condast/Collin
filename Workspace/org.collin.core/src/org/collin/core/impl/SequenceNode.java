@@ -1,4 +1,4 @@
-package org.collin.core.xml;
+package org.collin.core.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +65,7 @@ public class SequenceNode {
 	private String collin;
 	private int index;
 	private String locale;
+	private String delegate;
 
 	//optional
 	private String title;
@@ -184,12 +185,20 @@ public class SequenceNode {
 		return parent;
 	}
 
-	public long getTotalTime() {
-		return totalTime;
-	}
-
 	private void setParent(SequenceNode parent) {
 		this.parent = parent;
+	}
+
+	public String getDelegate() {
+		return delegate;
+	}
+
+	public void setDelegate(String delegate) {
+		this.delegate = delegate;
+	}
+
+	public long getTotalTime() {
+		return totalTime;
 	}
 
 	public void addChild( SequenceNode child ) {

@@ -1,6 +1,7 @@
-package org.collin.core.xml;
+package org.collin.core.impl;
 
-import org.collin.core.xml.SequenceNode.Nodes;
+import org.collin.core.def.ITetraNode;
+import org.collin.core.impl.SequenceNode.Nodes;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 
@@ -36,9 +37,21 @@ public class SequenceQuery {
 		for( SequenceNode child: nd.getChildren() ) {
 			SequenceNode result = find( node, child );
 			if( result != null )
-				return child;
+				return result;
 		}
 		return null;
+	}
+
+	public SequenceNode find(ITetraNode.Nodes type ) {
+		return find( type, root );
+	}
+	
+	protected SequenceNode find( ITetraNode.Nodes type, SequenceNode nd ) {
+		if(( type == null ) ||( ITetraNode.Nodes.UNDEFINED.equals(type)))
+			return null;
+		
+		SequenceNode.Nodes sn = SequenceNode.Nodes.valueOf( type.name());	
+		return find( sn );
 	}
 
 	public SequenceNode find( Attributes attr, String description ) {
@@ -86,5 +99,4 @@ public class SequenceQuery {
 		}
 		return null;
 	}
-
 }

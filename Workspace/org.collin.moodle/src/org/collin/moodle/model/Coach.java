@@ -6,35 +6,41 @@ import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.ITetra;
 import org.collin.core.essence.TetraEvent;
 import org.collin.core.impl.AbstractTetraImplementation;
+import org.collin.core.impl.SequenceDelegateFactory;
+import org.collin.core.impl.SequenceNode;
 import org.collin.core.transaction.TetraTransaction;
-import org.collin.core.xml.SequenceNode;
 
 public class Coach extends AbstractTetraImplementation<SequenceNode>{
 
 	private Logger logger = Logger.getLogger( this.getClass().getName());
 
-	private SequenceNode node;
-	
-	public Coach(SequenceNode node, ITetra<SequenceNode> tetra) {
-		super(tetra);
-		this.node = node;
+	public Coach(SequenceNode sequence, ITetra<SequenceNode> tetra) {
+		super(tetra, sequence, new SequenceDelegateFactory( sequence ));
 	}
 
 	@Override
-	protected TetraEvent.Results onNodeChange(ITetraNode<SequenceNode> node, TetraTransaction<SequenceNode> event) {
+	protected TetraEvent.Results onNodeChange(ITetraNode<SequenceNode> node, TetraEvent<SequenceNode> event ) {
 		TetraEvent.Results result = TetraEvent.Results.COMPLETE;
-		switch( event.getState()) {
+		TetraTransaction<SequenceNode> transaction = event.getTransaction();
+		switch( transaction.getState()) {
 		case START:
 			break;
 		case PROGRESS:
 			switch( node.getType()) {
-			case TASK:
-				//result = event.isFinished();
+			case GOAL:
+				switch( event.getResult()) {
+				case SUCCESS:
+					break;//result = event.isFinished();
+				case FAIL:
+					break;//result = event.isFinished();
+				default:
+					break;
+				}
 				break;
 			case SOLUTION:
 				break;
 			default:
-				logger.info( "UPDATING TETRA: "+ node.getType().toString() + ":  " + event.getState().toString());
+				logger.info( "UPDATING TETRA: "+ node.getType().toString() + ":  " + transaction.getState().toString());
 				break;
 			}
 			break;
@@ -47,13 +53,13 @@ public class Coach extends AbstractTetraImplementation<SequenceNode>{
 	}
 
 	@Override
-	protected TetraEvent.Results onTransactionUpdateRequest(TetraTransaction<SequenceNode> event) {
-		logger.info(event.getState().toString());
+	protected TetraEvent.Results onTransactionUpdateRequest(TetraEvent<SequenceNode> event) {
+		logger.info(event.getTransaction().getState().toString());
 		return TetraEvent.Results.COMPLETE;
 	}
 
 	@Override
-	protected void onTetraEventReceived(TetraTransaction<SequenceNode> event) {
-		logger.info(event.getState().toString());
+	protected void onTetraEventReceived(TetraEvent<SequenceNode> event) {
+		logger.info(event.getTransaction().getState().toString());
 	}	
 }

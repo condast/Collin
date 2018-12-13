@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <course id="org.collin.dashboard.test" name="Collin Test" title="HowAComputer.Thinks">
-  <units>
-  	<unit>
-  		<model type="moodle">
+  <models>
+  		<model type="moodle" collin="student">
   			<modules>
   				<module id="1" name="lesson1" index="0" uri="http://www.condast.com">
   					<activities>
   						<activity id="1" name="Activity1" index="1" uri="http://www.condast.com">
-  						   <task time="900"/>
-  						   <solution proceed="1">
-  						   		<questions>
-  						   			<question answer="D">Welke uitspraak is correct?\nA: keuze A\nB: Keuze B\nC: Keuze C\nD: Keuze D</question>
-  						   		</questions>
-  						   </solution>
+   							<task class="org.collin.core.task.TimedTask" time="900"></task>
+  							<function></function>
+  							<goal></goal>
+ 	  						<solution proceed="1">
+  								<questions>
+  									<question answer="D">Welke uitspraak is correct?\nA: keuze A\nB: Keuze B\nC: Keuze C\nD: Keuze D</question>
+  								</questions>
+  							</solution>
   						</activity>
   						<activity id="2" name="Activity2" index="2" uri="http://www.condast.com">
 						   <task time="900"/>
@@ -58,6 +59,5 @@
   				<step name="conclusion"/>
   			</sequence>
   		</controller>
-  	</unit>
-  </units>
+  </models>
 </course>

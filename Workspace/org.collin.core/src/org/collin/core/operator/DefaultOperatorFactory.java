@@ -13,7 +13,7 @@ import org.xml.sax.Attributes;
 public class DefaultOperatorFactory<D extends Object> implements IOperatorFactory<D> {
 
 	private Class<?> clss;
-	
+
 	public DefaultOperatorFactory( ) {
 	}
 
@@ -31,8 +31,9 @@ public class DefaultOperatorFactory<D extends Object> implements IOperatorFactor
 		ITetraNode<D> destination = (ITetraNode<D>) edge.getDestination(); 
 		switch( origin.getType() ) {
 		case FUNCTION:
-			if( ITetraNode.Nodes.GOAL.equals( destination.getType() ))
-				operator = create( className, origin, destination );
+			if( ITetraNode.Nodes.FUNCTION.equals( destination.getType() ))
+				break;
+			operator = create( className, origin, destination );
 			break;
 		case GOAL:
 			if( ITetraNode.Nodes.TASK.equals( destination.getType() ))
@@ -47,7 +48,7 @@ public class DefaultOperatorFactory<D extends Object> implements IOperatorFactor
 		}
 		return operator;
 	}
-	
+
 	protected IOperator<D> create( String className, ITetraNode<D> origin, ITetraNode<D> destination ){
 		if( StringUtils.isEmpty(className))
 			return new DefaultOperator(origin, destination);
@@ -55,7 +56,7 @@ public class DefaultOperatorFactory<D extends Object> implements IOperatorFactor
 			return constructOperator(clss, className, origin, destination);
 	}
 
-	
+
 	@SuppressWarnings("unchecked")
 	public static <D> IOperator<D> constructOperator( Class<?> clss, String className, ITetraNode<D> origin, ITetraNode<D> destination){
 		if( StringUtils.isEmpty( className ))
@@ -81,7 +82,7 @@ public class DefaultOperatorFactory<D extends Object> implements IOperatorFactor
 			public void notifyNodeSelected(Object source, TetraEvent<D> event) {
 				select((ITetraNode<D>) source, event);
 			}
-			
+
 			@Override
 			public String toString() {
 				return origin.getName() + "(" + origin.getType()  + ")-" + 
@@ -90,9 +91,9 @@ public class DefaultOperatorFactory<D extends Object> implements IOperatorFactor
 		};
 
 		protected ITetraNode<D> origin, destination;
-		
+
 		private Logger logger = Logger.getLogger(this.getClass().getName());
-		
+
 		public DefaultOperator(ITetraNode<D> origin, ITetraNode<D> destination) {
 			super();
 			this.origin = origin;
@@ -101,13 +102,11 @@ public class DefaultOperatorFactory<D extends Object> implements IOperatorFactor
 			destination.addCollINListener(listener);
 		}
 
-		
+
 		@Override
 		public void setParameters(Attributes attrs) {
 			// TODO Auto-generated method stub
-			
 		}
-
 
 		/* (non-Javadoc)
 		 * @see org.collin.core.connector.IConnector#contains(org.collin.core.def.ITetraNode)
@@ -139,13 +138,33 @@ public class DefaultOperatorFactory<D extends Object> implements IOperatorFactor
 			ITetraNode<D> node = getOther( source );
 			if( node == null )
 				return false;
+			switch( event.getResult()) {
+			case SUCCESS:
+				switch(source.getType() ) {
+				case TASK:
+					if( !ITetraNode.Nodes.SOLUTION.equals(node.getType()))
+						return false;
+					break;
+				default:
+					break;
+				}
+				break;
+			case FAIL:
+				switch(source.getType() ) {
+				case FUNCTION:
+					break;
+				default:
+					if( !ITetraNode.Nodes.FUNCTION.equals(node.getType()))
+						return false;
+					break;
+				}
+				break;
+			default:
+				break;
+			}
+
 			logger.info("Event to node: " + node.getName());
 			return node.select( source.getType(), event );
-		}
-
-		protected long getToken( Object sender ) {
-			long result = hashCode()<<32+sender.hashCode();
-			return result;
 		}
 
 		/* (non-Javadoc)

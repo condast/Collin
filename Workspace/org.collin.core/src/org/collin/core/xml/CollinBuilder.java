@@ -23,6 +23,8 @@ import org.collin.core.essence.Compass;
 import org.collin.core.essence.ITetra;
 import org.collin.core.essence.Tetra;
 import org.collin.core.essence.TetraNode;
+import org.collin.core.impl.ISequenceEventListener;
+import org.collin.core.impl.SequenceEvent;
 import org.collin.core.operator.IOperator;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
@@ -423,29 +425,5 @@ public class CollinBuilder<D extends Object>{
 			print(arg0);
 			super.warning(arg0);
 		}
-	}
-	
-	public static SequenceNode find( SequenceNode current, String id ) {
-		if(( current == null ) || ( id.equals(current.getId())))
-			return current;
-		for( SequenceNode child: current.getChildren()) {
-			SequenceNode find = find( child, id);
-			if( find != null )
-				return find;
-		}
-		return null;
-	}
-
-
-	protected static SequenceNode find( SequenceNode current, CollinNodes node ) {
-		if(( current == null ) || node.equals( current.getNode() ))
-			return current;
-		
-		for( SequenceNode child: current.getChildren()) {
-			SequenceNode find = find( child, node);
-			if( find != null )
-				return find;
-		}
-		return null;		
 	}
 }

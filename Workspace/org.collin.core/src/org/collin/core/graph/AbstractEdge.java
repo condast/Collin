@@ -88,4 +88,8 @@ public abstract class AbstractEdge<D extends Object> extends AbstractCollINVerte
 		return this.isEqual(edge.getOrigin(), edge.getDestination());
 	}
 
+	@Override
+	public String toString() {
+		return "[" + this.origin.toString() + ", " + this.destination.toString() + "]";
+	}
 }

@@ -29,6 +29,8 @@ public abstract class AbstractShape<D extends Object> extends AbstractCollINVert
 			return false;
 		if( containsEdge(edge.getOrigin(), edge.getDestination()))
 			return false;
+		if( edge.getOrigin().equals( edge.getDestination()))
+			return false;
 		return this.edges.add( edge );
 	}
 

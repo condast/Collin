@@ -38,6 +38,10 @@ public class Tetra<D extends Object> extends AbstractShape<D> implements ITetra<
 		this( node.getParent(), node.getId(), name, node.getType());
 	}
 
+	public Tetra( ICollINShape<D> parent, String id, String name) {
+		this( parent, new DefaultOperatorFactory<D>(), id, name, ITetraNode.Nodes.UNDEFINED );
+	}
+
 	public Tetra( ICollINShape<D> parent, String id, String name, ITetraNode.Nodes type ) {
 		this( parent, new DefaultOperatorFactory<D>(), id, name, type );
 	}
@@ -65,6 +69,8 @@ public class Tetra<D extends Object> extends AbstractShape<D> implements ITetra<
 		for( Nodes node: set) {
 			ITetraNode<D> origin = nodes.get(node);
 			for( ITetraNode<D> nd: this.nodes.values()) {
+				if( node.equals(nd.getType()))
+					continue;
 				Edge edge = new Edge( this, origin, nd );
 				IOperator<D> operator = this.factory.createOperator( null, edge );
 				edge.setOperator(operator);

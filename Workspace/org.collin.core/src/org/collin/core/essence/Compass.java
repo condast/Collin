@@ -40,8 +40,6 @@ public class Compass<D extends Object> extends AbstractShape<D>{
 	
 	private int progress;
 	
-	private String description;
-	
 	private ITetraListener<D> listener = new ITetraListener<D>() {
 
 		@Override
@@ -76,7 +74,7 @@ public class Compass<D extends Object> extends AbstractShape<D>{
 					this.tetras.containsKey(tetra))
 				continue;
 			String tid = createId( this, tetra );
-			ITetra<D> nt = new Tetra<>( tid, tetra.toString() );
+			ITetra<D> nt = new Tetra<>( this, tid, tetra.toString(),  ITetraNode.Nodes.UNDEFINED );
 			nt.init();
 			addTetra(tetra, nt);
 		}
@@ -88,14 +86,6 @@ public class Compass<D extends Object> extends AbstractShape<D>{
 		}
 	}
 	
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
 	public Compass<D> getParent() {
 		return parent;
 	}
@@ -141,16 +131,15 @@ public class Compass<D extends Object> extends AbstractShape<D>{
 		ITetra<D> other = null;
 		switch( type ) {
 		case CONSUMER:
-			other = tetras.get(Tetras.COACH);
+			other = tetras.get(Tetras.PROCESS);
 			if( other != null ) {
 				connectors.connect(goal, other.getNode( Nodes.TASK));
 			}
-			other = tetras.get(Tetras.PROCESS);
+			other = tetras.get(Tetras.COACH);
 			if( other != null ) {
 				connectors.connect(task, other.getNode( Nodes.GOAL));
 			}
 			break;
-
 		case COACH:
 			other = tetras.get(Tetras.PRODUCER);
 			if( other != null ) {

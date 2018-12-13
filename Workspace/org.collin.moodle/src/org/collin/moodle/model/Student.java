@@ -2,42 +2,36 @@ package org.collin.moodle.model;
 
 import java.util.logging.Logger;
 
+import org.collin.core.def.ICollINDelegate;
 import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.ITetra;
 import org.collin.core.essence.TetraEvent;
 import org.collin.core.essence.TetraEvent.Results;
 import org.collin.core.impl.AbstractTetraImplementation;
+import org.collin.core.impl.SequenceDelegateFactory;
+import org.collin.core.impl.SequenceNode;
 import org.collin.core.transaction.TetraTransaction;
-import org.collin.core.xml.SequenceNode;
 
 public class Student extends AbstractTetraImplementation<SequenceNode>{
 
 	private Logger logger = Logger.getLogger( this.getClass().getName());
 
-	private SequenceNode node;
-
-	public Student(SequenceNode node, ITetra<SequenceNode> tetra) {
-		super(tetra);
-		this.node = node;
+	public Student(SequenceNode sequence, ITetra<SequenceNode> tetra) {
+		super(tetra, sequence, new SequenceDelegateFactory( sequence ));
 	}
 
 	@Override
-	protected TetraEvent.Results onNodeChange(ITetraNode<SequenceNode> node, TetraTransaction<SequenceNode> event) {
+	protected TetraEvent.Results onNodeChange(ITetraNode<SequenceNode> node, TetraEvent<SequenceNode> event) {
 		TetraEvent.Results result = TetraEvent.Results.COMPLETE;
-		switch( event.getState()) {
+		TetraTransaction<SequenceNode> transaction = event.getTransaction();		
+		ICollINDelegate<SequenceNode> delegate = getDelegate( node );
+		result = (delegate == null)? result: delegate.perform(node, transaction );
+		switch( transaction.getState()) {
 		case START:
+			getDelegate(node);
 			break;
 		case PROGRESS:
-			switch( node.getType()) {
-			case TASK:
-				//result = event.isFinished();
-				break;
-			case SOLUTION:
-				break;
-			default:
-				logger.info( "UPDATING TETRA: "+ node.getType().toString() + ":  " + event.getState().toString());
-				break;
-			}
+			logger.info( "UPDATING TETRA ("+ result + "): " + node.getType().toString() + ":  " + transaction.getState().toString());
 			break;
 		case COMPLETE:
 			break;
@@ -46,15 +40,15 @@ public class Student extends AbstractTetraImplementation<SequenceNode>{
 		}
 		return result;
 	}
-
+	
 	@Override
-	protected TetraEvent.Results onTransactionUpdateRequest(TetraTransaction<SequenceNode> event) {
-		logger.info(event.getState().toString());
+	protected TetraEvent.Results onTransactionUpdateRequest(TetraEvent<SequenceNode> event) {
+		logger.info(event.getTransaction().getState().toString());
 		return Results.COMPLETE;
 	}
 
 	@Override
-	protected void onTetraEventReceived(TetraTransaction<SequenceNode> event) {
-		logger.info(event.getState().toString());
+	protected void onTetraEventReceived(TetraEvent<SequenceNode> event) {
+		logger.info(event.getTransaction().getState().toString());
 	}		
 }

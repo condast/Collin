@@ -9,11 +9,12 @@ import java.util.Map;
 import org.collin.core.def.ITetraImplementation;
 import org.collin.core.essence.Compass;
 import org.collin.core.essence.Compass.Tetras;
+import org.collin.core.impl.SequenceNode;
+import org.collin.core.impl.SequenceQuery;
+import org.collin.core.impl.SequenceNode.Nodes;
 import org.collin.core.transaction.TetraTransaction;
 import org.collin.core.transaction.TetraTransaction.States;
 import org.collin.core.xml.CollinBuilder;
-import org.collin.core.xml.SequenceNode;
-import org.collin.core.xml.SequenceQuery;
 import org.collin.moodle.model.Coach;
 import org.collin.moodle.model.Student;
 import org.collin.moodle.xml.ModuleBuilder;
@@ -82,6 +83,8 @@ public class Dispatcher {
 			SequenceNode actor = query.findCollin(Actors.STUDENT.toString());
 			implementations.put( Compass.Tetras.CONSUMER, new Student( actor, compass.getTetra(Tetras.CONSUMER) ));
 			actor = query.findCollin(Actors.COACH.toString());
+			if( actor == null)
+				actor = new SequenceNode( Nodes.MODEL, Actors.COACH.name(), Actors.COACH.toString(), Actors.COACH.toString(), 0, 900 );
 			implementations.put( Compass.Tetras.COACH, new Coach( actor, compass.getTetra( Tetras.COACH ) ));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -113,6 +116,7 @@ public class Dispatcher {
 		}
 	}
 	public String start( long moduleId ) throws Exception {
+		node = readModules();
 		InputStream stream = null;
 		String result = null;
 		try {

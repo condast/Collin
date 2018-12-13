@@ -82,13 +82,11 @@ public class TetraConnector<D extends Object> {
 	
 		@Override
 		public void setOperator(IOperator<D> operator) {
-			// TODO Auto-generated method stub
 			super.setOperator(operator);
 		}
 
 		@Override
 		public boolean fire(TetraTransaction<D> event) {
-			// TODO Auto-generated method stub
 			return false;
 		}
 		

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.EnumSet;
 import java.util.logging.Logger;
 
-import org.collin.core.xml.SequenceNode;
+import org.collin.core.impl.SequenceNode;
 import org.collin.moodle.xml.Sequence;
 import org.condast.commons.ui.player.PlayerImages;
 import org.condast.commons.ui.widgets.AbstractButtonBar;

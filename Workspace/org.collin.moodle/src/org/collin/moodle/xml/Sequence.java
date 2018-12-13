@@ -5,9 +5,9 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
-import org.collin.core.xml.SequenceEvent;
-import org.collin.core.xml.SequenceNode;
-import org.collin.core.xml.SequenceNode.Nodes;
+import org.collin.core.impl.SequenceEvent;
+import org.collin.core.impl.SequenceNode;
+import org.collin.core.impl.SequenceNode.Nodes;
 import org.collin.moodle.xml.ModuleBuilder.SequenceEvents;
 import org.condast.commons.Utils;
 

@@ -8,7 +8,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.collin.core.xml.SequenceNode;
+import org.collin.core.impl.SequenceNode;
 import org.collin.moodle.core.Dispatcher;
 import org.condast.commons.messaging.rest.RESTUtils;
 import org.condast.commons.strings.StringUtils;

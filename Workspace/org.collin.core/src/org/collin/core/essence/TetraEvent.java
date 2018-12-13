@@ -9,10 +9,10 @@ public class TetraEvent<D extends Object> extends EventObject {
 	private static final long serialVersionUID = 1L;
 
 	public enum Results{
-		COMPLETE(0),
-		CONTINUE(1),
-		FAIL(2),
-		SUCCESS(3);
+		COMPLETE(0),// Default; assume that the event is finished and does not need to be propagated  
+		CONTINUE(1),// propagate the event without constraints
+		FAIL(2), // Handling of the event failed; inform the function and other connected members
+		SUCCESS(3); // Handling succeeded; inform the solution node and other connected members 
 		
 		private int index;
 		

@@ -12,16 +12,15 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
-import java.util.Stack;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.collin.core.xml.ISequenceEventListener;
-import org.collin.core.xml.SequenceEvent;
-import org.collin.core.xml.SequenceNode;
-import org.collin.core.xml.SequenceNode.Nodes;
+import org.collin.core.impl.ISequenceEventListener;
+import org.collin.core.impl.SequenceEvent;
+import org.collin.core.impl.SequenceNode;
+import org.collin.core.impl.SequenceNode.Nodes;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 import org.xml.sax.Attributes;
@@ -204,15 +203,11 @@ public class ModuleBuilder{
 		
 		public static final int MAX_COUNT = 200;	
 		
-		private Stack<Nodes> stored;
-		
 		private SequenceNode root, current;
-		private SequenceNode parent;
 		private int index;
 		private Locale locale;
 		
 		public XmlHandler( ) {
-			stored = new Stack<Nodes>();
 			this.index = 0;
 			this.locale = Locale.getDefault();
 		}
@@ -223,6 +218,7 @@ public class ModuleBuilder{
 			if(( current != null ) &&  Nodes.TEXT.equals( current.getNode()))
 				return;
 					
+			SequenceNode parent = current;
 			String componentName = StringStyler.styleToEnum( qName );
 			
 			//The name is not a group. try the default JP2P components
@@ -241,13 +237,13 @@ public class ModuleBuilder{
 			String progress_str = attributes.getValue( AttributeNames.PROGRESS.toXmlStyle());
 			float progress = StringUtils.isEmpty(progress_str)?0: Float.valueOf(progress_str);  
 			String locale_str = attributes.getValue( AttributeNames.LOCALE.toXmlStyle());
+			String class_str = attributes.getValue( AttributeNames.CLASS.toXmlStyle());
 			String totaltime_str = attributes.getValue( AttributeNames.TOTAL_TIME.toXmlStyle());
 			long totalTime = StringUtils.isEmpty(totaltime_str)?-1: Long.parseLong(totaltime_str);
 			if(!StringUtils.isEmpty(locale_str)) {
 				String[] split = locale_str.split("[-]");
 				locale = new Locale(split[0], split[1]);
 			}
-			String class_str = attributes.getValue( AttributeNames.CLASS.toXmlStyle());
 			if( !StringUtils.isEmpty(index_str))
 				index = Integer.parseInt(index_str);
 			String collin = attributes.getValue( AttributeNames.COLLIN.toXmlStyle());
@@ -265,27 +261,30 @@ public class ModuleBuilder{
 				break;
 			case MODEL:
 				index = 0;
-				parent = current;
 				current = new SequenceNode(node, locale, id, name, collin, index);
 				break;
 			case MODULES:
 				index = 0;
-				parent = current;
 				current = new SequenceNode(node, locale, id, name, collin, index);
 				break;
 			case MODULE:
 				current = new SequenceNode(node, locale, id, name, collin, index, totalTime);
 				current.setUri(uri);
+				if( !StringUtils.isEmpty(class_str)) {
+					this.current.setDelegate(class_str);
+				}
 				index++;
 				break;
 			case ACTIVITIES:
 				index = 0;
-				parent = current;
 				current = new SequenceNode(node, locale, id, name, collin, index);
 				break;
 			case ACTIVITY:
 				current = new SequenceNode(node, locale, id, name, collin, index, totalTime);
 				current.setUri(uri);
+				if( !StringUtils.isEmpty(class_str)) {
+					this.current.setDelegate(class_str);
+				}
 				index++;
 				break;
 			case VIEW:
@@ -330,21 +329,22 @@ public class ModuleBuilder{
 			case SOLUTION:
 				current = new SequenceNode(node, locale, id, name, collin, 0, totalTime);
 				current.setUri(uri);
+				if( !StringUtils.isEmpty(class_str)) {
+					this.current.setDelegate(class_str);
+				}else if( !StringUtils.isEmpty(parent.getDelegate())){
+					this.current.setDelegate( parent.getDelegate());					
+				}
 				break;
 			default:
 				break;
 			}
 			if(( parent != null ) && ( !parent.equals(current))) {
 				parent.addChild(current);
-			}else if( parent == null )
-				parent = current;
-
+			}
 			if(!StringUtils.isEmpty(url))
 				current.setUri(url);
 			if(!StringUtils.isEmpty( description))
 				current.setUri(description);
-			stored.push(node);
-			parent = current;
 		}
 		
 		protected void completeFromTo( SequenceNode node, String from, String to ) {
@@ -373,8 +373,6 @@ public class ModuleBuilder{
 			//The name is not a node.
 			if( !Nodes.isNode( componentName ))
 				return;
-			if( stored.isEmpty())
-				return;
 			Nodes node = Nodes.valueOf(componentName);
 			switch( node ){
 			case MODULES:
@@ -382,23 +380,12 @@ public class ModuleBuilder{
 			default:
 				break;
 			}
-			if(( parent != null ) && ( parent.getParent() != null ))
-				parent = parent.getParent();
-			stored.pop();
+			if( current != null )
+				current = current.getParent();
 		}
 
 		@Override
 		public void characters(char ch[], int start, int length) throws SAXException {
-			String value = new String(ch, start, length);
-			if( StringUtils.isEmpty( value ) || ( stored.isEmpty()))
-				return;
-			Nodes current = stored.lastElement();
-			switch( current ){
-			case PART:
-				break;
-			default:
-				break;
-			}
 		}
 
 		private void print(SAXParseException x)

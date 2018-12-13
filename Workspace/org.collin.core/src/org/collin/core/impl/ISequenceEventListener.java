@@ -1,4 +1,4 @@
-package org.collin.core.xml;
+package org.collin.core.impl;
 
 
 public interface ISequenceEventListener {
