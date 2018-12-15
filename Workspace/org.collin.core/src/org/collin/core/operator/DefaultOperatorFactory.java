@@ -1,9 +1,9 @@
 package org.collin.core.operator;
 
 import java.lang.reflect.Constructor;
-import java.util.logging.Logger;
 
 import org.collin.core.def.ITetraNode;
+import org.collin.core.def.ITetraNode.Nodes;
 import org.collin.core.essence.ITetraListener;
 import org.collin.core.essence.TetraEvent;
 import org.collin.core.graph.IEdge;
@@ -92,8 +92,6 @@ public class DefaultOperatorFactory<D extends Object> implements IOperatorFactor
 
 		protected ITetraNode<D> origin, destination;
 
-		private Logger logger = Logger.getLogger(this.getClass().getName());
-
 		public DefaultOperator(ITetraNode<D> origin, ITetraNode<D> destination) {
 			super();
 			this.origin = origin;
@@ -135,40 +133,56 @@ public class DefaultOperatorFactory<D extends Object> implements IOperatorFactor
 		 */
 		@Override
 		public boolean select( ITetraNode<D> source, TetraEvent<D> event ) {
-			ITetraNode<D> node = getOther( source );
-			if( node == null )
+			ITetraNode<D> destination = getOther( source );
+			boolean result = false;
+			if( destination == null )
 				return false;
+			
+			//First propagate through the tetra:
+			//1: Function -> Goal -> Task -Solution
+			//2: Fail: All -> Function
 			switch( event.getResult()) {
-			case SUCCESS:
-				switch(source.getType() ) {
-				case TASK:
-					if( !ITetraNode.Nodes.SOLUTION.equals(node.getType()))
-						return false;
-					break;
-				default:
-					break;
-				}
-				break;
 			case FAIL:
-				switch(source.getType() ) {
-				case GOAL:
+				switch( destination.getType() ) {
+				case TASK:
+					if( Nodes.GOAL.equals(source.getType()))
+						result = destination.select( source.getType(), event );
+					break;
 				case FUNCTION:
+					result = destination.select( source.getType(), event );
 					break;
 				default:
-					if( !ITetraNode.Nodes.FUNCTION.equals(node.getType()))
-						return false;
 					break;
 				}
 				break;
 			default:
-				break;
+				switch(source.getType() ) {
+				case FUNCTION:
+					if( Nodes.GOAL.equals(destination.getType()))
+						result = destination.select( source.getType(), event );
+					break;
+				case GOAL:
+					if( Nodes.TASK.equals(destination.getType()))
+						result = destination.select( source.getType(), event );
+					break;
+				case TASK:
+					if( ITetraNode.Nodes.SOLUTION.equals(destination.getType()))
+						result = destination.select( source.getType(), event );
+				case SOLUTION:
+					result = true;
+					break;
+				default:
+					break;
+				}
+			}
+			//3: Always: jump to other tetras
+			if(!origin.getParent().equals(destination.getParent()))
+				result = destination.select( source.getType(), event );
+			
+			return result;
 			}
 
-			logger.info("Event to node: " + node.getName());
-			return node.select( source.getType(), event );
-		}
-
-		/* (non-Javadoc)
+			/* (non-Javadoc)
 		 * @see org.collin.core.connector.IConnector#dispose()
 		 */
 		@Override

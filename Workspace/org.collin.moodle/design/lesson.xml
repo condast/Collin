@@ -13,10 +13,6 @@
 							<function></function>
 							<goal></goal>
 							<solution proceed="1">
-								<questions>
-									<question answer="D">Welke uitspraak is correct?\nA: keuze
-										A\nB: Keuze B\nC: Keuze C\nD: Keuze D</question>
-								</questions>
 							</solution>
 						</activity>
 						<activity id="2" name="Activity2" index="2"

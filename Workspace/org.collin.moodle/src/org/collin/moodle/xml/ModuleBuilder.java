@@ -373,13 +373,6 @@ public class ModuleBuilder{
 			//The name is not a node.
 			if( !Nodes.isNode( componentName ))
 				return;
-			Nodes node = Nodes.valueOf(componentName);
-			switch( node ){
-			case MODULES:
-				break;
-			default:
-				break;
-			}
 			if( current != null )
 				current = current.getParent();
 		}

@@ -21,8 +21,23 @@ public class Student extends AbstractTetraImplementation<String, SequenceNode>{
 	}
 
 	@Override
-	protected TetraEvent.Results onNodeChange(ITetraNode<SequenceNode> node, TetraEvent<SequenceNode> event) {
+	protected TetraEvent.Results onCallFunction(ITetraNode<SequenceNode> node, TetraEvent<SequenceNode> event) {
+		logger.info(node.getId() + ": " + event.getTransaction().getState().toString());
 		TetraEvent.Results result = TetraEvent.Results.COMPLETE;
+		return result;
+	}
+
+	@Override
+	protected TetraEvent.Results onCallGoal(ITetraNode<SequenceNode> node, TetraEvent<SequenceNode> event) {
+		logger.info(node.getId() + ": " + event.getTransaction().getState().toString());
+		TetraEvent.Results result = TetraEvent.Results.CONTINUE;
+		return result;
+	}
+
+	@Override
+	protected TetraEvent.Results onCallTask(ITetraNode<SequenceNode> node, TetraEvent<SequenceNode> event) {
+		logger.info(node.getId() + ": " + event.getTransaction().getState().toString());
+		TetraEvent.Results result = TetraEvent.Results.CONTINUE;
 		TetraTransaction<SequenceNode> transaction = event.getTransaction();		
 		ICollINDelegate<String, SequenceNode> delegate = getDelegate( node );
 		result = (delegate == null)? result: delegate.perform(node, event );
@@ -35,13 +50,21 @@ public class Student extends AbstractTetraImplementation<String, SequenceNode>{
 			result = ( delegate == null )? Results.COMPLETE: delegate.perform(node, event);
 			break;
 		case COMPLETE:
+			result = Results.COMPLETE;
 			break;
 		default:
 			break;
 		}
 		return result;
 	}
-	
+
+	@Override
+	protected TetraEvent.Results onCallSolution(ITetraNode<SequenceNode> node, TetraEvent<SequenceNode> event) {
+		logger.info(node.getId() + ": " + event.getTransaction().getState().toString());
+		TetraEvent.Results result = TetraEvent.Results.COMPLETE;
+		return result;
+	}	
+
 	@Override
 	protected TetraEvent.Results onTransactionUpdateRequest(TetraEvent<SequenceNode> event) {
 		logger.info(event.getTransaction().getState().toString());

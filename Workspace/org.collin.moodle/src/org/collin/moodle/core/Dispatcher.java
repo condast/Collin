@@ -1,6 +1,5 @@
 package org.collin.moodle.core;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.HashMap;
@@ -71,24 +70,8 @@ public class Dispatcher {
 		super();
 		progress = new HashMap<>();
 		this.modules = new HashMap<>();
-		CollinBuilder<SequenceNode> builder;
-		try {
-			node = readModules();
-			SequenceQuery query = new SequenceQuery(node);
-			
-			builder = new CollinBuilder<SequenceNode>( getClass() );
-			Compass<SequenceNode>[] compasses = (Compass<SequenceNode>[]) builder.build();	
-			Compass<SequenceNode> compass = compasses[0];
-			implementations = new HashMap<>();
-			SequenceNode actor = query.findCollin(Actors.STUDENT.toString());
-			implementations.put( Compass.Tetras.CONSUMER, new Student( actor, compass.getTetra(Tetras.CONSUMER) ));
-			actor = query.findCollin(Actors.COACH.toString());
-			if( actor == null)
-				actor = new SequenceNode( Nodes.MODEL, Actors.COACH.name(), Actors.COACH.toString(), Actors.COACH.toString(), 0, 900 );
-			implementations.put( Compass.Tetras.COACH, new Coach( actor, compass.getTetra( Tetras.COACH ) ));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		implementations = new HashMap<>();
+		node = readModules();
 	}
 
 	public static Dispatcher getInstance() {
@@ -194,11 +177,22 @@ public class Dispatcher {
 		return ( value == null)?0: value;
 	}
 
-	private static SequenceNode readModules() {
+	private SequenceNode readModules() {
 		SequenceNode node = null;
 		try {
 			ModuleBuilder builder = new ModuleBuilder( Dispatcher.class );
 			node = builder.build();
+			SequenceQuery query = new SequenceQuery(node);
+			
+			CollinBuilder<SequenceNode> cbuilder = new CollinBuilder<SequenceNode>( getClass() );
+			Compass<SequenceNode>[] compasses = (Compass<SequenceNode>[]) cbuilder.build();	
+			Compass<SequenceNode> compass = compasses[0];
+			SequenceNode actor = query.findCollin(Actors.STUDENT.toString());
+			implementations.put( Compass.Tetras.CONSUMER, new Student( actor, compass.getTetra(Tetras.CONSUMER) ));
+			actor = query.findCollin(Actors.COACH.toString());
+			if( actor == null)
+				actor = new SequenceNode( Nodes.MODEL, Actors.COACH.name(), Actors.COACH.toString(), Actors.COACH.toString(), 0, 900 );
+			implementations.put( Compass.Tetras.COACH, new Coach( actor, compass.getTetra( Tetras.COACH ) ));
 		}
 		catch( Exception ex ) {
 			ex.printStackTrace();

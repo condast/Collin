@@ -9,9 +9,9 @@ public class TetraEvent<D extends Object> extends EventObject {
 	private static final long serialVersionUID = 1L;
 
 	public enum Results{
-		COMPLETE(0),// Default; assume that the event is finished and does not need to be propagated  
-		CONTINUE(1),// propagate the event without constraints
-		FAIL(2), // Handling of the event failed; inform the function and other connected members
+		CONTINUE(0),// Default; propagate the event without constraints
+		COMPLETE(1),// Assume that the event is finished and does not need to be propagated  
+		FAIL(2),    // Handling of the event failed; inform the function and other connected members
 		SUCCESS(3); // Handling succeeded; inform the solution node and other connected members 
 		
 		private int index;
@@ -34,7 +34,7 @@ public class TetraEvent<D extends Object> extends EventObject {
 		}
 	}
 	
-	private Results state;
+	private Results result;
 	
 	private TetraTransaction<D> transaction;
 			
@@ -46,14 +46,14 @@ public class TetraEvent<D extends Object> extends EventObject {
 		this( source, event.getResult(), event.getTransaction());
 	}
 
-	public TetraEvent( Object source, Results state, TetraTransaction<D> transaction ) {
+	public TetraEvent( Object source, Results result, TetraTransaction<D> transaction ) {
 		super(source);
-		this.state = state;
+		this.result = result;
 		this.transaction = transaction;
 	}
 	
 	public Results getResult() {
-		return state;
+		return result;
 	}
 
 	public TetraTransaction<D> getTransaction() {

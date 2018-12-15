@@ -103,6 +103,8 @@ public class TetraTransaction<D extends Object> extends EventObject {
 	
 	/**
 	 * Update the transaction. Returns true if the transaction was successfully updated,
+	 * Every listener of the transaction is one of the tetra's in the compass, and only one
+	 * should be able to give a result other than CONTINUE at any given time
 	 * and the next node can be notified. 
 	 * @param source
 	 * @param event
@@ -113,8 +115,8 @@ public class TetraTransaction<D extends Object> extends EventObject {
 		addHistory( source );
 		for( ITransactionListener<D> listener: this.listeners ) {
 			Results check = listener.transactionUpdateRequest( source, event);
-			if( check.getIndex() > result.getIndex())
-				result = check;
+			if( !Results.CONTINUE.equals(check))
+				return check;
 		}
 		return result;
 	}

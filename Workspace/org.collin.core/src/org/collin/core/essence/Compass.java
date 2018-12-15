@@ -141,41 +141,41 @@ public class Compass<D extends Object> extends AbstractShape<D>{
 			}
 			break;
 		case COACH:
-			other = tetras.get(Tetras.PRODUCER);
+			other = tetras.get(Tetras.CONSUMER);
 			if( other != null ) {
 				connectors.connect(goal, other.getNode( Nodes.TASK));
 			}
-			other = tetras.get(Tetras.CONSUMER);
+			other = tetras.get(Tetras.PRODUCER);
 			if( other != null ) {
 				connectors.connect(task, other.getNode( Nodes.GOAL));
 			}
 			break;
 		case PRODUCER:
-			other = tetras.get(Tetras.PRODUCT);
+			other = tetras.get(Tetras.COACH);
 			if( other != null ) {
 				connectors.connect(goal, other.getNode( Nodes.TASK));
 			}
-			other = tetras.get(Tetras.COACH);
+			other = tetras.get(Tetras.PRODUCT);
 			if( other != null ) {
 				connectors.connect(task, other.getNode( Nodes.GOAL));
 			}
 			break;
 		case PRODUCT:
-			other = tetras.get(Tetras.PROCESS );
+			other = tetras.get(Tetras.PRODUCER );
 			if( other != null ) {
 				connectors.connect(goal, other.getNode( Nodes.TASK));
 			}
-			other = tetras.get(Tetras.PRODUCER);
+			other = tetras.get(Tetras.PROCESS);
 			if( other != null ) {
 				connectors.connect(task, other.getNode( Nodes.GOAL));
 			}
 			break;			
 		case PROCESS:
-			other = tetras.get(Tetras.CONSUMER );
+			other = tetras.get(Tetras.PRODUCT );
 			if( other != null ) {
 				connectors.connect(goal, other.getNode( Nodes.TASK));
 			}
-			other = tetras.get(Tetras.PRODUCT);
+			other = tetras.get(Tetras.CONSUMER);
 			if( other != null ) {
 				connectors.connect(task, other.getNode( Nodes.GOAL));
 			}

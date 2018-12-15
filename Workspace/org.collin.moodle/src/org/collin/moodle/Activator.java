@@ -1,5 +1,13 @@
 package org.collin.moodle;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.URIUtil;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -27,4 +35,9 @@ public class Activator implements BundleActivator {
 		Activator.context = null;
 	}
 
+	public static File getFileResource( String path ) throws IOException, URISyntaxException {
+		URL url = FileLocator.find(context.getBundle(), new Path(path), null);
+		url = FileLocator.toFileURL(url);
+		return URIUtil.toFile(URIUtil.toURI(url));
+	}
 }

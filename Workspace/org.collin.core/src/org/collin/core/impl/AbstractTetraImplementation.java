@@ -34,14 +34,33 @@ public abstract class AbstractTetraImplementation<T extends Object, D extends ID
 	
 		@Override
 		public TetraEvent.Results transactionUpdateRequest(ICollINVertex<D> source, TetraEvent<D> event) {
-			if( !tetra.isChild(source))
-				return Results.COMPLETE;
+			if( source instanceof ITetraNode ) {
+				ITetraNode<D> tnode = (ITetraNode<D>) source;
+				if( !tetra.equals(tnode.getParent()))
+					return Results.CONTINUE;
+			}
+			if( TetraEvent.Results.COMPLETE.equals( event.getResult()))
+				return event.getResult();
 			
 			TetraEvent.Results result = TetraEvent.Results.COMPLETE;
 			if( source instanceof ITetraNode ) {
 				ITetraNode<D> node = (ITetraNode<D>) source;
-				if( node.getParent().equals(tetra))
-					result = onNodeChange(node, event );
+				switch( node.getType() ) {
+				case FUNCTION:
+					result = onCallFunction(node, event);
+					break;
+				case GOAL:
+					result = onCallGoal(node, event);
+					break;
+				case TASK:
+					result = onCallTask(node, event);
+					break;
+				case SOLUTION:
+					result = onCallFunction(node, event);
+					break;
+				default:
+					break;
+				}
 				return result;
 			}
 			return onTransactionUpdateRequest(event );
@@ -82,7 +101,10 @@ public abstract class AbstractTetraImplementation<T extends Object, D extends ID
 		return factory;
 	}
 
-	protected abstract TetraEvent.Results onNodeChange( ITetraNode<D> solution, TetraEvent<D> event );
+	protected abstract TetraEvent.Results onCallFunction( ITetraNode<D> node, TetraEvent<D> event );
+	protected abstract TetraEvent.Results onCallGoal( ITetraNode<D> node, TetraEvent<D> event );
+	protected abstract TetraEvent.Results onCallTask( ITetraNode<D> node, TetraEvent<D> event );
+	protected abstract TetraEvent.Results onCallSolution( ITetraNode<D> node, TetraEvent<D> event );
 
 	protected abstract TetraEvent.Results onTransactionUpdateRequest( TetraEvent<D> event );
 

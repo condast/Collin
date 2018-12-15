@@ -1,6 +1,5 @@
 package org.collin.core.task;
 
-import java.io.File;
 import java.util.Date;
 
 import org.collin.core.def.IDataObject;
