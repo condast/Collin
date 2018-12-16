@@ -2,6 +2,7 @@ package org.collin.moodle.rest;
 
 import java.util.Random;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -94,6 +95,7 @@ public class RESTResource{
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/advice")
 	public Response getAdvice( @QueryParam("id") long id, @QueryParam("token") String token, @QueryParam("module-id") long moduleId, @QueryParam("activity-id") long activityId, @QueryParam("progress") double progress ) {
 		try{

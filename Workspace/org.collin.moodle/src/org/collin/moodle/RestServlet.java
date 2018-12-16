@@ -3,6 +3,7 @@ package org.collin.moodle;
 import javax.servlet.Servlet;
 import javax.ws.rs.ApplicationPath;
 
+import org.collin.moodle.rest.CorsFilter;
 import org.collin.moodle.rest.RESTResource;
 import org.condast.commons.messaging.http.AbstractServletWrapper;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -29,6 +30,7 @@ public class RestServlet extends AbstractServletWrapper {
 		//Loading classes is the safest way...
 		//in equinox the scanning of packages may not work
 		private RestApplication() {
+			register( CorsFilter.class );
 			register( RESTResource.class );
 		}
 	}
