@@ -1,5 +1,7 @@
 package org.collin.moodle.rest;
 
+import java.util.Random;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -102,7 +104,9 @@ public class RESTResource{
 			if( !response )
 				return ( moduleId < 0 )? Response.noContent().build(): Response.status( Status.UNAUTHORIZED ).build();
 			SequenceNode result = dispatcher.getAdvice( moduleId, activityId, progress);
-			return (result == null)? Response.noContent().build(): Response.ok( result ).build();
+			String[] advice = result.getData();
+			Random random = new Random(advice.length);
+			return (result == null)? Response.noContent().build(): Response.ok( advice[random.nextInt()]).build();
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();

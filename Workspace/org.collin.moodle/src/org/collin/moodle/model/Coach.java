@@ -84,7 +84,7 @@ public class Coach extends AbstractTetraImplementation<String, SequenceNode>{
 					e.printStackTrace();
 				}
 				this.completed = true;
-				result = Results.COMPLETE;//the coach has succesfully given an advice
+				result = Results.COMPLETE;//the coach has successfully given an advice
 				break;
 			case COMPLETE:
 				break;

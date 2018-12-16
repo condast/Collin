@@ -2,6 +2,7 @@ package org.collin.core.essence;
 
 import java.util.EventObject;
 
+import org.collin.core.graph.IEdge;
 import org.collin.core.transaction.TetraTransaction;
 import org.condast.commons.strings.StringStyler;
 
@@ -58,5 +59,18 @@ public class TetraEvent<D extends Object> extends EventObject {
 
 	public TetraTransaction<D> getTransaction() {
 		return transaction;
+	}
+	
+	/**
+	 * Returns true if the given edge can be processed 
+	 * @param edge
+	 * @return
+	 */
+	public boolean canProcess( IEdge<D> edge ){
+		if( transaction.hasBeenProcessed(edge))
+			return false;
+		transaction.addHistory(edge);
+		return true;
+
 	}
 }

@@ -73,8 +73,10 @@ public abstract class AbstractEdge<D extends Object> extends AbstractCollINVerte
 	
 	@Override
 	public int hashCode() {	
-		Long total = new Long( this.getOrigin().hashCode()<<32 + this.destination.hashCode());
-		return total.hashCode();
+		long total = this.getOrigin().hashCode();
+		total<<=32;
+		total += this.destination.hashCode();
+		return new Long( total ).hashCode();
 	}
 
 	@SuppressWarnings("unchecked")

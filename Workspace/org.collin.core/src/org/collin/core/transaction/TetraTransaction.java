@@ -10,6 +10,7 @@ import java.util.HashSet;
 import org.collin.core.essence.TetraEvent;
 import org.collin.core.essence.TetraEvent.Results;
 import org.collin.core.graph.ICollINVertex;
+import org.collin.core.graph.IEdge;
 import org.condast.commons.strings.StringStyler;
 
 public class TetraTransaction<D extends Object> extends EventObject {
@@ -34,7 +35,7 @@ public class TetraTransaction<D extends Object> extends EventObject {
 	
 	private Date create;
 	
-	private Collection<ICollINVertex<D>> history;
+	private Collection<IEdge<D>> history;
 	
 	private Collection<ITransactionListener<D>> listeners;
 
@@ -72,7 +73,7 @@ public class TetraTransaction<D extends Object> extends EventObject {
 		return ( this.progress >= 100 );
 	}
 
-	public boolean addHistory( ICollINVertex<D> node ) {
+	public boolean addHistory( IEdge<D> node ) {
 		if( this.history.contains(node))
 			return false;
 		return this.history.add(node);
@@ -83,7 +84,7 @@ public class TetraTransaction<D extends Object> extends EventObject {
 		return this.history.toArray( new ICollINVertex[ this.history.size()]);
 	}
 	
-	protected boolean hasBeenProcessed( ICollINVertex<D> node ) {
+	public boolean hasBeenProcessed( IEdge<D> node ) {
 		if( node == null )
 			return true;
 		return this.history.contains(node);
@@ -111,12 +112,11 @@ public class TetraTransaction<D extends Object> extends EventObject {
 	 * @return
 	 */
 	public Results updateTransaction( ICollINVertex<D> source, TetraEvent<D> event ) {
-		Results result = hasBeenProcessed(source)? Results.COMPLETE: Results.CONTINUE;
-		addHistory( source );
+		Results result = Results.COMPLETE;
 		for( ITransactionListener<D> listener: this.listeners ) {
-			Results check = listener.transactionUpdateRequest( source, event);
-			if( !Results.CONTINUE.equals(check))
-				return check;
+			result = listener.transactionUpdateRequest( source, event);
+			if( !Results.CONTINUE.equals(result))
+				return result;
 		}
 		return result;
 	}

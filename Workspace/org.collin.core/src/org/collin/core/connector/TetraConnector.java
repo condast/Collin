@@ -105,7 +105,7 @@ public class TetraConnector<D extends Object> {
 		private class Connector extends DefaultOperator implements IOperator<D>{
 
 			public Connector(IEdge<D> edge) {
-				super((ITetraNode<D>) edge.getOrigin(), (ITetraNode<D>)edge.getDestination());
+				super( edge );
 			}
 
 
@@ -114,18 +114,22 @@ public class TetraConnector<D extends Object> {
 			 */
 			@Override
 			public boolean isEqual( ITetraNode<D> node1, ITetraNode<D> node2 ) {
+				ITetraNode<D> origin = (ITetraNode<D>) edge.getOrigin();
+				ITetraNode<D> destination = (ITetraNode<D>) edge.getDestination();
 				boolean result = origin.equals(node1) && destination.equals( node2 );
 				return result? result: origin.equals(node2) && destination.equals( node1 );
 			}
 
 			@Override
 			public boolean select( ITetraNode<D> source, TetraEvent<D> event) {
-				ITetraNode<D> node = getOther(source);
-				logger.info("Event from: " + source + " to " + node);
-				if( node != null ){
-					ITetra<D> tetra = (ITetra<D>) node.getParent();
+				ITetraNode<D> destination = getOther(source);
+				logger.info("Event from: " + source + " to " + destination);
+				if( destination != null ){
+					if( !event.canProcess(edge))
+						return false;
+					ITetra<D> tetra = (ITetra<D>) destination.getParent();
 					if(tetra.select( source.getType(), event))
-						notifyConnectorListeners(new ConnectorEvent<D>( owner, source, node ));
+						notifyConnectorListeners(new ConnectorEvent<D>( owner, source, destination ));
 				}else {
 					logger.severe("NULL event: " + source.getId());
 				}
