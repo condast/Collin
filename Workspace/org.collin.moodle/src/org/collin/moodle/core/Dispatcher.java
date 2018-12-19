@@ -21,6 +21,8 @@ import org.condast.commons.io.IOUtils;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 
+import nl.martijndwars.webpush.core.PushManager;
+
 
 public class Dispatcher {
 
@@ -52,10 +54,9 @@ public class Dispatcher {
 		@Override
 		public String toString() {
 			return StringStyler.xmlStyleString(super.toString());
-		}
-
-		
+		}	
 	}
+	
 	private static Dispatcher dispatcher = new Dispatcher();
 	
 	private Map<Long, Integer> progress;	
@@ -66,16 +67,23 @@ public class Dispatcher {
 	
 	private SequenceNode node;
 
+	private PushManager pushMananger;
+	
 	private Dispatcher() {
 		super();
 		progress = new HashMap<>();
 		this.modules = new HashMap<>();
 		implementations = new HashMap<>();
+		pushMananger = new PushManager();
 		node = readModules();
 	}
 
 	public static Dispatcher getInstance() {
 		return dispatcher;
+	}
+
+	public PushManager getPushMananger() {
+		return pushMananger;
 	}
 
 	public long addModule( String path ) {

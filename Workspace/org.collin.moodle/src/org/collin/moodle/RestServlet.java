@@ -3,9 +3,10 @@ package org.collin.moodle;
 import javax.servlet.Servlet;
 import javax.ws.rs.ApplicationPath;
 
-import org.collin.moodle.rest.CorsFilter;
+import org.collin.moodle.rest.PushResource;
 import org.collin.moodle.rest.RESTResource;
 import org.condast.commons.messaging.http.AbstractServletWrapper;
+import org.condast.commons.messaging.rest.CorsFilter;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
@@ -32,6 +33,7 @@ public class RestServlet extends AbstractServletWrapper {
 		private RestApplication() {
 			register( CorsFilter.class );
 			register( RESTResource.class );
+			register( PushResource.class );
 		}
 	}
 }
