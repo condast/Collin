@@ -16,7 +16,7 @@ import org.collin.moodle.core.Dispatcher;
 import org.condast.commons.messaging.push.ISubscription;
 import org.condast.commons.messaging.rest.RESTUtils;
 import org.condast.commons.strings.StringUtils;
-
+import org.condast.js.commons.push.PushOptionsBuilder;
 import nl.martijndwars.webpush.core.PushManager;
 
 //Sets the path to alias + path
@@ -113,9 +113,14 @@ public class RESTResource{
 			PushManager pm = dispatcher.getPushMananger();
 			ISubscription[] subscriptions = pm.getSubscriptions();
 			logger.info( "Subscriptions found: " + subscriptions.length );
-			String result;
+			
+			PushOptionsBuilder builder = new PushOptionsBuilder();
+			builder.addOption( PushOptionsBuilder.Options.TITLE, "Moodle Notification");
+			builder.addOption( PushOptionsBuilder.Options.BODY, "This is Moodle calling!");
+			builder.addOption( PushOptionsBuilder.Options.ICON, "/moodleresources/images/gino.png");
+			
 			for( ISubscription subscription: subscriptions ) {
-				logger.info( PushManager.sendPushMessage( S_PUBLIC_KEY, S_PRIVATE_KEY, subscription, "Hello".getBytes()));				
+				logger.info( PushManager.sendPushMessage( S_PUBLIC_KEY, S_PRIVATE_KEY, subscription, builder.createPayLoad()));				
 			}
 			return Response.ok().build();
 			//SequenceNode result = dispatcher.getAdvice( moduleId, activityId, progress);

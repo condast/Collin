@@ -16,6 +16,7 @@ import org.condast.commons.messaging.http.IHttpClientListener;
 import org.condast.commons.messaging.http.ResponseEvent;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
+import org.condast.js.commons.push.PushRegistrationComposite;
 import org.eclipse.nebula.widgets.richtext.RichTextEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Link;
@@ -32,7 +33,11 @@ public class TestComposite extends Composite {
 	private static final long serialVersionUID = 1L;
 
 	public static final String S_CONTEXT_PATH = "http://localhost:10080/moodle/module/";
-	
+	public static final String S_PUSH_CONTEXT_PATH = "http://localhost:10080/moodle/push/";
+
+	public static final String S_SERVICE_WORKER = "http://localhost:10080/moodleresources/js/collin-service.js/";
+	public static final String S_SUBSCRIPTION_SERVER =  S_PUSH_CONTEXT_PATH;
+
 	private Text textName;
 	private Text textPassword;
 
@@ -47,12 +52,18 @@ public class TestComposite extends Composite {
 		LOGIN,
 		LOGOUT,
 		UNREGISTER,
+		SUBSCRIBE,
 		START,
 		LESSON,
 		ADVICE;
 
 		public String getPath(){
-			return S_CONTEXT_PATH + this.name().toLowerCase();
+			switch( this ) {
+			case SUBSCRIBE:
+				return S_PUSH_CONTEXT_PATH + this.name().toLowerCase();
+			default:
+				return S_CONTEXT_PATH + this.name().toLowerCase();
+			}
 		}
 
 		@Override
@@ -112,6 +123,7 @@ public class TestComposite extends Composite {
 		}
 	};
 	
+	private PushRegistrationComposite pushComposite;
 	private Text text;
 	private Button btnSelectButton;
 	private Button btnGo;
@@ -139,16 +151,21 @@ public class TestComposite extends Composite {
 		textName = new Text(this, SWT.BORDER);
 		textName.setText("TestNaam");
 		textName.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-		new Label(this, SWT.NONE);
 		
-		Label lblNewLabel = new Label(this, SWT.NONE);
-		lblNewLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblNewLabel.setText("Password");
+		pushComposite = new PushRegistrationComposite(this, SWT.BORDER);
+		pushComposite.setLayoutData(new GridData( SWT.FILL, SWT.FILL, true, false, 1, 2));
+		pushComposite.setServiceWorker(S_SERVICE_WORKER);
+		pushComposite.setServerRegistration(S_SUBSCRIPTION_SERVER);
+		//pushComposite.setInput(PushRegistrationComposite.S_RESOURCE);
+		pushComposite.setInput("/moodleresources/push.html");
+				
+		Label lblPasswordLabel = new Label(this, SWT.NONE);
+		lblPasswordLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblPasswordLabel.setText("Password");
 		
 		textPassword = new Text(this, SWT.BORDER);
 		textPassword.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		textPassword.setText("TestPassword");
-		new Label(this, SWT.NONE);
 		
 		Link loginLink = new Link(this, SWT.NONE);
 		loginLink.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
@@ -229,6 +246,7 @@ public class TestComposite extends Composite {
 					params.put( Parameters.TOKEN.toString(), "12");
 					params.put(Parameters.PATH.toString(), modulePath );
 					client.sendGet(Requests.START, params);
+					client.sendPost(Requests.SUBSCRIBE, params, "hello");
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
@@ -368,13 +386,18 @@ public class TestComposite extends Composite {
 	private class WebClient extends AbstractHttpRequest<Requests>{
 
 		public WebClient( String context ) {
-			super();
+			super(context );
 		}
 
 		public void sendGet( Requests request, Map<String, String> parameters ) throws Exception {
 			super.sendGet(request.getPath(), parameters);
 		}
 		
+		@Override
+		protected void sendPost(Requests request, Map<String, String> parameters, String data) throws Exception {
+			super.sendPost(request.getPath(), parameters, data);
+		}
+
 		@Override
 		protected String onHandleResponse(URL url, int responsecode, BufferedReader reader) throws IOException {
 			try{
