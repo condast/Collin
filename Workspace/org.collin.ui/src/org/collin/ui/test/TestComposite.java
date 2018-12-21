@@ -328,7 +328,7 @@ public class TestComposite extends Composite {
 					int moduleId = spinner_module.getSelection();
 					int activityId = spinner_activity.getSelection();
 					int progress = spinner_progress.getSelection();
-					params.put( Parameters.ID.toString(), String.valueOf( moduleId ));
+					params.put( Parameters.ID.toString(), "12");
 					params.put( Parameters.TOKEN.toString(), "12");
 					params.put( Parameters.MODULE_ID.toString(), String.valueOf( moduleId ));
 					params.put( Parameters.ACTIVITY_ID.toString(), String.valueOf( activityId ));
@@ -358,7 +358,7 @@ public class TestComposite extends Composite {
 				try {
 					int moduleId = spinner_module.getSelection();
 					int activityId = spinner_activity.getSelection();
-					params.put( Parameters.ID.toString(), "1");
+					params.put( Parameters.ID.toString(), "12");
 					params.put( Parameters.TOKEN.toString(), "12");
 					params.put(Parameters.MODULE_ID.toString(), String.valueOf(moduleId));
 					params.put(Parameters.ACTIVITY_ID.toString(), String.valueOf(activityId));

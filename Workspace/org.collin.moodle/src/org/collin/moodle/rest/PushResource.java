@@ -39,7 +39,7 @@ public class PushResource{
 	@Path("/subscribe")
 	public Response subscribe( @QueryParam("id") long id, @QueryParam("token") String token, String subscription ) {
 		try{
-			logger.info( subscription );
+			logger.info( "Subscription request for " + id + ": " + subscription );
 			PushManager pm = dispatcher.getPushMananger();
 			ISubscription sub = pm.subscribe(id, token, subscription);
 			return ( sub == null )? Response.status( Status.BAD_REQUEST).build(): 

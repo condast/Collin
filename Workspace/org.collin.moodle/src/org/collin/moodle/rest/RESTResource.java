@@ -1,5 +1,8 @@
 package org.collin.moodle.rest;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
@@ -11,7 +14,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.collin.core.advice.IAdvice;
 import org.collin.core.impl.SequenceNode;
+import org.collin.moodle.LanguagePack;
 import org.collin.moodle.core.Dispatcher;
 import org.condast.commons.messaging.push.ISubscription;
 import org.condast.commons.messaging.rest.RESTUtils;
@@ -110,23 +115,29 @@ public class RESTResource{
 			if( !response ) {
 				return ( moduleId < 0 )? Response.noContent().build(): Response.status( Status.UNAUTHORIZED ).build();
 			}
+			logger.info( "Subscriptions found: " + id );
+
 			PushManager pm = dispatcher.getPushMananger();
-			ISubscription[] subscriptions = pm.getSubscriptions();
-			logger.info( "Subscriptions found: " + subscriptions.length );
+			ISubscription subscription = pm.getSubscription( id );
+
+			SequenceNode result = dispatcher.getAdvice( moduleId, activityId, progress);
+			if( result == null )
+				return Response.ok().build();
+			List<IAdvice> data = new ArrayList<>( result.getData() );
+			if( data.isEmpty())
+				return Response.ok().build();
+			
+			Random random = new Random();
+			IAdvice advice = data.get( random.nextInt(data.size()));
+			LanguagePack.Fields field = LanguagePack.Fields.valueOf(advice.getAdvice().trim());
 			
 			PushOptionsBuilder builder = new PushOptionsBuilder();
 			builder.addOption( PushOptionsBuilder.Options.TITLE, "Moodle Notification");
-			builder.addOption( PushOptionsBuilder.Options.BODY, "This is Moodle calling!");
+			builder.addOption( PushOptionsBuilder.Options.BODY, field.getMessage());
 			builder.addOption( PushOptionsBuilder.Options.ICON, "/moodleresources/images/gino.png");
 			
-			for( ISubscription subscription: subscriptions ) {
-				logger.info( PushManager.sendPushMessage( S_PUBLIC_KEY, S_PRIVATE_KEY, subscription, builder.createPayLoad()));				
-			}
+			logger.info( PushManager.sendPushMessage( S_PUBLIC_KEY, S_PRIVATE_KEY, subscription, builder.createPayLoad()));				
 			return Response.ok().build();
-			//SequenceNode result = dispatcher.getAdvice( moduleId, activityId, progress);
-			//String[] advice = result.getData();
-			//Random random = new Random(advice.length);
-			//return (result == null)? Response.noContent().build(): Response.ok( advice[random.nextInt()]).build();
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();

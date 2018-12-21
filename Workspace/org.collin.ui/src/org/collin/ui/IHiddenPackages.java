@@ -16,6 +16,8 @@ package org.collin.ui;
 //Indirect references
 import org.condast.commons.messaging.http.*;
 import org.eclipse.jface.window.*;
+import org.condast.js.commons.push.*;
+import org.eclipse.core.commands.*;
 
 @SuppressWarnings("unused")
 public interface IHiddenPackages {

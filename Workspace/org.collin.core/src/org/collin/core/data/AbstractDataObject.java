@@ -18,10 +18,9 @@ public abstract class AbstractDataObject<D extends Object> implements IDataObjec
 		return this.data.add(data);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public D[] getData() {
-		return (D[]) data.toArray();
+	public Collection<D> getData() {
+		return data;
 	}
 
 	

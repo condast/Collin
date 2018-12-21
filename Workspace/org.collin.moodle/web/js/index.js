@@ -1,12 +1,5 @@
-const result = go();
-
-function go(){
-	window.addEventListener('load', () => {
-		registerServiceWorker();
-	});
-}
-
-function registerServiceWorker() { 
+function registerServiceWorker(userid ) { 
+	console.log('userid: ' + userid );
 	if (!('serviceWorker' in navigator)) {
 		console.log("Not in navigator");
 		return false;
@@ -17,7 +10,7 @@ function registerServiceWorker() {
 		return false;
 	}
 
-	return navigator.serviceWorker.register('/moodleresources/js/collin-service.js') .then( 
+	return navigator.serviceWorker.register('http:www.condast.com:8080//moodleresources/js/collin-service.js') .then( 
 			function( registration) { 
 				console.log(' Service worker successfully registered.'); 
 				askPermission().then(() => {
@@ -32,8 +25,7 @@ function registerServiceWorker() {
 				}).then((pushSubscription) => {
 					console.log(' Subscription successful'); 
 					// we got the pushSubscription object
-					callServer( pushSubscription );
-					setButton( pushSubscription);
+					callServer( userid, pushSubscription );
 				}).catch( function( err) { 
 					console.error(' Unable to register service worker.', err);
 				});
@@ -58,14 +50,14 @@ function askPermission() {
 	}); 
 }
 
-function callServer(subscription) {
+function callServer(userid, subscription) {
 	// Get public key and user auth from the subscription object
     var key = subscription.getKey ? subscription.getKey('p256dh') : '';
     var auth = subscription.getKey ? subscription.getKey('auth') : '';
 
 	console.log("fetch from server");
 	//Send the subscription details to the server using the Fetch API.
-	fetch('http://localhost:10080/moodle/push/subscribe?id=1&token=12', {
+	fetch('http://localhost:10080/moodle/push/subscribe?id='+ userid + '&token=12', {
 		method: 'post',
 		headers: {
 			'Content-type': 'application/json'

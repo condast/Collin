@@ -15,6 +15,7 @@ import org.collin.core.transaction.TetraTransaction;
 
 public abstract class AbstractTask<T extends Object, D extends IDataObject<T>> implements ICollINDelegate<T,D>{
 
+	public static final int DEFAULT_TIME = 900;//sec
 	private IDataObject<T> sequence;
 
 	private Date start;
@@ -38,6 +39,8 @@ public abstract class AbstractTask<T extends Object, D extends IDataObject<T>> i
 
 	protected Date getEndTime() {
 		int time = (int) sequence.getTotalTime();
+		if( time < 0 )
+			time = DEFAULT_TIME;
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(start);
 		calendar.add(Calendar.SECOND, time);
@@ -83,7 +86,7 @@ public abstract class AbstractTask<T extends Object, D extends IDataObject<T>> i
 		default:
 			break;
 		}
-		return result;
+		return Results.FAIL;//result;
 	}
 	
 	protected Results calculate( TetraTransaction<D> transaction) {

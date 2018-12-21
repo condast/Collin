@@ -2,6 +2,7 @@ package org.collin.moodle.model;
 
 import java.util.logging.Logger;
 
+import org.collin.core.advice.IAdvice;
 import org.collin.core.def.ICollINDelegate;
 import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.ITetra;
@@ -12,7 +13,7 @@ import org.collin.core.impl.SequenceDelegateFactory;
 import org.collin.core.impl.SequenceNode;
 import org.collin.core.transaction.TetraTransaction;
 
-public class Student extends AbstractTetraImplementation<String, SequenceNode>{
+public class Student extends AbstractTetraImplementation<IAdvice, SequenceNode>{
 
 	private Logger logger = Logger.getLogger( this.getClass().getName());
 
@@ -39,7 +40,7 @@ public class Student extends AbstractTetraImplementation<String, SequenceNode>{
 		logger.info(node.getId() + ": " + event.getTransaction().getState().toString());
 		TetraEvent.Results result = TetraEvent.Results.CONTINUE;
 		TetraTransaction<SequenceNode> transaction = event.getTransaction();		
-		ICollINDelegate<String, SequenceNode> delegate = getDelegate( node );
+		ICollINDelegate<IAdvice, SequenceNode> delegate = getDelegate( node );
 		result = (delegate == null)? result: delegate.perform(node, event );
 		switch( transaction.getState()) {
 		case START:

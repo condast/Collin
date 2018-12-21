@@ -1,0 +1,6 @@
+gino; fail; FAIL1; 60
+gino; fail; FAIL2; 60;
+gino; fail; FAIL3; 60;
+gino; success; SUCCESS1; 60;
+gino; success; SUCCESS2; 60;
+gino; success; SUCCESS3; 60;

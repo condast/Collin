@@ -22,6 +22,6 @@ public class TimedTask<T extends Object, D extends IDataObject<T>> extends Abstr
 
 	@Override
 	protected Results onComplete(ITetraNode<D> node, TetraEvent<D> event) {
-		return calculate( event.getTransaction());			
+		return Results.FAIL;//calculate( event.getTransaction());			
 	}
 }

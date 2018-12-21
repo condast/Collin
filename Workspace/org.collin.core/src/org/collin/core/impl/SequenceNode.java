@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.collin.core.advice.IAdvice;
 import org.collin.core.data.AbstractDataObject;
 
 import org.condast.commons.Utils;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 
-public class SequenceNode extends AbstractDataObject<String>{
+public class SequenceNode extends AbstractDataObject<IAdvice>{
 
 	public enum Nodes{
 		COURSE,

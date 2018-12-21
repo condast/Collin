@@ -1,12 +1,10 @@
 package org.collin.moodle.model;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Random;
 import java.util.logging.Logger;
 
+import org.collin.core.advice.AdviceFactory;
+import org.collin.core.advice.IAdvice;
 import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.ITetra;
 import org.collin.core.essence.TetraEvent;
@@ -16,11 +14,8 @@ import org.collin.core.impl.SequenceDelegateFactory;
 import org.collin.core.impl.SequenceNode;
 import org.collin.core.impl.SequenceQuery;
 import org.collin.core.transaction.TetraTransaction;
-import org.collin.moodle.Activator;
-import org.condast.commons.Utils;
-import org.condast.commons.strings.StringUtils;
 
-public class Coach extends AbstractTetraImplementation<String, SequenceNode>{
+public class Coach extends AbstractTetraImplementation<IAdvice, SequenceNode>{
 
 	private Logger logger = Logger.getLogger( this.getClass().getName());
 
@@ -53,36 +48,18 @@ public class Coach extends AbstractTetraImplementation<String, SequenceNode>{
 		case START:
 			break;
 		case PROGRESS:
-			FileFilter filter = new FileFilter() {
-
-				@Override
-				public boolean accept(File pathname) {
-					String name= pathname.getName();
-					return name.startsWith( event.getResult().name().toLowerCase());
-				}		
-			};
-
 			switch( event.getResult()) {
 			case SUCCESS:
 			case FAIL:
 				SequenceQuery query = new SequenceQuery( super.getData());
 				SequenceNode sn = query.find(node.getType());
-				String url = sn.getUri();
-				File file = null;
-				try {
-					file = Activator.getFileResource(url);
-					if( file.isDirectory()) {
-						Random random = new Random();
-						File[] files =  file.listFiles( filter );
-						if( Utils.assertNull(files))
-							return result;
-						int choice = (int)random.nextInt(files.length);
-						file = files[ choice ];
-					}
-					event.getTransaction().getData().addDatum( StringUtils.getContent(file));
-				} catch (IOException | URISyntaxException e) {
-					e.printStackTrace();
-				}
+				//String url = sn.getUri();
+				AdviceFactory factory = new AdviceFactory();
+				factory.load( this.getClass(), AdviceFactory.S_DEFAULT_LOCATION);
+				IAdvice[] results = factory.getAdvice( Results.SUCCESS.equals(event.getResult())?IAdvice.AdviceTypes.SUCCESS: IAdvice.AdviceTypes.FAIL);
+				Random random = new Random();
+				int choice = (int)random.nextInt(results.length);
+				event.getTransaction().getData().addDatum( results[choice]);
 				this.completed = true;
 				result = Results.COMPLETE;//the coach has successfully given an advice
 				break;
