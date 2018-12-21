@@ -46,15 +46,17 @@ public class AdviceFactory {
 		private String advice;
 		private int repeat;
 		private IAdvice.AdviceTypes type;
+		private IAdvice.Mood mood;
 
 		public Advice(String[] arr) {
-			this( arr[0], IAdvice.AdviceTypes.valueOf( arr[1].trim().toUpperCase()), arr[2], Integer.parseInt( arr[3].trim() ));
+			this( arr[0], IAdvice.AdviceTypes.valueOf( arr[1].trim().toUpperCase()), IAdvice.Mood.valueOf(arr[2].trim().toUpperCase()), arr[3], Integer.parseInt( arr[4].trim() ));
 		}
 		
-		public Advice(String member, IAdvice.AdviceTypes type, String advice, int repeat) {
+		public Advice(String member, IAdvice.AdviceTypes type, Mood mood, String advice, int repeat) {
 			super();
 			this.member = member;
 			this.type = type;
+			this.mood = mood;
 			this.advice = advice;
 			this.repeat = repeat;
 		}
@@ -89,6 +91,11 @@ public class AdviceFactory {
 		@Override
 		public IAdvice.AdviceTypes getType() {
 			return type;
+		}
+
+		@Override
+		public IAdvice.Mood getMood() {
+			return mood;
 		}
 	}
 }

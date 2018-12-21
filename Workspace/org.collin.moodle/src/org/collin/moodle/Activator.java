@@ -13,6 +13,7 @@ import org.osgi.framework.BundleContext;
 
 public class Activator implements BundleActivator {
 
+	public static final String BUNDLE_ID = "org.collin.moodle";
 	private static BundleContext context;
 
 	public static BundleContext getContext() {

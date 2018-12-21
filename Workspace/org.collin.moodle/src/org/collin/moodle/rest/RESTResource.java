@@ -18,6 +18,7 @@ import org.collin.core.advice.IAdvice;
 import org.collin.core.impl.SequenceNode;
 import org.collin.moodle.LanguagePack;
 import org.collin.moodle.core.Dispatcher;
+import org.collin.moodle.images.TeamImages;
 import org.condast.commons.messaging.push.ISubscription;
 import org.condast.commons.messaging.rest.RESTUtils;
 import org.condast.commons.strings.StringUtils;
@@ -134,7 +135,7 @@ public class RESTResource{
 			PushOptionsBuilder builder = new PushOptionsBuilder();
 			builder.addOption( PushOptionsBuilder.Options.TITLE, "Moodle Notification");
 			builder.addOption( PushOptionsBuilder.Options.BODY, field.getMessage());
-			builder.addOption( PushOptionsBuilder.Options.ICON, "/moodleresources/images/gino.png");
+			builder.addOption( PushOptionsBuilder.Options.ICON, TeamImages.Team.getPath(advice));
 			
 			logger.info( PushManager.sendPushMessage( S_PUBLIC_KEY, S_PRIVATE_KEY, subscription, builder.createPayLoad()));				
 			return Response.ok().build();

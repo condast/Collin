@@ -10,7 +10,7 @@ function registerServiceWorker(userid ) {
 		return false;
 	}
 
-	return navigator.serviceWorker.register('http:www.condast.com:8080//moodleresources/js/collin-service.js') .then( 
+	return navigator.serviceWorker.register('./js/collin-service.js') .then( 
 			function( registration) { 
 				console.log(' Service worker successfully registered.'); 
 				askPermission().then(() => {
