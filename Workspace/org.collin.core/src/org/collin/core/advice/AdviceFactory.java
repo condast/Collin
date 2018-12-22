@@ -34,7 +34,7 @@ public class AdviceFactory {
 		if( type == null )
 			return new Advice[0];
 		Collection<IAdvice> results = new ArrayList<>();
-		for( IAdvice advice: advices ) {
+		for( Advice advice: advices ) {			
 			if( advice.getType().equals( type ))
 				results.add(advice);
 		}
@@ -42,13 +42,19 @@ public class AdviceFactory {
 	}
 	
 	private class Advice implements IAdvice{
+		
+		private long userId;
+		private long moduleId;
+		private long activityId; 
+		private double progress;
+		
 		private String member;
 		private String advice;
 		private int repeat;
 		private IAdvice.AdviceTypes type;
 		private IAdvice.Mood mood;
 
-		public Advice(String[] arr) {
+		public Advice( String[] arr) {
 			this( arr[0], IAdvice.AdviceTypes.valueOf( arr[1].trim().toUpperCase()), IAdvice.Mood.valueOf(arr[2].trim().toUpperCase()), arr[3], Integer.parseInt( arr[4].trim() ));
 		}
 		
@@ -59,6 +65,42 @@ public class AdviceFactory {
 			this.mood = mood;
 			this.advice = advice;
 			this.repeat = repeat;
+		}
+
+		public long getUserId() {
+			return userId;
+		}
+
+		@Override
+		public void setUserId(long userId) {
+			this.userId = userId;
+		}
+
+		public long getModuleId() {
+			return moduleId;
+		}
+
+		@Override
+		public void setModuleId(long moduleId) {
+			this.moduleId = moduleId;
+		}
+
+		public long getActivityId() {
+			return activityId;
+		}
+
+		@Override
+		public void setActivityId(long activityId) {
+			this.activityId = activityId;
+		}
+		
+		public double getProgress() {
+			return progress;
+		}
+
+		@Override
+		public void setProgress(double progress) {
+			this.progress = progress;
 		}
 
 		/* (non-Javadoc)

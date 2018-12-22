@@ -21,10 +21,20 @@ public class LanguagePack extends Language {
 		
 		public String getMessage() {
 			return getInstance().getMessage( this );
-		}
-		
-		
+		}		
 	}
+	
+	public enum Notifications{
+		DONT_CARE,
+		THANKS,
+		SHUT_UP,;
+
+		@Override
+		public String toString() {
+			return getInstance().getString( this);
+		}
+	}
+
 	private static LanguagePack language = new LanguagePack();
 	
 	private LanguagePack() {

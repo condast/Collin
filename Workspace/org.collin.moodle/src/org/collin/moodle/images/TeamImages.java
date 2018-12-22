@@ -25,7 +25,8 @@ public class TeamImages extends AbstractImages {
 		GINO,
 		CHARLES,
 		RUBEN,
-		NELLY;
+		NELLY,
+		PLUSKLAS;
 
 		@Override
 		public String toString() {
@@ -38,16 +39,28 @@ public class TeamImages extends AbstractImages {
 			return str;
 		}
 
+		public static String getPath( Team member ){
+			String str = member.name().toLowerCase() + "/" + ".png";
+			return S_DEFAULT_LOCATION + str;
+		}
+
 		public static String getPath( Team member, IAdvice.Mood mood ){
 			String str = member.name().toLowerCase() + "/" + member.toString() + 
 					"_" + mood.toString() + ".png";
-			return S_DEFAULT_LOCATION + "/" + str;
+			return S_DEFAULT_LOCATION + str;
 		}
 
 		public static String getPath( IAdvice advice ){
 			Team member = Team.valueOf(advice.getMember().toUpperCase());
-			String str = member.name().toLowerCase() + "/" + member.toString() + 
+			String str;
+			switch( member ) {
+			case PLUSKLAS:
+				str = member.name().toLowerCase() + ".png";
+				break;
+			default:
+			str = member.name().toLowerCase() + "/" + member.toString() + 
 					"_" + advice.getMood().toString() + ".png";
+			}
 			return S_DEFAULT_LOCATION + str;
 		}
 

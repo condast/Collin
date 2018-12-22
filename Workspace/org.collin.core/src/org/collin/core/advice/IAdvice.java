@@ -34,4 +34,12 @@ public interface IAdvice {
 
 	IAdvice.Mood getMood();
 
+	void setUserId(long userId);
+
+	void setModuleId(long moduleId);
+
+	void setActivityId(long activityId);
+
+	void setProgress(double progress);
+
 }

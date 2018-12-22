@@ -16,13 +16,11 @@ import javax.ws.rs.core.Response.Status;
 
 import org.collin.core.advice.IAdvice;
 import org.collin.core.impl.SequenceNode;
-import org.collin.moodle.LanguagePack;
 import org.collin.moodle.core.Dispatcher;
-import org.collin.moodle.images.TeamImages;
+import org.collin.moodle.core.PushOptionsAdviceBuilder;
 import org.condast.commons.messaging.push.ISubscription;
 import org.condast.commons.messaging.rest.RESTUtils;
 import org.condast.commons.strings.StringUtils;
-import org.condast.js.commons.push.PushOptionsBuilder;
 import nl.martijndwars.webpush.core.PushManager;
 
 //Sets the path to alias + path
@@ -130,14 +128,14 @@ public class RESTResource{
 			
 			Random random = new Random();
 			IAdvice advice = data.get( random.nextInt(data.size()));
-			LanguagePack.Fields field = LanguagePack.Fields.valueOf(advice.getAdvice().trim());
-			
-			PushOptionsBuilder builder = new PushOptionsBuilder();
-			builder.addOption( PushOptionsBuilder.Options.TITLE, "Moodle Notification");
-			builder.addOption( PushOptionsBuilder.Options.BODY, field.getMessage());
-			builder.addOption( PushOptionsBuilder.Options.ICON, TeamImages.Team.getPath(advice));
-			
-			logger.info( PushManager.sendPushMessage( S_PUBLIC_KEY, S_PRIVATE_KEY, subscription, builder.createPayLoad()));				
+			advice.setUserId( id );
+			advice.setModuleId(moduleId);
+			advice.setActivityId(activityId);
+			advice.setProgress(progress);
+			PushOptionsAdviceBuilder builder = new PushOptionsAdviceBuilder();
+			builder.createPayLoad( advice, true );
+			logger.info(builder.toString());
+			PushManager.sendPushMessage( S_PUBLIC_KEY, S_PRIVATE_KEY, subscription, builder.createPayLoad());				
 			return Response.ok().build();
 		}
 		catch( Exception ex ){
@@ -168,9 +166,9 @@ public class RESTResource{
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/update")
-	public Response update( @QueryParam("id") long id, @QueryParam("token") String token, 
-			@QueryParam("module") String module, @QueryParam("chapter") int chapter, @QueryParam("progress") int progress) {
+	public Response update( @QueryParam("id") long id, @QueryParam("token") String token, @QueryParam("notification") String notification) {
 
+		logger.info("NOTIFICATION:" + notification );
 		try{
 			return Response.ok().build();
 		}
