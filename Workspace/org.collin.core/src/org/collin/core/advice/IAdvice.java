@@ -78,4 +78,6 @@ public interface IAdvice {
 
 	double getProgress();
 
+	String getUri();
+
 }

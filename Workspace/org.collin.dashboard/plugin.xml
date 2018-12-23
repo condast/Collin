@@ -18,4 +18,11 @@
             load-on-startup="true">
       </servlet>
    </extension>
+    <extension
+         point="org.eclipse.equinox.http.registry.resources">
+      <resource
+            alias="/moodletest"
+            base-name="/web">
+      </resource>
+   </extension>
  </plugin>

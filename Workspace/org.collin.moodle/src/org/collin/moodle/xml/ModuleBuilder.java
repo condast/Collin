@@ -319,6 +319,7 @@ public class ModuleBuilder{
 				current = new SequenceNode(node, locale, id, collin, name, index);
 				current.setProgress( progress);
 				current.setType(type);
+				current.setUri(uri);
 				break;	
 			case TEXT:
 				current = new SequenceNode(node, locale, id, name, collin, index);

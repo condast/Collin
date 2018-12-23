@@ -52,15 +52,6 @@ public class SequenceNode extends AbstractDataObject<IAdvice>{
 		}
 	}
 
-	public enum Types{
-		NONE,
-		DELAY;
-
-		@Override
-		public String toString() {
-			return StringStyler.prettyString( super.toString() );
-		}
-	}
 	
 	private Nodes node;
 	private String id;
@@ -148,8 +139,8 @@ public class SequenceNode extends AbstractDataObject<IAdvice>{
 		return description;
 	}
 
-	public Types getType() {
-		return Types.valueOf( type );
+	public String getType() {
+		return type;
 	}
 
 	public void setTitle(String title) {

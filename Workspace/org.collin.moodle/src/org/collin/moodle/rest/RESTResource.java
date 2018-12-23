@@ -1,5 +1,6 @@
 package org.collin.moodle.rest;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -168,11 +169,21 @@ public class RESTResource{
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/update")
-	public Response update( @QueryParam("id") String id, @QueryParam("token") String token, @QueryParam("adviceid") String adviceId, @QueryParam("notification") String notificationId) {
-		Notifications notification = Notifications.getNotification( Integer.parseInt(notificationId ));
+	public Response update( @QueryParam("id") String id, @QueryParam("token") String token, @QueryParam("adviceid") String adviceId, @QueryParam("notification") String notification_str) {
+		Notifications notification = Notifications.valueOf(notification_str );
 		logger.info("NOTIFICATION:" + notification);
-		try{dispatcher.updateAdvice(Long.parseLong(id), Long.parseLong( adviceId ), notification);
-			return Response.ok().build();
+		try{
+			dispatcher.updateAdvice(Long.parseLong(id), Long.parseLong( adviceId ), notification);
+			Response response = Response.serverError().build();
+			switch( notification ) {
+			case HELP:
+				response = Response.seeOther( new URI( "http://www.condast.com")).build();
+				break;
+			default:
+				response = Response.ok().build();
+				break;
+			}
+			return response;
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();

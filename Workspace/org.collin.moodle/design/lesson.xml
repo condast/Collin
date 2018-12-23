@@ -9,7 +9,8 @@
 					<activities>
 						<activity id="1" name="Activity1" index="1"
 							uri="http://www.condast.com">
-							<task class="org.collin.core.task.TimedTask" time="900"></task>
+							<task class="org.collin.core.task.TimedTask" time="900">
+		</task>
 							<function></function>
 							<goal></goal>
 							<solution proceed="1">
@@ -43,7 +44,10 @@
 					uri="http://www.condast.com">
 					<activities>
 						<activity id="1" name="Activity1">
-							<task class="org.collin.core.task.AdviceTask" time="900" uri="resources/advice"></task>
+							<task class="org.collin.core.task.AdviceTask" time="900" uri="resources/advice">
+								<advice type="fail" uri="https://nl.wikipedia.org/wiki/Egyptische_piramide"/>
+								<advice type="success" uri="http://www.wikipedia.com/boats"/>
+							</task>
 						</activity>
 						<activity id="2" name="Activity2" index="2"
 							uri="http://www.condast.com">

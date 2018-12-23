@@ -6,6 +6,7 @@ import org.eclipse.swt.widgets.Label;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,10 +17,8 @@ import org.condast.commons.messaging.http.IHttpClientListener;
 import org.condast.commons.messaging.http.ResponseEvent;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
-import org.condast.js.commons.push.PushRegistrationComposite;
 import org.eclipse.nebula.widgets.richtext.RichTextEditor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -35,11 +34,7 @@ public class TestComposite extends Composite {
 	public static final String S_CONTEXT_PATH = "http://localhost:10080/moodle/module/";
 	public static final String S_PUSH_CONTEXT_PATH = "http://localhost:10080/moodle/push/";
 
-	public static final String S_SERVICE_WORKER = "http://localhost:10080/moodleresources/js/collin-service.js/";
 	public static final String S_SUBSCRIPTION_SERVER =  S_PUSH_CONTEXT_PATH;
-
-	private Text textName;
-	private Text textPassword;
 
 	private Spinner spinner_progress;
 	private Spinner spinner_module;
@@ -115,20 +110,18 @@ public class TestComposite extends Composite {
 				if( StringUtils.isEmpty(uri))
 					break;
 				viewer.setText(uri);
-				btnGo.setEnabled(!StringUtils.isEmpty(modulePath));
 				break;
 			default:
 					break;
 			}
 		}
 	};
-	
-	private PushRegistrationComposite pushComposite;
 	private Text text;
 	private Button btnSelectButton;
-	private Button btnGo;
 	
 	private RichTextEditor viewer;
+	private Label lblUserId;
+	private Spinner userSpinner;
 	
 	/**
 	 * Create the composite.
@@ -144,71 +137,13 @@ public class TestComposite extends Composite {
 	protected void createComposite( Composite parent, int style ) {
 		setLayout(new GridLayout(3, false));
 		
-		Label lblName = new Label(this, SWT.NONE);
-		lblName.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblName.setText("Name:");
+		lblUserId = new Label(this, SWT.NONE);
+		lblUserId.setText("User id:");
 		
-		textName = new Text(this, SWT.BORDER);
-		textName.setText("TestNaam");
-		textName.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-		
-		pushComposite = new PushRegistrationComposite(this, SWT.BORDER);
-		pushComposite.setLayoutData(new GridData( SWT.FILL, SWT.FILL, true, false, 1, 2));
-		pushComposite.setServiceWorker(S_SERVICE_WORKER);
-		pushComposite.setServerRegistration(S_SUBSCRIPTION_SERVER);
-		//pushComposite.setInput(PushRegistrationComposite.S_RESOURCE);
-		pushComposite.setInput("/moodleresources/push.html");
-				
-		Label lblPasswordLabel = new Label(this, SWT.NONE);
-		lblPasswordLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblPasswordLabel.setText("Password");
-		
-		textPassword = new Text(this, SWT.BORDER);
-		textPassword.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-		textPassword.setText("TestPassword");
-		
-		Link loginLink = new Link(this, SWT.NONE);
-		loginLink.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		loginLink.setText("<a>Login</a>");
-		loginLink.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				WebClient client = new WebClient( S_CONTEXT_PATH);
-				try {
-					Map<String, String> parameters = new HashMap<String, String>();
-					parameters.put( Parameters.NAME.toString(), textName.getText());
-					client.sendGet( Requests.LOGIN.getPath(), parameters);
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-			}
-		});
-		
-		Link registerLink = new Link(this, SWT.NONE);
-		registerLink.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				try {
-					WebClient client = new WebClient( S_CONTEXT_PATH);
-					Map<String, String> parameters = new HashMap<String, String>();
-					parameters.put( Parameters.NAME.toString(), textName.getText());
-					parameters.put( Parameters.PASSWORD.toString(), textPassword.getText());
-					client.sendGet( Requests.REGISTER.getPath(), parameters);
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-			}
-		});
-		registerLink.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		registerLink.setText("<a>Register</a>");
+		userSpinner = new Spinner(this, SWT.BORDER);
+		userSpinner.setSelection(12);
+		userSpinner.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 		new Label(this, SWT.NONE);
-		
-		Label label = new Label(this, SWT.SEPARATOR | SWT.HORIZONTAL);
-		label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 3, 1));
 		
 		new Label(this, SWT.NONE);
 		text = new Text(this, SWT.BORDER);
@@ -221,7 +156,6 @@ public class TestComposite extends Composite {
 				try{
 					modulePath = text.getText();
 					btnSelectButton.setEnabled( !StringUtils.isEmpty(modulePath));
-					btnGo.setEnabled( !StringUtils.isEmpty(modulePath));
 				}
 				catch(Exception ex ) {
 					
@@ -242,7 +176,7 @@ public class TestComposite extends Composite {
 				Map<String, String> params = new HashMap<>();
 
 				try {
-					params.put( Parameters.ID.toString(), "1");
+					params.put( Parameters.ID.toString(), String.valueOf( userSpinner.getSelection() ));
 					params.put( Parameters.TOKEN.toString(), "12");
 					params.put(Parameters.PATH.toString(), modulePath );
 					client.sendGet(Requests.START, params);
@@ -269,8 +203,8 @@ public class TestComposite extends Composite {
 
 				try {
 					int moduleId = spinner_module.getSelection();
-					params.put( Parameters.ID.toString(), String.valueOf( moduleId ));
-					params.put( Parameters.TOKEN.toString(), "12");
+					params.put( Parameters.ID.toString(), String.valueOf( userSpinner.getSelection() ));
+					params.put( Parameters.TOKEN.toString(), String.valueOf( userSpinner.getSelection() ));
 					params.put( Parameters.MODULE_ID.toString(), String.valueOf( moduleId ));
 					params.put( Parameters.ACTIVITY_ID.toString(), String.valueOf(0 ));
 					client.sendGet(Requests.LESSON, params);
@@ -299,7 +233,7 @@ public class TestComposite extends Composite {
 					int moduleId = spinner_module.getSelection();
 					int activityId = spinner_activity.getSelection();
 					params.put( Parameters.ID.toString(), String.valueOf( moduleId ));
-					params.put( Parameters.TOKEN.toString(), "12");
+					params.put( Parameters.TOKEN.toString(), String.valueOf( userSpinner.getSelection() ));
 					params.put( Parameters.MODULE_ID.toString(), String.valueOf( moduleId ));
 					params.put( Parameters.ACTIVITY_ID.toString(), String.valueOf( activityId ));
 					client.sendGet(Requests.LESSON, params);
@@ -328,7 +262,7 @@ public class TestComposite extends Composite {
 					int moduleId = spinner_module.getSelection();
 					int activityId = spinner_activity.getSelection();
 					int progress = spinner_progress.getSelection();
-					params.put( Parameters.ID.toString(), "12");
+					params.put( Parameters.ID.toString(), String.valueOf( userSpinner.getSelection() ));
 					params.put( Parameters.TOKEN.toString(), "12");
 					params.put( Parameters.MODULE_ID.toString(), String.valueOf( moduleId ));
 					params.put( Parameters.ACTIVITY_ID.toString(), String.valueOf( activityId ));
@@ -340,44 +274,15 @@ public class TestComposite extends Composite {
 				super.widgetSelected(e);
 			}		
 		});
-
-		new Label(this, SWT.NONE);
-		btnGo = new Button(this, SWT.NONE);
-		btnGo.setEnabled(false);
-		btnGo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		btnGo.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				
-				WebClient client = new WebClient( S_CONTEXT_PATH);
-				client.addListener(listener);
-				Map<String, String> params = new HashMap<>();
-
-				try {
-					int moduleId = spinner_module.getSelection();
-					int activityId = spinner_activity.getSelection();
-					params.put( Parameters.ID.toString(), "12");
-					params.put( Parameters.TOKEN.toString(), "12");
-					params.put(Parameters.MODULE_ID.toString(), String.valueOf(moduleId));
-					params.put(Parameters.ACTIVITY_ID.toString(), String.valueOf(activityId));
-					int progress=  spinner_progress.getSelection();
-					params.put(Parameters.PROGRESS.toString(), String.valueOf( progress));
-					client.sendGet(Requests.ADVICE, params);
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-			}
-		});
-		btnGo.setText("Go");
-		new Label(this, SWT.NONE);
-		new Label(this, SWT.NONE);
 		
 		viewer = new RichTextEditor(this, SWT.BORDER);
 		viewer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
 	}
 
+	public void setInput( Class<?> clss ) {
+		InputStream inp = clss.getResourceAsStream(ModuleBuilder.getDefaultModuleLocation());
+		viewer.setText( StringUtils.readInput(inp));
+	}
 	@Override
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components

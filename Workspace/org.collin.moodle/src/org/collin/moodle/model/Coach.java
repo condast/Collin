@@ -54,7 +54,7 @@ public class Coach extends AbstractTetraImplementation<IAdvice, SequenceNode>{
 				SequenceQuery query = new SequenceQuery( super.getData());
 				SequenceNode sn = query.find(node.getType());
 				//String url = sn.getUri();
-				AdviceFactory factory = new AdviceFactory();
+				AdviceFactory factory = new AdviceFactory( sn);
 				factory.load( this.getClass(), AdviceFactory.S_DEFAULT_LOCATION);
 				IAdvice[] results = factory.getAdvice( Results.SUCCESS.equals(event.getResult())?IAdvice.AdviceTypes.SUCCESS: IAdvice.AdviceTypes.FAIL);
 				Random random = new Random();

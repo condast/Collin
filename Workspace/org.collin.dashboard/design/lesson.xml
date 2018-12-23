@@ -33,7 +33,9 @@
 					<activities type="activity">
 						<activity id="Activity1" index="1"
 							uri="http://www.condast.com">
-							<task class="org.collin.core.task.AdviceTask" time="900" uri="resources/advice"></task>
+							<task class="org.collin.core.task.AdviceTask" time="900" uri="resources/advice">
+								<advice type="success" uri="http://www.wikipedia.com/boats"/>
+							</task>
 							<function></function>
 							<goal></goal>
 							<solution></solution>

@@ -2,28 +2,53 @@ package org.collin.core.advice;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+
+import org.collin.core.impl.SequenceNode;
+import org.condast.commons.strings.StringStyler;
 
 public class AdviceFactory {
 
 	public static String S_DEFAULT_LOCATION = "/resources/advice/advice.mdl";
 	
 	private Collection<Advice> advices;
+	private SequenceNode node;
 	
-	public AdviceFactory() {
+	public AdviceFactory( SequenceNode node ) {
 		advices = new ArrayList<>();
+		this.node = node;
+	}
+	
+	protected String getAdviceURI(SequenceNode root, IAdvice.AdviceTypes type, int index ) {
+		List<SequenceNode> children = root.getChildren();
+		List<SequenceNode> temp = new ArrayList<>();
+		for( SequenceNode nd: children ) {
+			String type_str = StringStyler.styleToEnum(nd.getType());
+			IAdvice.AdviceTypes nttype = IAdvice.AdviceTypes.valueOf(type_str);
+			if(! nttype.equals(type ))
+				continue;
+			temp.add(nd);
+		}
+		if( temp.isEmpty())
+			return null;
+		int select = (index >= temp.size())?0: index;
+		return temp.get(select).getUri();
 	}
 	
 	public void load( Class<?> clss, String path ) {
 		Scanner scanner = new Scanner( clss.getResourceAsStream(path));
 		try{
+			int index = 0;
 			while( scanner.hasNextLine()) {
 				String line = scanner.nextLine().trim();
 				if( line.startsWith("#"))
 					continue;
 				String[] split = line.split("[,;]");
-				advices.add( new Advice( split ));
+				Advice advice = new Advice( split ); 
+				advice.setUri( getAdviceURI(node, advice.getType(), index));
+				advices.add( advice);
 			}
 		}
 		finally {
@@ -55,6 +80,7 @@ public class AdviceFactory {
 		private int repeat;
 		private IAdvice.AdviceTypes type;
 		private IAdvice.Mood mood;
+		private String uri;
 
 		public Advice( String[] arr) {
 			this( createAdviceId(), arr[0], IAdvice.AdviceTypes.valueOf( arr[1].trim().toUpperCase()), IAdvice.Mood.valueOf(arr[2].trim().toUpperCase()), arr[3], Integer.parseInt( arr[4].trim() ));
@@ -150,6 +176,15 @@ public class AdviceFactory {
 		@Override
 		public IAdvice.Mood getMood() {
 			return mood;
+		}
+
+		@Override
+		public String getUri() {
+			return uri;
+		}
+
+		public void setUri(String uri) {
+			this.uri = uri;
 		}
 	}
 	
