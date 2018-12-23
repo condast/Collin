@@ -21,7 +21,7 @@
     <extension
          point="org.eclipse.equinox.http.registry.resources">
       <resource
-            alias="/moodletest"
+            alias="/moodlecoretest"
             base-name="/web">
       </resource>
    </extension>

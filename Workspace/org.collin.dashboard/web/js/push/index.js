@@ -10,7 +10,7 @@ function registerServiceWorker(userid ) {
 		return false;
 	}
 
-	return navigator.serviceWorker.register('./js/collin-service.js') .then( 
+	return navigator.serviceWorker.register('./js/push/collin-service.js') .then( 
 			function( registration) { 
 				console.log(' Service worker successfully registered.'); 
 				askPermission().then(() => {
@@ -57,7 +57,7 @@ function callServer(userid, subscription) {
 
 	console.log("fetch from server");
 	//Send the subscription details to the server using the Fetch API.
-	fetch('http://localhost:10080/moodle/push/subscribe?id='+ userid + '&token=12', {
+	fetch('.. /moodle/push/subscribe?id='+ userid + '&token=12', {
 		method: 'post',
 		headers: {
 			'Content-type': 'application/json'
@@ -73,7 +73,7 @@ function callServer(userid, subscription) {
 		if (!response.ok) {
 			throw new Error('An error occurred')
 		}
-		console.log('Response received');
+		console.log('Response received:' + response.status);
 		return response;
 	});	
 }

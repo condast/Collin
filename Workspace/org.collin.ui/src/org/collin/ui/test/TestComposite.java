@@ -6,7 +6,6 @@ import org.eclipse.swt.widgets.Label;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,8 +30,8 @@ import org.eclipse.swt.widgets.Spinner;
 public class TestComposite extends Composite {
 	private static final long serialVersionUID = 1L;
 
-	public static final String S_CONTEXT_PATH = "http://localhost:10080/moodle/module/";
-	public static final String S_PUSH_CONTEXT_PATH = "http://localhost:10080/moodle/push/";
+	public static final String S_CONTEXT_PATH = "http://www.condast.com:8080/moodle/module/";
+	public static final String S_PUSH_CONTEXT_PATH = "http://www.condast.com:8080/moodle/push/";
 
 	public static final String S_SUBSCRIPTION_SERVER =  S_PUSH_CONTEXT_PATH;
 
@@ -121,7 +120,7 @@ public class TestComposite extends Composite {
 	
 	private RichTextEditor viewer;
 	private Label lblUserId;
-	private Spinner userSpinner;
+	private Spinner spinnerUserId;
 	
 	/**
 	 * Create the composite.
@@ -138,11 +137,11 @@ public class TestComposite extends Composite {
 		setLayout(new GridLayout(3, false));
 		
 		lblUserId = new Label(this, SWT.NONE);
-		lblUserId.setText("User id:");
+		lblUserId.setText("User Id:");
 		
-		userSpinner = new Spinner(this, SWT.BORDER);
-		userSpinner.setSelection(12);
-		userSpinner.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+		spinnerUserId = new Spinner(this, SWT.BORDER);
+		spinnerUserId.setSelection(12);
+		spinnerUserId.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 		new Label(this, SWT.NONE);
 		
 		new Label(this, SWT.NONE);
@@ -176,11 +175,10 @@ public class TestComposite extends Composite {
 				Map<String, String> params = new HashMap<>();
 
 				try {
-					params.put( Parameters.ID.toString(), String.valueOf( userSpinner.getSelection() ));
+					params.put( Parameters.ID.toString(), String.valueOf( spinnerUserId.getSelection()));
 					params.put( Parameters.TOKEN.toString(), "12");
 					params.put(Parameters.PATH.toString(), modulePath );
 					client.sendGet(Requests.START, params);
-					client.sendPost(Requests.SUBSCRIBE, params, "hello");
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
@@ -203,8 +201,8 @@ public class TestComposite extends Composite {
 
 				try {
 					int moduleId = spinner_module.getSelection();
-					params.put( Parameters.ID.toString(), String.valueOf( userSpinner.getSelection() ));
-					params.put( Parameters.TOKEN.toString(), String.valueOf( userSpinner.getSelection() ));
+					params.put( Parameters.ID.toString(),  String.valueOf( spinnerUserId.getSelection()));
+					params.put( Parameters.TOKEN.toString(), "12");
 					params.put( Parameters.MODULE_ID.toString(), String.valueOf( moduleId ));
 					params.put( Parameters.ACTIVITY_ID.toString(), String.valueOf(0 ));
 					client.sendGet(Requests.LESSON, params);
@@ -232,8 +230,8 @@ public class TestComposite extends Composite {
 				try {
 					int moduleId = spinner_module.getSelection();
 					int activityId = spinner_activity.getSelection();
-					params.put( Parameters.ID.toString(), String.valueOf( moduleId ));
-					params.put( Parameters.TOKEN.toString(), String.valueOf( userSpinner.getSelection() ));
+					params.put( Parameters.ID.toString(),  String.valueOf( spinnerUserId.getSelection()));
+					params.put( Parameters.TOKEN.toString(), "12");
 					params.put( Parameters.MODULE_ID.toString(), String.valueOf( moduleId ));
 					params.put( Parameters.ACTIVITY_ID.toString(), String.valueOf( activityId ));
 					client.sendGet(Requests.LESSON, params);
@@ -262,7 +260,7 @@ public class TestComposite extends Composite {
 					int moduleId = spinner_module.getSelection();
 					int activityId = spinner_activity.getSelection();
 					int progress = spinner_progress.getSelection();
-					params.put( Parameters.ID.toString(), String.valueOf( userSpinner.getSelection() ));
+					params.put( Parameters.ID.toString(),  String.valueOf( spinnerUserId.getSelection()));
 					params.put( Parameters.TOKEN.toString(), "12");
 					params.put( Parameters.MODULE_ID.toString(), String.valueOf( moduleId ));
 					params.put( Parameters.ACTIVITY_ID.toString(), String.valueOf( activityId ));
@@ -280,9 +278,10 @@ public class TestComposite extends Composite {
 	}
 
 	public void setInput( Class<?> clss ) {
-		InputStream inp = clss.getResourceAsStream(ModuleBuilder.getDefaultModuleLocation());
-		viewer.setText( StringUtils.readInput(inp));
+		String url = ModuleBuilder.S_DEFAULT_FOLDER + "/" + ModuleBuilder.S_DEFAULT_FILE;
+		this.viewer.setText( StringUtils.readInput( clss.getResourceAsStream(url)));
 	}
+	
 	@Override
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components
