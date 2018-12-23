@@ -2,6 +2,7 @@ package org.collin.core.advice;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Random;
 import java.util.Scanner;
 
 public class AdviceFactory {
@@ -43,6 +44,7 @@ public class AdviceFactory {
 	
 	private class Advice implements IAdvice{
 		
+		private long adviceId;
 		private long userId;
 		private long moduleId;
 		private long activityId; 
@@ -55,11 +57,12 @@ public class AdviceFactory {
 		private IAdvice.Mood mood;
 
 		public Advice( String[] arr) {
-			this( arr[0], IAdvice.AdviceTypes.valueOf( arr[1].trim().toUpperCase()), IAdvice.Mood.valueOf(arr[2].trim().toUpperCase()), arr[3], Integer.parseInt( arr[4].trim() ));
+			this( createAdviceId(), arr[0], IAdvice.AdviceTypes.valueOf( arr[1].trim().toUpperCase()), IAdvice.Mood.valueOf(arr[2].trim().toUpperCase()), arr[3], Integer.parseInt( arr[4].trim() ));
 		}
 		
-		public Advice(String member, IAdvice.AdviceTypes type, Mood mood, String advice, int repeat) {
+		public Advice( long adviceId, String member, IAdvice.AdviceTypes type, Mood mood, String advice, int repeat) {
 			super();
+			this.adviceId = adviceId;
 			this.member = member;
 			this.type = type;
 			this.mood = mood;
@@ -67,6 +70,12 @@ public class AdviceFactory {
 			this.repeat = repeat;
 		}
 
+		@Override
+		public long getId() {
+			return adviceId;
+		}
+
+		@Override
 		public long getUserId() {
 			return userId;
 		}
@@ -76,6 +85,7 @@ public class AdviceFactory {
 			this.userId = userId;
 		}
 
+		@Override
 		public long getModuleId() {
 			return moduleId;
 		}
@@ -85,6 +95,7 @@ public class AdviceFactory {
 			this.moduleId = moduleId;
 		}
 
+		@Override
 		public long getActivityId() {
 			return activityId;
 		}
@@ -94,6 +105,7 @@ public class AdviceFactory {
 			this.activityId = activityId;
 		}
 		
+		@Override
 		public double getProgress() {
 			return progress;
 		}
@@ -139,5 +151,10 @@ public class AdviceFactory {
 		public IAdvice.Mood getMood() {
 			return mood;
 		}
+	}
+	
+	public static long createAdviceId() {
+		Random rand = new Random();
+		return rand.nextLong();
 	}
 }

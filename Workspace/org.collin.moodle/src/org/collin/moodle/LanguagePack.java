@@ -24,17 +24,6 @@ public class LanguagePack extends Language {
 		}		
 	}
 	
-	public enum Notifications{
-		DONT_CARE,
-		THANKS,
-		SHUT_UP,;
-
-		@Override
-		public String toString() {
-			return getInstance().getString( this);
-		}
-	}
-
 	private static LanguagePack language = new LanguagePack();
 	
 	private LanguagePack() {

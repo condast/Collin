@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.collin.core.advice.IAdvice;
+import org.collin.core.advice.IAdvice.Notifications;
 import org.collin.core.impl.SequenceNode;
 import org.collin.moodle.core.Dispatcher;
 import org.collin.moodle.core.PushOptionsAdviceBuilder;
@@ -91,7 +92,7 @@ public class RESTResource{
 			response = RESTUtils.checkId(id, token, moduleId);
 			if( !response )
 				return ( moduleId < 0 )? Response.noContent().build(): Response.status( Status.UNAUTHORIZED ).build();
-			String result = dispatcher.start(moduleId);
+			String result = dispatcher.start(id, moduleId);
 			return StringUtils.isEmpty(result)? Response.noContent().build(): Response.ok( result ).build();
 		}
 		catch( Exception ex ){
@@ -119,7 +120,7 @@ public class RESTResource{
 			PushManager pm = dispatcher.getPushMananger();
 			ISubscription subscription = pm.getSubscription( id );
 
-			SequenceNode result = dispatcher.getAdvice( moduleId, activityId, progress);
+			SequenceNode result = dispatcher.getAdvice( id, moduleId, activityId, progress);
 			if( result == null )
 				return Response.ok().build();
 			List<IAdvice> data = new ArrayList<>( result.getData() );
@@ -165,11 +166,12 @@ public class RESTResource{
 	// This method is called if TEXT_PLAIN is requested
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/update")
-	public Response update( @QueryParam("id") long id, @QueryParam("token") String token, @QueryParam("notification") String notification) {
-
-		logger.info("NOTIFICATION:" + notification );
-		try{
+	public Response update( @QueryParam("id") String id, @QueryParam("token") String token, @QueryParam("adviceid") String adviceId, @QueryParam("notification") String notificationId) {
+		Notifications notification = Notifications.getNotification( Integer.parseInt(notificationId ));
+		logger.info("NOTIFICATION:" + notification);
+		try{dispatcher.updateAdvice(Long.parseLong(id), Long.parseLong( adviceId ), notification);
 			return Response.ok().build();
 		}
 		catch( Exception ex ){

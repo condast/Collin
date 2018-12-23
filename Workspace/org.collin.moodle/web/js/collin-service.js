@@ -34,29 +34,32 @@ self.addEventListener('notificationclick', function(event) {
 	clickedNotification.close();
 
 	// Do something as the result of the notification click
-	doSomething( event );
+	event.action = 'DONT_CARE';
+	update( event );
 	//event.waitUntil(promiseChain);
 });
 
 self.addEventListener('notificationclose', function(event) {
 	const dismissedNotification = event.notification;
-	doSomething( event );
+	event.action = 'SHUT_UP';
+	update( event );
 });
 
-function doSomething( event ){
+function update( event ){
 	console.log('Notification closed!' + event.action);
 	const data = event.notification.data;
-	console.log('');
-	console.log('The data notification had the following parameters:');
-	console.log( data );
-	fetch('http://localhost:10080/moodle/module/update?id='+ data.userid + '&token=12&notification=' + event.action , {
+	console.log(data);
+	const url = 'http://localhost:10080/moodle/module/update?id='+ data.userId + '&token=12&notification=' + event.action;
+	console.log( url );
+	fetch(url , {
 		method: 'get',
 		headers: {
 			'Content-type': 'application/json'
 		}
 	}).then( function(response){
 		if (!response.ok) {
-			throw new Error('An error occurred')
+			console.log(response.status );
+			throw new Error('An error occurred' + response.status);
 		}
 		console.log('Response received');
 		return response;

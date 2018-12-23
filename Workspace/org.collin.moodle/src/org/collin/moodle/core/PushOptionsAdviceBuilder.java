@@ -12,14 +12,12 @@ public class PushOptionsAdviceBuilder extends PushOptionsBuilder {
 	public static final String S_MOODLE_NOTIFICATION = "Moodle Notification";
 	public static final String S_ADVICE_TAG = "advice-tag";
 	
-	private LanguagePack language;
-	
 	public PushOptionsAdviceBuilder() {
 		super();
-		language = LanguagePack.getInstance();
 	}
 
 	public byte[] createPayLoad( IAdvice advice, boolean renotify ) {
+		LanguagePack language = LanguagePack.getInstance();
 		LanguagePack.Fields field = LanguagePack.Fields.valueOf(advice.getAdvice().trim());
 
 		addOption( Options.TITLE, S_MOODLE_NOTIFICATION);
@@ -30,8 +28,8 @@ public class PushOptionsAdviceBuilder extends PushOptionsBuilder {
 		addOption( Options.TAG, S_ADVICE_TAG);
 			
 		addOption( Options.VIBRATE, new int[]{500,110,500,110,450,110,200,110,170,40,450,110,200,110,170,40,500});
-		addAction( LanguagePack.Notifications.SHUT_UP.toString(), LanguagePack.Notifications.SHUT_UP.toString(), Team.getPath(Team.NELLY, Mood.ANGRY));
-		addAction( LanguagePack.Notifications.THANKS.toString(), LanguagePack.Notifications.THANKS.toString(), Team.getPath(Team.GINO, Mood.HAPPY));
+		addAction( IAdvice.Notifications.SHUT_UP.name(), language.getString(IAdvice.Notifications.SHUT_UP.toString()), Team.getPath(Team.NELLY, Mood.ANGRY));
+		addAction( IAdvice.Notifications.THANKS.name(), language.getString( IAdvice.Notifications.THANKS.toString()), Team.getPath(Team.GINO, Mood.HAPPY));
 		return createPayLoad(renotify, false );
 	}
 }

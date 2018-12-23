@@ -5,6 +5,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.collin.core.advice.IAdvice;
 import org.collin.core.def.ITetraImplementation;
 import org.collin.core.essence.Compass;
 import org.collin.core.essence.Compass.Tetras;
@@ -69,11 +70,14 @@ public class Dispatcher {
 
 	private PushManager pushMananger;
 	
+	private Map<Long, MoodleProcess> process;
+	
 	private Dispatcher() {
 		super();
 		progress = new HashMap<>();
 		this.modules = new HashMap<>();
 		implementations = new HashMap<>();
+		process = new HashMap<>();
 		pushMananger = new PushManager();
 		node = readModules();
 	}
@@ -106,7 +110,7 @@ public class Dispatcher {
 			impl.unregister();
 		}
 	}
-	public String start( long moduleId ) throws Exception {
+	public String start( long userId, long moduleId ) throws Exception {
 		node = readModules();
 		InputStream stream = null;
 		String result = null;
@@ -116,6 +120,7 @@ public class Dispatcher {
 			Student student = (Student) this.implementations.get(Compass.Tetras.CONSUMER);
  			student.fire( transaction );
 			unregister();
+			process.put(userId, new MoodleProcess( userId, moduleId ));
 		}
 		catch( Exception ex ) {
 			ex.printStackTrace();
@@ -156,7 +161,7 @@ public class Dispatcher {
 		return null;
 	}
 
-	public SequenceNode getAdvice( long moduleId, long activityId, double progress ) throws Exception {
+	public SequenceNode getAdvice( long userId, long moduleId, long activityId, double progress ) throws Exception {
 		try {
 			SequenceNode find = findNode( node, String.valueOf( moduleId ), String.valueOf( activityId ));
 			if( find == null )
@@ -164,7 +169,10 @@ public class Dispatcher {
 			TetraTransaction<SequenceNode> transaction = new TetraTransaction<SequenceNode>(this, States.PROGRESS, find, progress );
 			register( transaction );
 			Student student = (Student) this.implementations.get(Compass.Tetras.CONSUMER);
- 			student.fire(  transaction);
+ 			student.fire(  transaction );
+ 			MoodleProcess mprocess = this.process.get(userId);
+ 			SequenceNode node = transaction.getData();
+ 			mprocess.addAdvice( node.getData().iterator().next(), node);
  			unregister();
  			return find;
 		}
@@ -173,7 +181,17 @@ public class Dispatcher {
 		}
 		return null;
 	}
-	
+
+	public void updateAdvice( long userId, long adviceId, IAdvice.Notifications notification ) throws Exception {
+		try {
+ 			MoodleProcess mprocess = this.process.get(userId);
+ 			mprocess.updateAdvice(adviceId, notification);
+ 		}
+		catch( Exception ex ) {
+			ex.printStackTrace();
+		}
+	}
+
 	public int getProgress( long moduleId ) {
 		Integer value = progress.get( moduleId);
 		if( value != null ) {
