@@ -70,15 +70,15 @@ public class Dispatcher {
 
 	private PushManager pushMananger;
 	
-	private Map<Long, MoodleProcess> process;
+	private AdviceManager adviceManager;
 	
 	private Dispatcher() {
 		super();
 		progress = new HashMap<>();
 		this.modules = new HashMap<>();
 		implementations = new HashMap<>();
-		process = new HashMap<>();
 		pushMananger = new PushManager();
+		this.adviceManager = new AdviceManager();
 		node = readModules();
 	}
 
@@ -88,6 +88,10 @@ public class Dispatcher {
 
 	public PushManager getPushMananger() {
 		return pushMananger;
+	}
+
+	public AdviceManager getAdviceManager() {
+		return adviceManager;
 	}
 
 	public long addModule( String path ) {
@@ -110,25 +114,21 @@ public class Dispatcher {
 			impl.unregister();
 		}
 	}
-	public String start( long userId, long moduleId ) throws Exception {
+
+	public void start( long userId, long moduleId ){
 		node = readModules();
 		InputStream stream = null;
-		String result = null;
 		try {
-			TetraTransaction<SequenceNode> transaction = new TetraTransaction<SequenceNode>(this, node );
+			TetraTransaction<SequenceNode> transaction = new TetraTransaction<SequenceNode>(this, userId, node );
 			register( transaction );
 			Student student = (Student) this.implementations.get(Compass.Tetras.CONSUMER);
  			student.fire( transaction );
 			unregister();
-			process.put(userId, new MoodleProcess( userId, moduleId ));
-		}
-		catch( Exception ex ) {
-			ex.printStackTrace();
+			this.adviceManager.start(userId, moduleId );
 		}
 		finally {
 			IOUtils.closeQuietly(stream);
 		}
-		return result;
 	}
 
 	public SequenceNode findLesson( long moduleId, long activityId ) throws Exception {
@@ -166,13 +166,12 @@ public class Dispatcher {
 			SequenceNode find = findNode( node, String.valueOf( moduleId ), String.valueOf( activityId ));
 			if( find == null )
 				return null;
-			TetraTransaction<SequenceNode> transaction = new TetraTransaction<SequenceNode>(this, States.PROGRESS, find, progress );
+			TetraTransaction<SequenceNode> transaction = new TetraTransaction<SequenceNode>(this, userId, States.PROGRESS, find, progress );
 			register( transaction );
 			Student student = (Student) this.implementations.get(Compass.Tetras.CONSUMER);
  			student.fire(  transaction );
- 			MoodleProcess mprocess = this.process.get(userId);
- 			SequenceNode node = transaction.getData();
- 			mprocess.addAdvice( node.getData().iterator().next(), node);
+			SequenceNode node = transaction.getData();
+ 			this.adviceManager.addAdvice(userId, node);
  			unregister();
  			return find;
 		}
@@ -183,13 +182,7 @@ public class Dispatcher {
 	}
 
 	public void updateAdvice( long userId, long adviceId, IAdvice.Notifications notification ) throws Exception {
-		try {
- 			MoodleProcess mprocess = this.process.get(userId);
- 			mprocess.updateAdvice(adviceId, notification);
- 		}
-		catch( Exception ex ) {
-			ex.printStackTrace();
-		}
+		this.adviceManager.updateAdvice(userId, adviceId, notification);
 	}
 
 	public int getProgress( long moduleId ) {

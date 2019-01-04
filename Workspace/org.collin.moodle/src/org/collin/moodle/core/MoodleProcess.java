@@ -1,24 +1,32 @@
 package org.collin.moodle.core;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.collin.core.advice.IAdvice;
 import org.collin.core.advice.IAdvice.Notifications;
 import org.collin.core.impl.SequenceNode;
+import org.condast.commons.Utils;
+import org.condast.commons.date.DateUtils;
 
 public class MoodleProcess {
 
 	private long userId;
 	
 	private long moduleId;
-	
-	private Map< IAdvice, ProgressData> progress;
+
+	private Date accessed;
+
+	private LinkedHashMap< IAdvice, ProgressData> progress;
 	
 	public MoodleProcess( long userId, long moduleId ) {
 		this.userId = userId;
 		this.moduleId = moduleId; 
-		this.progress = new HashMap<>();
+		this.progress = new LinkedHashMap<>();//keep order of insertion
+		this.accessed = Calendar.getInstance().getTime();
 	}
 
 	public long getUserId() {
@@ -28,7 +36,20 @@ public class MoodleProcess {
 	public long getModuleId() {
 		return moduleId;
 	}
+	
+	public IAdvice getRecent() {
+		if( Utils.assertNull(this.progress))
+			return null;
+		List<IAdvice> advice = new ArrayList<>( progress.keySet());
+		return advice.get(advice.size()-1); 
+	}
 
+	public boolean isDue( IAdvice.AdviceTypes type, int delay ) {
+		if( !getRecent().getType().equals(type))
+			return true;
+		return DateUtils.isOverdue(accessed, Calendar.SECOND, delay );
+	}
+	
 	public void addAdvice( IAdvice advice, SequenceNode node ) {
 		this.progress.put( advice, new ProgressData( node));
 	}
@@ -38,6 +59,7 @@ public class MoodleProcess {
 			if( advice.getId() != adviceId )
 				continue;
 			ProgressData data = this.progress.get(advice );
+			accessed = Calendar.getInstance().getTime();
 			data.setNotification(notification);
 		}
 	}
@@ -63,6 +85,7 @@ public class MoodleProcess {
 		public Notifications getNotification() {
 			return notification;
 		}
+		
 		public void setNotification(Notifications notification) {
 			this.notification = notification;
 		}

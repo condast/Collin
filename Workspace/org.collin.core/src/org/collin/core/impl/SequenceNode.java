@@ -34,7 +34,10 @@ public class SequenceNode extends AbstractDataObject<IAdvice>{
 		SEQUENCE,
 		ADVICE,
 		TEXT,
-		STEP;
+		STEP,
+		SUCCESS,
+		PROGRESS,
+		FAIL;
 
 		@Override
 		public String toString() {

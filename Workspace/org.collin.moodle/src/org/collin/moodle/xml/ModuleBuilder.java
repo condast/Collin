@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.collin.core.advice.IAdvice;
 import org.collin.core.impl.ISequenceEventListener;
 import org.collin.core.impl.SequenceEvent;
 import org.collin.core.impl.SequenceNode;
@@ -206,6 +207,7 @@ public class ModuleBuilder{
 		private SequenceNode root, current;
 		private int index;
 		private Locale locale;
+		private IAdvice.AdviceTypes advice;
 		
 		public XmlHandler( ) {
 			this.index = 0;
@@ -317,10 +319,16 @@ public class ModuleBuilder{
 				break;	
 			case ADVICE:
 				current = new SequenceNode(node, locale, id, collin, name, index);
-				current.setProgress( progress);
-				current.setType(type);
+				current.setProgress( progress );
+				String adviceType = StringUtils.isEmpty(type)? advice.name(): StringStyler.styleToEnum(type);
+				current.setType(adviceType);
 				current.setUri(uri);
 				break;	
+			case SUCCESS:
+			case PROGRESS:
+			case FAIL:
+				advice = IAdvice.AdviceTypes.valueOf(node.name());
+				break;
 			case TEXT:
 				current = new SequenceNode(node, locale, id, name, collin, index);
 				break;

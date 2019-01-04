@@ -25,7 +25,7 @@ public class Dispatcher implements ISelectionChangedListener{
 				return;
 			Object obj = selection.getFirstElement();
 			if( obj instanceof ITetra)
-				tetraViewer.setInput((ITetra<?>) obj);
+				tetraViewer.setInput(0, (ITetra<?>) obj);
 			
 		}
 	};

@@ -67,7 +67,7 @@ public class CollinViewerComposite extends Composite {
 				}else if( selection.getFirstElement() instanceof ITetra ) {
 					logger.clear();
 					ITetra<?> tetra = (ITetra<?>) selection.getFirstElement();
-					TetraTransaction<Object> tevent = new TetraTransaction<Object>( tetra, new Object( ));
+					TetraTransaction<Object> tevent = new TetraTransaction<Object>( tetra, 0, new Object( ));
 					for( Compass<Object> compass: compasses )
 						compass.fire(tevent);
 					eventWidget.setInput(tevent);

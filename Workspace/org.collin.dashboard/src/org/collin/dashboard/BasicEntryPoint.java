@@ -5,6 +5,7 @@ import org.collin.dashboard.ds.AuthenticationDispatcher;
 import org.collin.ui.main.CollinComposite;
 import org.collin.ui.main.CollinViewerComposite;
 import org.collin.ui.main.TetraViewer;
+import org.collin.ui.test.TestComposite;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 import org.condast.commons.ui.xml.XMLFactoryBuilder;
@@ -54,6 +55,9 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 					CollinViewerComposite vccomposite=  (CollinViewerComposite) event.getData();
 					vccomposite.setInput( Activator.class);
 					dispatcher.setVccomposite(vccomposite);
+				}if( event.getData() instanceof TestComposite ) {
+					TestComposite testcomposite=  (TestComposite) event.getData();
+					testcomposite.setInput( this.getClass());
 				}else if( event.getData() instanceof TetraViewer ) {
 					TetraViewer tetraViewer=  (TetraViewer) event.getData();
 					//tetraViewer.setInput( Activator.class);

@@ -102,20 +102,4 @@ public abstract class AbstractTask<T extends Object, D extends IDataObject<T>> i
 		}	
 		return result;
 	}
-
-	protected static String getContent( File file ) {
-		StringBuffer buffer = new StringBuffer();
-		Scanner scanner = null;
-		try {
-			scanner = new Scanner(file );
-			while( scanner.hasNextLine())
-				buffer.append(scanner.nextLine());
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		finally {
-			scanner.close();
-		}
-		return buffer.toString();
-	}
 }

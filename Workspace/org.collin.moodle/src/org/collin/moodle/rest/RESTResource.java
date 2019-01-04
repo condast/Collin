@@ -22,7 +22,6 @@ import org.collin.moodle.core.Dispatcher;
 import org.collin.moodle.core.PushOptionsAdviceBuilder;
 import org.condast.commons.messaging.push.ISubscription;
 import org.condast.commons.messaging.rest.RESTUtils;
-import org.condast.commons.strings.StringUtils;
 import nl.martijndwars.webpush.core.PushManager;
 
 //Sets the path to alias + path
@@ -83,18 +82,18 @@ public class RESTResource{
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/start")
-	public Response startModule( @QueryParam("id") long id, @QueryParam("token") String token, 
+	public Response startModule( @QueryParam("id") long userId, @QueryParam("token") String token, 
 			@QueryParam("module") long moduleId) {
 
 		try{
-			boolean response = RESTUtils.checkId(id, token, moduleId);
+			boolean response = RESTUtils.checkId(userId, token, moduleId);
 			if( !response )
 				return ( moduleId < 0 )? Response.noContent().build(): Response.status( Status.UNAUTHORIZED ).build();
-			response = RESTUtils.checkId(id, token, moduleId);
+			response = RESTUtils.checkId( userId, token, moduleId);
 			if( !response )
 				return ( moduleId < 0 )? Response.noContent().build(): Response.status( Status.UNAUTHORIZED ).build();
-			String result = dispatcher.start(id, moduleId);
-			return StringUtils.isEmpty(result)? Response.noContent().build(): Response.ok( result ).build();
+			dispatcher.getAdviceManager().start(userId, moduleId );
+			return Response.ok().build();
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();

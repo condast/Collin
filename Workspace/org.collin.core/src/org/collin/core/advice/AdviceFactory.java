@@ -2,8 +2,9 @@ package org.collin.core.advice;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
 import java.util.Scanner;
 
 import org.collin.core.impl.SequenceNode;
@@ -46,7 +47,7 @@ public class AdviceFactory {
 				if( line.startsWith("#"))
 					continue;
 				String[] split = line.split("[,;]");
-				Advice advice = new Advice( split ); 
+				Advice advice = new Advice( index++, split ); 
 				advice.setUri( getAdviceURI(node, advice.getType(), index));
 				advices.add( advice);
 			}
@@ -56,15 +57,15 @@ public class AdviceFactory {
 		}
 	}
 	
-	public IAdvice[] getAdvice( IAdvice.AdviceTypes type ) {
+	public Map<Long, IAdvice> getAdvice( IAdvice.AdviceTypes type ) {
+		Map<Long, IAdvice> results = new HashMap<>();
 		if( type == null )
-			return new Advice[0];
-		Collection<IAdvice> results = new ArrayList<>();
+			return results;
 		for( Advice advice: advices ) {			
 			if( advice.getType().equals( type ))
-				results.add(advice);
+				results.put(advice.getId(), advice);
 		}
-		return results.toArray( new IAdvice[results.size()]);
+		return results;
 	}
 	
 	private class Advice implements IAdvice{
@@ -82,8 +83,8 @@ public class AdviceFactory {
 		private IAdvice.Mood mood;
 		private String uri;
 
-		public Advice( String[] arr) {
-			this( createAdviceId(), arr[0], IAdvice.AdviceTypes.valueOf( arr[1].trim().toUpperCase()), IAdvice.Mood.valueOf(arr[2].trim().toUpperCase()), arr[3], Integer.parseInt( arr[4].trim() ));
+		public Advice( int id, String[] arr) {
+			this( id, arr[0], IAdvice.AdviceTypes.valueOf( arr[1].trim().toUpperCase()), IAdvice.Mood.valueOf(arr[2].trim().toUpperCase()), arr[3], Integer.parseInt( arr[4].trim() ));
 		}
 		
 		public Advice( long adviceId, String member, IAdvice.AdviceTypes type, Mood mood, String advice, int repeat) {
@@ -186,10 +187,5 @@ public class AdviceFactory {
 		public void setUri(String uri) {
 			this.uri = uri;
 		}
-	}
-	
-	public static long createAdviceId() {
-		Random rand = new Random();
-		return rand.nextLong();
 	}
 }

@@ -29,6 +29,8 @@ public class TetraTransaction<D extends Object> extends EventObject {
 	
 	private States state;
 	
+	private long userId;
+	
 	private D data;
 			
 	private double progress;
@@ -39,11 +41,11 @@ public class TetraTransaction<D extends Object> extends EventObject {
 	
 	private Collection<ITransactionListener<D>> listeners;
 
-	public TetraTransaction( Object source, D data ) {
-		this( source, States.START, data, 0);
+	public TetraTransaction( Object source,long userId,  D data ) {
+		this( source, userId, States.START, data, 0);
 	}
 
-	public TetraTransaction( Object source, States state, D data, double progress ) {
+	public TetraTransaction( Object source, long userId, States state, D data, double progress ) {
 		super(source);
 		this.state = state;
 		this.data = data;
@@ -53,6 +55,10 @@ public class TetraTransaction<D extends Object> extends EventObject {
 		this.listeners = new ArrayList<>();
 	}
 	
+	public long getUserId() {
+		return userId;
+	}
+
 	public States getState() {
 		return state;
 	}

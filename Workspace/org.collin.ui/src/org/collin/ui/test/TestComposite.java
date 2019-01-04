@@ -108,7 +108,6 @@ public class TestComposite extends Composite {
 				String uri = event.getResponse();
 				if( StringUtils.isEmpty(uri))
 					break;
-				viewer.setText(uri);
 				break;
 			default:
 					break;
@@ -274,12 +273,14 @@ public class TestComposite extends Composite {
 		});
 		
 		viewer = new RichTextEditor(this, SWT.BORDER);
+		viewer.setEditable(false);
 		viewer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
 	}
 
 	public void setInput( Class<?> clss ) {
 		String url = ModuleBuilder.S_DEFAULT_FOLDER + "/" + ModuleBuilder.S_DEFAULT_FILE;
 		this.viewer.setText( StringUtils.readInput( clss.getResourceAsStream(url)));
+		this.viewer.requestLayout();
 	}
 	
 	@Override

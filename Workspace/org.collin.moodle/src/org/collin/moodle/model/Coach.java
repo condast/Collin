@@ -1,9 +1,7 @@
 package org.collin.moodle.model;
 
-import java.util.Random;
 import java.util.logging.Logger;
 
-import org.collin.core.advice.AdviceFactory;
 import org.collin.core.advice.IAdvice;
 import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.ITetra;
@@ -14,13 +12,17 @@ import org.collin.core.impl.SequenceDelegateFactory;
 import org.collin.core.impl.SequenceNode;
 import org.collin.core.impl.SequenceQuery;
 import org.collin.core.transaction.TetraTransaction;
+import org.collin.moodle.core.AdviceManager;
+import org.collin.moodle.core.Dispatcher;
 
 public class Coach extends AbstractTetraImplementation<IAdvice, SequenceNode>{
 
 	private Logger logger = Logger.getLogger( this.getClass().getName());
 
 	private boolean completed; 
-
+	
+	private Dispatcher dispatcher = Dispatcher.getInstance();
+	
 	public Coach(SequenceNode sequence, ITetra<SequenceNode> tetra) {
 		super(tetra, sequence, new SequenceDelegateFactory( sequence ));
 		this.completed = false;
@@ -53,13 +55,12 @@ public class Coach extends AbstractTetraImplementation<IAdvice, SequenceNode>{
 			case FAIL:
 				SequenceQuery query = new SequenceQuery( super.getData());
 				SequenceNode sn = query.find(node.getType());
-				//String url = sn.getUri();
-				AdviceFactory factory = new AdviceFactory( sn);
-				factory.load( this.getClass(), AdviceFactory.S_DEFAULT_LOCATION);
-				IAdvice[] results = factory.getAdvice( Results.SUCCESS.equals(event.getResult())?IAdvice.AdviceTypes.SUCCESS: IAdvice.AdviceTypes.FAIL);
-				Random random = new Random();
-				int choice = (int)random.nextInt(results.length);
-				event.getTransaction().getData().addDatum( results[choice]);
+				AdviceManager manager = dispatcher .getAdviceManager();
+				IAdvice.AdviceTypes type = Results.SUCCESS.equals(event.getResult())?IAdvice.AdviceTypes.SUCCESS: IAdvice.AdviceTypes.FAIL;
+				IAdvice advice = manager.createAdvice( transaction.getUserId(), sn, type );
+				if( advice == null )
+					break;
+				event.getTransaction().getData().addDatum( advice);
 				this.completed = true;
 				result = Results.COMPLETE;//the coach has successfully given an advice
 				break;

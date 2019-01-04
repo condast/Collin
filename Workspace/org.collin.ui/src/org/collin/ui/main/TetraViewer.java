@@ -61,14 +61,14 @@ public class TetraViewer extends Composite {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void setInput( ITetra<?> tetra) {
+	public void setInput( long userId, ITetra<?> tetra) {
 		this.tetra = (ITetra<Object>) tetra;
 		ITetra<?>[] arr = new ITetra<?>[1];
 		arr[0] = tetra;
 		viewer.setInput(arr);
 		if( tetra == null )
 			return;
-		TetraTransaction<Object> event = new TetraTransaction<Object>( this, new Object( ));
+		TetraTransaction<Object> event = new TetraTransaction<Object>( this, userId, new Object( ));
 		this.tetra.fire(event);
 		eventWidget.setInput(event);
 		requestLayout();
