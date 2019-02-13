@@ -1,8 +1,10 @@
 package org.collin.core.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.collin.core.advice.IAdvice;
 import org.collin.core.data.AbstractDataObject;
@@ -10,6 +12,7 @@ import org.collin.core.data.AbstractDataObject;
 import org.condast.commons.Utils;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
+import org.xml.sax.Attributes;
 
 public class SequenceNode extends AbstractDataObject<IAdvice>{
 
@@ -18,6 +21,8 @@ public class SequenceNode extends AbstractDataObject<IAdvice>{
 		MODEL,
 		VIEW,
 		CONTROLLER,
+		SECTIONS,
+		SECTION,
 		MODULES,
 		MODULE,
 		ACTIVITIES,
@@ -73,35 +78,37 @@ public class SequenceNode extends AbstractDataObject<IAdvice>{
 	private long totalTime;
 
 	private SequenceNode parent;
+	
+	private Map<String, String> attributes;
 
 	private List<SequenceNode> children;
 
-	public SequenceNode( Nodes node, Locale locale, String id, String name, int index, String title) {
-		this( node, locale, id, name, null, index, -1 );
+	public SequenceNode( Nodes node, Locale locale, String id, String name, Attributes attributes, int index, String title) {
+		this( node, locale, id, name, null, attributes, index, -1 );
 	}
 
-	public SequenceNode( Nodes node, Locale locale, String id, String name, String collin, int index, String title) {
-		this( node, locale, id, name, collin, index, -1 );
+	public SequenceNode( Nodes node, Locale locale, String id, String name, String collin, Attributes attributes, int index, String title) {
+		this( node, locale, id, name, collin, attributes, index, -1 );
 	}
 	
-	public SequenceNode( Nodes node, String id, String name, String collin, int index, String title, long totalTime) {
-		this( node, Locale.ENGLISH, id, name, collin, index, totalTime );
+	public SequenceNode( Nodes node, String id, String name, String collin, Attributes attributes, int index, String title, long totalTime) {
+		this( node, Locale.ENGLISH, id, name, collin, attributes, index, totalTime );
 	}
 	
-	public SequenceNode( Nodes node, Locale locale, String id, String name, String collin, int index, String title, long totalTime) {
-		this( node, locale, id, name, collin, index, totalTime );
+	public SequenceNode( Nodes node, Locale locale, String id, String name, String collin, Attributes attributes, int index, String title, long totalTime) {
+		this( node, locale, id, name, collin, attributes, index, totalTime );
 		this.title = title;
 	}
 
-	public SequenceNode( Nodes node, String id, String name, String collin, int index, long totalTime ) {
-		this( node, Locale.ENGLISH, id, name, collin, index, totalTime );
+	public SequenceNode( Nodes node, String id, String name, String collin, Attributes attributes, int index, long totalTime ) {
+		this( node, Locale.ENGLISH, id, name, collin, attributes, index, totalTime );
 	}
 
-	public SequenceNode( Nodes node, Locale locale, String id, String name, String collin, int index ) {
-		this( node, locale, id, name, collin, index, -1 );
+	public SequenceNode( Nodes node, Locale locale, String id, String name, String collin, Attributes attributes, int index ) {
+		this( node, locale, id, name, collin, attributes, index, -1 );
 	}
 	
-	public SequenceNode( Nodes node, Locale locale, String id, String name, String collin, int index, long totalTime ) {
+	public SequenceNode( Nodes node, Locale locale, String id, String name, String collin, Attributes attributes, int index, long totalTime ) {
 		super();
 		this.node = node;
 		this.locale = locale.toString();
@@ -111,6 +118,10 @@ public class SequenceNode extends AbstractDataObject<IAdvice>{
 		this.index = index;
 		this.locale = Locale.ENGLISH.toString();
 		this.totalTime = totalTime;
+		this.attributes = new HashMap<>();
+		for( int i=0; i<attributes.getLength(); i++ ) {
+			this.attributes.put(attributes.getQName(i), attributes.getValue(i));
+		}
 		this.children = new ArrayList<>();
 	}
 
@@ -198,6 +209,10 @@ public class SequenceNode extends AbstractDataObject<IAdvice>{
 		return totalTime;
 	}
 
+	public String getValue( String key ) {
+		return attributes.get(key);
+	}
+	
 	public void addChild( SequenceNode child ) {
 		this.children.add(child);
 		child.setParent(this);

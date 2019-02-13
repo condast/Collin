@@ -1,9 +1,6 @@
 package org.collin.moodle.rest;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
@@ -15,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.collin.core.advice.AdviceBuilder;
 import org.collin.core.advice.IAdvice;
 import org.collin.core.advice.IAdvice.Notifications;
 import org.collin.core.impl.SequenceNode;
@@ -36,11 +34,14 @@ public class RESTResource{
 	
 	public static final String S_CODED = "BMfyyFPnyR8MRrzPJ6jloLC26FyXMcrL8v46d7QEUccbQVArghc9YHC6USyp4TggrFleNzAUq8df0RiSS13xwtM";
 	
+	private AdviceBuilder builder;
+	
 	private Dispatcher dispatcher = Dispatcher.getInstance();
 
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	public RESTResource() {
+		builder = new AdviceBuilder();
 	}
 
 	// This method is called if TEXT_PLAIN is requested
@@ -123,16 +124,10 @@ public class RESTResource{
 			SequenceNode result = dispatcher.getAdvice( id, moduleId, activityId, progress);
 			if( result == null )
 				return Response.ok().build();
-			List<IAdvice> data = new ArrayList<>( result.getData() );
-			if( data.isEmpty())
-				return Response.ok().build();
-			
-			Random random = new Random();
-			IAdvice advice = data.get( random.nextInt(data.size()));
-			advice.setUserId( id );
-			advice.setModuleId(moduleId);
-			advice.setActivityId(activityId);
-			advice.setProgress(progress);
+
+			IAdvice advice = builder.buildAdvice(result, id, activityId, moduleId, progress);
+			if( advice == null )
+				return Response.ok().build();		
 			PushOptionsAdviceBuilder builder = new PushOptionsAdviceBuilder();
 			builder.createPayLoad( advice, true );
 			logger.info(builder.toString());

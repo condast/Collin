@@ -232,7 +232,9 @@ public class ModuleBuilder{
 			String title = attributes.getValue( AttributeNames.TITLE.toXmlStyle());
 			String name = attributes.getValue( AttributeNames.NAME.toXmlStyle());
 			String description = attributes.getValue( AttributeNames.DESCRIPTION.toXmlStyle());
-			String url = attributes.getValue( AttributeNames.URI.toXmlStyle());
+			
+			String key = AttributeNames.URI.toXmlStyle();
+			String url = parse( current, key, attributes.getValue( key));
 			String index_str = attributes.getValue( AttributeNames.INDEX.toXmlStyle());
 			String from = attributes.getValue( AttributeNames.FROM.toXmlStyle());
 			String to = attributes.getValue( AttributeNames.TO.toXmlStyle());
@@ -256,21 +258,28 @@ public class ModuleBuilder{
 			switch( node ){
 			case COURSE:
 				index = 0;
-				current = new SequenceNode( node, locale, id, name, index, title);
+				current = new SequenceNode( node, locale, id, name, attributes, index, title);
 				root= current;
 				if( !StringUtils.isEmpty(title ))
 					current.setTitle(title);
 				break;
 			case MODEL:
 				index = 0;
-				current = new SequenceNode(node, locale, id, name, collin, index);
+				current = new SequenceNode(node, locale, id, name, collin, attributes,index);
+				break;
+			case SECTIONS:
+				index = 0;
+				current = new SequenceNode(node, locale, id, name, collin, attributes,index);
+				break;
+			case SECTION:
+				current = new SequenceNode(node, locale, id, name, collin, attributes,index);
 				break;
 			case MODULES:
 				index = 0;
-				current = new SequenceNode(node, locale, id, name, collin, index);
+				current = new SequenceNode(node, locale, id, name, collin, attributes,index);
 				break;
 			case MODULE:
-				current = new SequenceNode(node, locale, id, name, collin, index, totalTime);
+				current = new SequenceNode(node, locale, id, name, collin, attributes,index, totalTime);
 				current.setUri(url);
 				if( !StringUtils.isEmpty(class_str)) {
 					this.current.setDelegate(class_str);
@@ -279,10 +288,10 @@ public class ModuleBuilder{
 				break;
 			case ACTIVITIES:
 				index = 0;
-				current = new SequenceNode(node, locale, id, name, collin, index);
+				current = new SequenceNode(node, locale, id, name, collin, attributes,index);
 				break;
 			case ACTIVITY:
-				current = new SequenceNode(node, locale, id, name, collin, index, totalTime);
+				current = new SequenceNode(node, locale, id, name, collin, attributes,index, totalTime);
 				current.setUri(url);
 				if( !StringUtils.isEmpty(class_str)) {
 					this.current.setDelegate(class_str);
@@ -291,34 +300,34 @@ public class ModuleBuilder{
 				break;
 			case VIEW:
 				index=0;
-				current = new SequenceNode(node, locale, id, collin, name, index);
+				current = new SequenceNode(node, locale, id, name, collin, attributes,index);
 				if( !StringUtils.isEmpty(type))
 					current.setType(type);
 				break;
 			case PARTS:
 				index=0;
-				current = new SequenceNode(node, locale, id, collin, name, index);
+				current = new SequenceNode(node, locale, id, name, collin, attributes, index);
 				completeFromTo(current, from, to);
 				break;	
 			case PART:
-				current = new SequenceNode(node, locale, id, collin, name, index);
+				current = new SequenceNode(node, locale, id, name, collin, attributes, index);
 				index++;
 				break;	
 			case CONTROLLER:
 				index=0;
-				current = new SequenceNode(node, locale, id, collin, name, index);
+				current = new SequenceNode(node, locale, id, name, collin, attributes, index);
 				break;	
 			case SEQUENCE:
 				index=0;
-				current = new SequenceNode(node, locale, id, collin, name, index);
+				current = new SequenceNode(node, locale, id, name, collin, attributes, index);
 				break;	
 			case STEP:
-				current = new SequenceNode(node, locale, id, collin, name, index);
+				current = new SequenceNode(node, locale, id, name, collin, attributes, index);
 				if( !StringUtils.isEmpty(name))
 					current.setTitle(name);
 				break;	
 			case ADVICE:
-				current = new SequenceNode(node, locale, id, collin, name, index);
+				current = new SequenceNode(node, locale, id, name, collin, attributes, index);
 				current.setProgress( progress );
 				String adviceType = StringUtils.isEmpty(type)? advice.name(): StringStyler.styleToEnum(type);
 				current.setType(adviceType);
@@ -330,13 +339,13 @@ public class ModuleBuilder{
 				advice = IAdvice.AdviceTypes.valueOf(node.name());
 				break;
 			case TEXT:
-				current = new SequenceNode(node, locale, id, name, collin, index);
+				current = new SequenceNode(node, locale, id, name, collin, attributes, index);
 				break;
 			case FUNCTION:
 			case GOAL:
 			case TASK:
 			case SOLUTION:
-				current = new SequenceNode(node, locale, id, name, collin, 0, totalTime);
+				current = new SequenceNode(node, locale, id, name, collin, attributes, 0, totalTime);
 				current.setUri(url);
 				if( !StringUtils.isEmpty(class_str)) {
 					this.current.setDelegate(class_str);
@@ -372,8 +381,7 @@ public class ModuleBuilder{
 				for( int i=index; i<last; i++ ) {
 					current.addChild(parts.getChildren().get(i));
 				}
-			}
-			
+			}	
 		}
 		
 		@Override
@@ -436,5 +444,37 @@ public class ModuleBuilder{
 				return find;
 		}
 		return null;		
+	}
+	
+	protected static String parse( SequenceNode node, String key, String value ) {
+		String result = null;
+		if( StringUtils.isEmpty(value)) {
+			result = getValue(node, key, value);
+			if(StringUtils.isEmpty(result))
+				return value;
+		}
+		String[] split = value.split("[$][{]");
+		if( split.length == 1)
+			return value;
+		result = split[0];
+		for( int i = 1; i<split.length; i++ ) {
+			String str = split[i];
+			String name = str.substring(0, str.indexOf("}")).trim();
+			String rest = str.substring(str.indexOf("}")+1, str.length());
+			String[] split2 = name.split("[.]");
+			String attr = (split2.length == 1)?node.getValue(split2[0]): getValue( node, split2[0], split2[1] );
+			result += attr;
+			result += rest;
+		}
+		return result;
+	}
+	
+	protected static final String getValue( SequenceNode node, String name, String key ) {
+		String nodeName = StringStyler.xmlStyleString(node.getNode().name());
+		if( nodeName.equals(name)) {
+			String result = node.getValue(key);
+			return result;
+		}
+		return getValue( node.getParent(), name, key );
 	}
 }

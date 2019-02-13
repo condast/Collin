@@ -1,42 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<course id="org.collin.moodle.test" name="Collin Moodle Test"
-	title="HowAComputer.Thinks">
+<course id="329" name="CodeHeroes_1"
+	title="CodeHeroes 1: Het geheim van de tempel">
 	<models type="moodle">
 		<model type="moodle" collin="student">
-			<modules>
-				<module id="1" name="lesson1" index="0"
-					uri="http://www.condast.com">
-					<activities>
-						<activity id="1" name="Activity1" index="1"
-							uri="http://www.condast.com">
-							<task class="org.collin.core.task.TimedTask" time="900">
-		</task>
-							<function></function>
-							<goal></goal>
-							<solution proceed="1">
-							</solution>
-						</activity>
-						<activity id="2" name="Activity2" index="2"
-							uri="http://www.condast.com">
-							<task time="900" />
-						</activity>
-						<activity id="3" name="Activity3" index="3"
-							uri="http://www.condast.com"></activity>
-					</activities>
-				</module>
-				<module id="2" name="lesson2" index="1"
-					uri="http://www.condast.com"></module>
-				<module id="3" name="lesson3" index="2"
-					uri="http://www.condast.com"></module>
-				<module id="4" name="lesson4" index="3"
-					uri="http://www.condast.com"></module>
-				<module id="5" name="lesson5" index="4"
-					uri="http://www.condast.com"></module>
-				<module id="6" name="lesson6" index="5"
-					uri="http://www.condast.com"></module>
-				<module id="7" name="lesson7" index="6"
-					uri="http://www.condast.com"></module>
-			</modules>
+			<sections uri="https://www.plusklas.nu/course/view.php?id=${course.id}#${type}-${index}">
+				<section index="0" title="Algemeen">
+				</section>
+				<section index="1" title="Het Avontuur">
+					<modules uri="https://www.plusklas.nu/mod/url/view.php">
+						<module id="22456" index="1"
+							uri="https://www.plusklas.nu/course/view.php?${id}#{name}-${index}">
+							<activities>
+								<activity id="1" name="Activity1" index="1"
+									uri="http://www.condast.com">
+									<task class="org.collin.core.task.TimedTask" time="900">
+									</task>
+									<function></function>
+									<goal></goal>
+									<solution proceed="1">
+									</solution>
+								</activity>
+								<activity id="2" name="Activity2" index="2"
+									uri="http://www.condast.com">
+									<task time="900" />
+								</activity>
+								<activity id="3" name="Activity3" index="3"
+									uri="http://www.condast.com"></activity>
+							</activities>
+						</module>
+						<module id="2" name="lesson2" index="1"
+							uri="http://www.condast.com"></module>
+						<module id="3" name="lesson3" index="2"
+							uri="http://www.condast.com"></module>
+						<module id="4" name="lesson4" index="3"
+							uri="http://www.condast.com"></module>
+						<module id="5" name="lesson5" index="4"
+							uri="http://www.condast.com"></module>
+						<module id="6" name="lesson6" index="5"
+							uri="http://www.condast.com"></module>
+						<module id="7" name="lesson7" index="6"
+							uri="http://www.condast.com"></module>
+					</modules>
+				</section>
+				<section index="2" title="Sten van Rosetta">
+				</section>
+				<section index="3" title="Kamer onder water">
+				</section>
+				<section index="4" title="Drones, robots en Dirk">
+				</section>
+			</sections>
 		</model>
 		<model type="moodle" collin="coach">
 			<modules>
@@ -44,9 +56,12 @@
 					uri="http://www.condast.com">
 					<activities>
 						<activity id="1" name="Activity1">
-							<task class="org.collin.core.task.AdviceTask" time="900" uri="resources/advice">
-								<advice type="fail" uri="https://nl.wikipedia.org/wiki/Egyptische_piramide"/>
-								<advice type="success" uri="http://www.wikipedia.com/boats"/>
+							<task class="org.collin.core.task.AdviceTask" time="900"
+								uri="resources/advice">
+								<advice type="fail"
+									uri="https://nl.wikipedia.org/wiki/Egyptische_piramide" />
+								<advice type="success"
+									uri="http://www.wikipedia.com/boats" />
 							</task>
 						</activity>
 						<activity id="2" name="Activity2" index="2"
