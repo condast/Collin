@@ -2,7 +2,6 @@ package org.collin.moodle.model;
 
 import java.util.logging.Logger;
 
-import org.collin.core.advice.IAdvice;
 import org.collin.core.def.ICollINDelegate;
 import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.ITetra;
@@ -12,43 +11,42 @@ import org.collin.core.impl.AbstractTetraImplementation;
 import org.collin.core.impl.SequenceDelegateFactory;
 import org.collin.core.impl.SequenceNode;
 import org.collin.core.transaction.TetraTransaction;
+import org.collin.moodle.advice.IAdviceMap;
 
-public class Student extends AbstractTetraImplementation<IAdvice, SequenceNode>{
+public class Student extends AbstractTetraImplementation<SequenceNode<IAdviceMap>, IAdviceMap>{
 
 	private Logger logger = Logger.getLogger( this.getClass().getName());
 
-	public Student(SequenceNode sequence, ITetra<SequenceNode> tetra) {
-		super(tetra, sequence, new SequenceDelegateFactory( sequence ));
+	public Student(SequenceNode<IAdviceMap> sequence, ITetra<IAdviceMap> tetra) {
+		super(tetra, sequence, new SequenceDelegateFactory<IAdviceMap>( sequence ));
 	}
 
 	@Override
-	protected TetraEvent.Results onCallFunction(ITetraNode<SequenceNode> node, TetraEvent<SequenceNode> event) {
+	protected TetraEvent.Results onCallFunction(ITetraNode<IAdviceMap> node, TetraEvent<IAdviceMap> event) {
 		logger.info(node.getId() + ": " + event.getTransaction().getState().toString());
 		TetraEvent.Results result = TetraEvent.Results.COMPLETE;
 		return result;
 	}
 
 	@Override
-	protected TetraEvent.Results onCallGoal(ITetraNode<SequenceNode> node, TetraEvent<SequenceNode> event) {
+	protected TetraEvent.Results onCallGoal(ITetraNode<IAdviceMap> node, TetraEvent<IAdviceMap> event) {
 		logger.info(node.getId() + ": " + event.getTransaction().getState().toString());
 		TetraEvent.Results result = TetraEvent.Results.CONTINUE;
 		return result;
 	}
 
 	@Override
-	protected TetraEvent.Results onCallTask(ITetraNode<SequenceNode> node, TetraEvent<SequenceNode> event) {
+	protected TetraEvent.Results onCallTask(ITetraNode<IAdviceMap> node, TetraEvent<IAdviceMap> event) {
 		logger.info(node.getId() + ": " + event.getTransaction().getState().toString());
 		TetraEvent.Results result = TetraEvent.Results.CONTINUE;
-		TetraTransaction<SequenceNode> transaction = event.getTransaction();		
-		ICollINDelegate<IAdvice, SequenceNode> delegate = getDelegate( node );
+		TetraTransaction<IAdviceMap> transaction = event.getTransaction();		
+		ICollINDelegate<IAdviceMap> delegate = getDelegate( node );
 		result = (delegate == null)? result: delegate.perform(node, event );
 		switch( transaction.getState()) {
 		case START:
-			getDelegate(node);
 			break;
 		case PROGRESS:
 			logger.info( "UPDATING TETRA ("+ result + "): " + node.getType().toString() + ":  " + transaction.getState().toString());
-			result = ( delegate == null )? Results.COMPLETE: delegate.perform(node, event);
 			break;
 		case COMPLETE:
 			result = Results.COMPLETE;
@@ -60,20 +58,20 @@ public class Student extends AbstractTetraImplementation<IAdvice, SequenceNode>{
 	}
 
 	@Override
-	protected TetraEvent.Results onCallSolution(ITetraNode<SequenceNode> node, TetraEvent<SequenceNode> event) {
+	protected TetraEvent.Results onCallSolution(ITetraNode<IAdviceMap> node, TetraEvent<IAdviceMap> event) {
 		logger.info(node.getId() + ": " + event.getTransaction().getState().toString());
 		TetraEvent.Results result = TetraEvent.Results.COMPLETE;
 		return result;
 	}	
 
 	@Override
-	protected TetraEvent.Results onTransactionUpdateRequest(TetraEvent<SequenceNode> event) {
+	protected TetraEvent.Results onTransactionUpdateRequest(TetraEvent<IAdviceMap> event) {
 		logger.info(event.getTransaction().getState().toString());
 		return Results.COMPLETE;
 	}
 
 	@Override
-	protected void onTetraEventReceived(TetraEvent<SequenceNode> event) {
+	protected void onTetraEventReceived(TetraEvent<IAdviceMap> event) {
 		logger.info(event.getTransaction().getState().toString());
 	}		
 }

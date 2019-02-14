@@ -30,8 +30,11 @@ import org.eclipse.swt.widgets.Spinner;
 public class TestComposite extends Composite {
 	private static final long serialVersionUID = 1L;
 
-	public static final String S_CONTEXT_PATH = "http://www.condast.com:8080/moodle/module/";
-	public static final String S_PUSH_CONTEXT_PATH = "http://www.condast.com:8080/moodle/push/";
+	//public static final String S_CONTEXT_PATH = "http://www.condast.com:8080/moodle/module/";
+	//public static final String S_PUSH_CONTEXT_PATH = "http://www.condast.com:8080/moodle/push/";
+
+	public static final String S_CONTEXT_PATH = "http://127.0.0.1:10080/moodle/module/";
+	public static final String S_PUSH_CONTEXT_PATH = "http://127.0.0.1:10080/moodle/push/";
 
 	public static final String S_SUBSCRIPTION_SERVER =  S_PUSH_CONTEXT_PATH;
 

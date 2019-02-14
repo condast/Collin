@@ -1,5 +1,8 @@
 package org.collin.moodle;
 
+import java.util.Random;
+
+import org.collin.moodle.advice.IAdvice;
 import org.condast.commons.i18n.Language;
 
 public class LanguagePack extends Language {
@@ -22,6 +25,14 @@ public class LanguagePack extends Language {
 		public String getMessage() {
 			return getInstance().getMessage( this );
 		}		
+
+		public static Fields getField( IAdvice.AdviceTypes type ) {
+			Random random = new Random();
+			int value = 1 + random.nextInt(2);
+			String str = type.name() + value;
+			return Fields.valueOf(str);
+		}		
+
 	}
 	
 	private static LanguagePack language = new LanguagePack();

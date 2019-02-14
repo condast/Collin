@@ -298,4 +298,10 @@ public class PersonAddress implements IPersonAddress, Serializable {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public boolean hasValidLocation() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

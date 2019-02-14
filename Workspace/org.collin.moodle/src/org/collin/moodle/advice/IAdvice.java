@@ -1,4 +1,4 @@
-package org.collin.core.advice;
+package org.collin.moodle.advice;
 
 import org.condast.commons.strings.StringStyler;
 
@@ -49,34 +49,23 @@ public interface IAdvice {
 			return Notifications.UNKNOWN;
 		}
 	}
+	
+	public enum Attributes{
+		MEMBER,
+		REPEAT;
+	}
 
 	long getId();
 	
 	String getMember();
 
-	String getAdvice();
+	String getDescription();
 
 	int getRepeat();
 
 	IAdvice.AdviceTypes getType();
 
 	IAdvice.Mood getMood();
-
-	void setUserId(long userId);
-
-	void setModuleId(long moduleId);
-
-	void setActivityId(long activityId);
-
-	void setProgress(double progress);
-
-	long getUserId();
-
-	long getModuleId();
-
-	long getActivityId();
-
-	double getProgress();
 
 	String getUri();
 

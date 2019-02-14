@@ -8,24 +8,25 @@ import java.util.List;
 import org.collin.core.impl.SequenceEvent;
 import org.collin.core.impl.SequenceNode;
 import org.collin.core.impl.SequenceNode.Nodes;
+import org.collin.moodle.advice.IAdviceMap;
 import org.collin.moodle.xml.ModuleBuilder.SequenceEvents;
 import org.condast.commons.Utils;
 
 public class Sequence {
 
-	private ModuleBuilder builder;
-	private SequenceNode root;
-	private SequenceNode current;
+	private ModuleBuilder<IAdviceMap> builder;
+	private SequenceNode<IAdviceMap> root;
+	private SequenceNode<IAdviceMap> current;
 	
 	public Sequence( Class<?> clss) throws IOException {
 		super();
-		builder = new ModuleBuilder( clss);
+		builder = new ModuleBuilder<>( clss);
 		root = builder.build();
 	}
 
 	public Sequence( InputStream in) throws IOException {
 		super();
-		builder = new ModuleBuilder( in );
+		builder = new ModuleBuilder<>( in );
 		root = builder.build();
 	}
 
@@ -35,8 +36,8 @@ public class Sequence {
 	public SequenceEvent process( SequenceEvents event, SequenceEvent current ) {
 		SequenceEvent result = null;
 		try {
-			SequenceNode find = null;
-			SequenceNode parent = null;
+			SequenceNode<IAdviceMap> find = null;
+			SequenceNode<IAdviceMap> parent = null;
 			switch( event) {
 			case RESET:
 				find = root;
@@ -89,46 +90,46 @@ public class Sequence {
 	}
 
 	public SequenceEvent getSequence() {
-		SequenceNode is = ModuleBuilder.find( root, Nodes.SEQUENCE );
+		SequenceNode<IAdviceMap> is = ModuleBuilder.find( root, Nodes.SEQUENCE );
 		return new SequenceEvent( this, is.getId(), is.getUri(), is.getIndex());
 	}
 		
-	public SequenceNode start() {
-		SequenceNode is = ModuleBuilder.find( root, Nodes.SEQUENCE );
-		Collection<SequenceNode> steps = is.getChildren();
+	public SequenceNode<IAdviceMap> start() {
+		SequenceNode<IAdviceMap> is = ModuleBuilder.find( root, Nodes.SEQUENCE );
+		Collection<SequenceNode<IAdviceMap>> steps = is.getChildren();
 		if( Utils.assertNull(steps))
 			return is;
-		SequenceNode step = steps.iterator().next();
-		Collection<SequenceNode> parts = step.getChildren();
+		SequenceNode<IAdviceMap> step = steps.iterator().next();
+		Collection<SequenceNode<IAdviceMap>> parts = step.getChildren();
 		current = Utils.assertNull(parts)?step: parts.iterator().next().getChildren().iterator().next();
 		return current;
 	}
 	
-	public SequenceNode next() {
-		SequenceNode is = ModuleBuilder.find( root, Nodes.SEQUENCE );
-		Collection<SequenceNode> steps = is.getChildren();
+	public SequenceNode<IAdviceMap> next() {
+		SequenceNode<IAdviceMap> is = ModuleBuilder.find( root, Nodes.SEQUENCE );
+		Collection<SequenceNode<IAdviceMap>> steps = is.getChildren();
 		if( Utils.assertNull(steps))
 			return is;
-		SequenceNode step = steps.iterator().next();
-		List<SequenceNode> parts = step.getChildren();
-		SequenceNode curparts = current.getParent();
+		SequenceNode<IAdviceMap> step = steps.iterator().next();
+		List<SequenceNode<IAdviceMap>> parts = step.getChildren();
+		SequenceNode<IAdviceMap> curparts = current.getParent();
 		int index = curparts.getChildren().indexOf(current);
 		int next = (index >= curparts.getChildren().size())?-1:++index;
 		if( next >= 0 )
 			return curparts.getChildren().get(next);
 		else {
 			int partsindex = parts.indexOf(curparts);
-			SequenceNode nextpart = parts.get(++partsindex);
+			SequenceNode<IAdviceMap> nextpart = parts.get(++partsindex);
 			return nextpart.getChildren().iterator().next();
 			//TODO implement 
 		}
 	}
 
-	public static SequenceNode find( SequenceNode current, String id ) {
+	public static SequenceNode<IAdviceMap> find( SequenceNode<IAdviceMap> current, String id ) {
 		if( id.equals(current.getId()))
 			return current;
-		for( SequenceNode child: current.getChildren()) {
-			SequenceNode find = find( child, id);
+		for( SequenceNode<IAdviceMap> child: current.getChildren()) {
+			SequenceNode<IAdviceMap> find = find( child, id);
 			if( find != null )
 				return find;
 		}

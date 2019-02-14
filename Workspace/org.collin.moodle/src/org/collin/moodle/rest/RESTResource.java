@@ -12,10 +12,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.collin.core.advice.AdviceBuilder;
-import org.collin.core.advice.IAdvice;
-import org.collin.core.advice.IAdvice.Notifications;
 import org.collin.core.impl.SequenceNode;
+import org.collin.moodle.advice.IAdvice;
+import org.collin.moodle.advice.IAdviceMap;
 import org.collin.moodle.core.Dispatcher;
 import org.collin.moodle.core.PushOptionsAdviceBuilder;
 import org.condast.commons.messaging.push.ISubscription;
@@ -34,14 +33,11 @@ public class RESTResource{
 	
 	public static final String S_CODED = "BMfyyFPnyR8MRrzPJ6jloLC26FyXMcrL8v46d7QEUccbQVArghc9YHC6USyp4TggrFleNzAUq8df0RiSS13xwtM";
 	
-	private AdviceBuilder builder;
-	
 	private Dispatcher dispatcher = Dispatcher.getInstance();
 
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	public RESTResource() {
-		builder = new AdviceBuilder();
 	}
 
 	// This method is called if TEXT_PLAIN is requested
@@ -54,7 +50,7 @@ public class RESTResource{
 			boolean response = RESTUtils.checkId(moduleId, token, moduleId);
 			if( !response )
 				return Response.status( Status.BAD_REQUEST).build();
-			SequenceNode node = dispatcher.findLesson( moduleId, activityId ); 
+			SequenceNode<IAdviceMap> node = dispatcher.findLesson( moduleId, activityId ); 
 				return ( node != null )? Response.ok( node.getUri()).build(): Response.noContent().build();
 		}
 		catch( Exception ex ){
@@ -93,7 +89,7 @@ public class RESTResource{
 			response = RESTUtils.checkId( userId, token, moduleId);
 			if( !response )
 				return ( moduleId < 0 )? Response.noContent().build(): Response.status( Status.UNAUTHORIZED ).build();
-			dispatcher.getAdviceManager().start(userId, moduleId );
+			dispatcher.start(userId, moduleId );
 			return Response.ok().build();
 		}
 		catch( Exception ex ){
@@ -121,15 +117,12 @@ public class RESTResource{
 			PushManager pm = dispatcher.getPushMananger();
 			ISubscription subscription = pm.getSubscription( id );
 
-			SequenceNode result = dispatcher.getAdvice( id, moduleId, activityId, progress);
-			if( result == null )
+			IAdviceMap adviceMap = dispatcher.getAdvice( id, moduleId, activityId, progress);
+			if(( adviceMap == null ) || adviceMap.isEmpty() )
 				return Response.ok().build();
 
-			IAdvice advice = builder.buildAdvice(result, id, activityId, moduleId, progress);
-			if( advice == null )
-				return Response.ok().build();		
 			PushOptionsAdviceBuilder builder = new PushOptionsAdviceBuilder();
-			builder.createPayLoad( advice, true );
+			builder.createPayLoad( adviceMap.getAdvice()[0], true );
 			logger.info(builder.toString());
 			PushManager.sendPushMessage( S_PUBLIC_KEY, S_PRIVATE_KEY, subscription, builder.createPayLoad());				
 			return Response.ok().build();
@@ -164,7 +157,7 @@ public class RESTResource{
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/update")
 	public Response update( @QueryParam("id") String id, @QueryParam("token") String token, @QueryParam("adviceid") String adviceId, @QueryParam("notification") String notification_str) {
-		Notifications notification = Notifications.valueOf(notification_str );
+		IAdvice.Notifications notification = IAdvice.Notifications.valueOf(notification_str );
 		logger.info("NOTIFICATION:" + notification);
 		try{
 			dispatcher.updateAdvice(Long.parseLong(id), Long.parseLong( adviceId ), notification);

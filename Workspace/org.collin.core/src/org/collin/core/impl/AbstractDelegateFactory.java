@@ -8,33 +8,32 @@ import org.collin.core.def.IDelegateFactory;
 import org.collin.core.def.ITetraNode;
 import org.condast.commons.strings.StringUtils;
 
-public abstract class AbstractDelegateFactory<T extends Object, D extends IDataObject<T>> implements IDelegateFactory<T,D>{
+public abstract class AbstractDelegateFactory<D,N extends Object> implements IDelegateFactory<D>{
 
-	private D data;
+	private N data;
 	
-	protected AbstractDelegateFactory( D sequence ) {
+	protected AbstractDelegateFactory( N sequence ) {
 		this.data = sequence;
 	}
 
-	protected D getData() {
+	protected N getData() {
 		return data;
 	}
 		
 	@SuppressWarnings("unchecked")
-	protected static <T extends Object, D extends IDataObject<T>> ICollINDelegate<T, D> constructDelegate( Class<?> clss, String className, 
-			SequenceNode sequence, ITetraNode<D> node){
+	protected static <D extends Object> ICollINDelegate<D> constructDelegate( Class<?> clss, String className, 
+			SequenceNode<D> sequence, ITetraNode<D> node){
 		if( StringUtils.isEmpty( className ))
 			return null;
-		Class< ICollINDelegate<T,D>> builderClass;
-		 ICollINDelegate<T,D> delegate = null;
+		Class< ICollINDelegate<D>> builderClass;
+		 ICollINDelegate<D> delegate = null;
 		try {
-			builderClass = (Class<ICollINDelegate<T,D>>) clss.getClassLoader().loadClass( className );
- 			Constructor< ICollINDelegate<T,D>> constructor = builderClass.getConstructor( IDataObject.class, ITetraNode.class );;
+			builderClass = (Class<ICollINDelegate<D>>) clss.getClassLoader().loadClass( className );
+ 			Constructor< ICollINDelegate<D>> constructor = builderClass.getConstructor( IDataObject.class, ITetraNode.class );;
 			delegate = constructor.newInstance( sequence, node );
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return delegate;
 	}
-
 }

@@ -5,7 +5,7 @@ import org.collin.core.impl.SequenceNode.Nodes;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 
-public class SequenceQuery {
+public class SequenceQuery<D extends Object> {
 
 	public enum Attributes{
 		ID,
@@ -18,35 +18,72 @@ public class SequenceQuery {
 		}		
 	}
 	
-	private SequenceNode root;
+	private SequenceNode<D> root;
 
-	public SequenceQuery(SequenceNode node) {
+	public SequenceQuery(SequenceNode<D> node) {
 		super();
 		this.root = node;
 	}
 
-	public SequenceNode find( Nodes node ) {
+	public SequenceNode<D> getTetra( long moduleId, long activityId, Nodes node ) {
+		SequenceNode<D> module = find( Nodes.MODULE, String.valueOf(moduleId), root );
+		SequenceNode<D> activity = find( Nodes.ACTIVITY, String.valueOf(activityId), module );
+		return searchParent(node, activity);
+	}
+
+	public SequenceNode<D> searchParent( Nodes node, SequenceNode<D> sn ) {
+		if( sn == null )
+			return null;
+		if( node.equals(sn.getNode()))
+			return sn;
+		for( SequenceNode<D> child: sn.getChildren() ) {
+			if( node.equals( child.getNode()))
+				return child;
+		}
+		return searchParent(node, sn.getParent());
+	}
+
+	public SequenceNode<D> find( Nodes node ) {
 		return find( node, root );
 	}
 	
-	protected SequenceNode find( Nodes node, SequenceNode nd ) {
+	protected SequenceNode<D> find( Nodes node, SequenceNode<D> nd ) {
 		if( node == null )
 			return null;
 		if( node.equals(nd.getNode()))
 			return nd;
-		for( SequenceNode child: nd.getChildren() ) {
-			SequenceNode result = find( node, child );
+		for( SequenceNode<D> child: nd.getChildren() ) {
+			SequenceNode<D> result = find( node, child );
 			if( result != null )
 				return result;
 		}
 		return null;
 	}
 
-	public SequenceNode find(ITetraNode.Nodes type ) {
+	public SequenceNode<D> find( Nodes node, String id ) {
+		if( StringUtils.isEmpty(id))
+			return null;
+		return find( node, id, root );
+	}
+	
+	protected SequenceNode<D> find( Nodes node, String id, SequenceNode<D> nd ) {
+		if( node == null )
+			return null;
+		if(( node.equals(nd.getNode())) && ( nd.getId().equals(id )))
+			return nd;
+		for( SequenceNode<D> child: nd.getChildren() ) {
+			SequenceNode<D> result = find( node, id, child );
+			if( result != null )
+				return result;
+		}
+		return null;
+	}
+
+	public SequenceNode<D> find(ITetraNode.Nodes type ) {
 		return find( type, root );
 	}
 	
-	protected SequenceNode find( ITetraNode.Nodes type, SequenceNode nd ) {
+	protected SequenceNode<D> find( ITetraNode.Nodes type, SequenceNode<D> nd ) {
 		if(( type == null ) ||( ITetraNode.Nodes.UNDEFINED.equals(type)))
 			return null;
 		
@@ -54,11 +91,11 @@ public class SequenceQuery {
 		return find( sn );
 	}
 
-	public SequenceNode find( Attributes attr, String description ) {
+	public SequenceNode<D> find( Attributes attr, String description ) {
 		return find( description, root );
 	}
 	
-	protected SequenceNode find( Attributes attr, String description, SequenceNode nd ) {
+	protected SequenceNode<D> find( Attributes attr, String description, SequenceNode<D> nd ) {
 		if( StringUtils.isEmpty(description))
 			return null;
 		switch( attr ) {
@@ -75,25 +112,25 @@ public class SequenceQuery {
 				return nd;
 			break;
 		}
-		for( SequenceNode child: nd.getChildren() ) {
-			SequenceNode result = find( description, child );
+		for( SequenceNode<D> child: nd.getChildren() ) {
+			SequenceNode<D> result = find( description, child );
 			if( result != null )
 				return child;
 		}
 		return null;
 	}
 
-	public SequenceNode findCollin( String name ) {
+	public SequenceNode<D> findCollin( String name ) {
 		return find( name, root );
 	}
 	
-	protected SequenceNode find( String name, SequenceNode nd ) {
+	protected SequenceNode<D> find( String name, SequenceNode<D> nd ) {
 		if( StringUtils.isEmpty(name))
 			return null;
 		if( name.equals(nd.getCollin()))
 			return nd;
-		for( SequenceNode child: nd.getChildren() ) {
-			SequenceNode result = find( name, child );
+		for( SequenceNode<D> child: nd.getChildren() ) {
+			SequenceNode<D> result = find( name, child );
 			if( result != null )
 				return child;
 		}

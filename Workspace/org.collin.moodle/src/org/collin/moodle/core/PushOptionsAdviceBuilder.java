@@ -1,8 +1,8 @@
 package org.collin.moodle.core;
 
-import org.collin.core.advice.IAdvice;
-import org.collin.core.advice.IAdvice.Mood;
 import org.collin.moodle.LanguagePack;
+import org.collin.moodle.advice.IAdvice;
+import org.collin.moodle.advice.IAdvice.Mood;
 import org.collin.moodle.images.TeamImages;
 import org.collin.moodle.images.TeamImages.Team;
 import org.condast.js.commons.push.PushOptionsBuilder;
@@ -18,7 +18,7 @@ public class PushOptionsAdviceBuilder extends PushOptionsBuilder {
 
 	public byte[] createPayLoad( IAdvice advice, boolean renotify ) {
 		LanguagePack language = LanguagePack.getInstance();
-		LanguagePack.Fields field = LanguagePack.Fields.valueOf(advice.getAdvice().trim());
+		LanguagePack.Fields field = LanguagePack.Fields.getField(advice.getType());
 
 		addOption( Options.TITLE, S_MOODLE_NOTIFICATION);
 		addOption( Options.BODY, field.getMessage());

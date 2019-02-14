@@ -5,13 +5,13 @@ import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.TetraEvent;
 import org.collin.core.essence.TetraEvent.Results;
 
-public class TimedTask<T extends Object, D extends IDataObject<T>> extends AbstractTask<T,D>{
+public class TimedTask<D extends Object> extends AbstractTask<D>{
 
 	public TimedTask() {
 		super();
 	}
 
-	public TimedTask(IDataObject<T> sequence, ITetraNode<D> node ) {
+	public TimedTask(IDataObject<D> sequence, ITetraNode<D> node ) {
 		super( sequence, node );
 	}
 	

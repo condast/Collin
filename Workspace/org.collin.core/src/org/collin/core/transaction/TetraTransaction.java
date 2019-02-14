@@ -41,6 +41,10 @@ public class TetraTransaction<D extends Object> extends EventObject {
 	
 	private Collection<ITransactionListener<D>> listeners;
 
+	public TetraTransaction( Object source,long userId ) {
+		this( source, userId, States.START, null, 0);
+	}
+
 	public TetraTransaction( Object source,long userId,  D data ) {
 		this( source, userId, States.START, data, 0);
 	}
@@ -48,6 +52,7 @@ public class TetraTransaction<D extends Object> extends EventObject {
 	public TetraTransaction( Object source, long userId, States state, D data, double progress ) {
 		super(source);
 		this.state = state;
+		this.userId = userId;
 		this.data = data;
 		this.progress = progress;
 		this.history = new HashSet<>();

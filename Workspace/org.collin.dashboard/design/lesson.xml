@@ -3,7 +3,8 @@
 	title="CodeHeroes 1: Het geheim van de tempel">
 	<models type="moodle">
 		<model type="moodle" collin="student">
-			<sections uri="https://www.plusklas.nu/course/view.php?id=${course.id}#${type}-${index}">
+			<sections
+				uri="https://www.plusklas.nu/course/view.php?id=${course.id}#${type}-${index}">
 				<section index="0" title="Algemeen">
 				</section>
 				<section index="1" title="Het Avontuur">
@@ -42,7 +43,7 @@
 							uri="http://www.condast.com"></module>
 					</modules>
 				</section>
-				<section index="2" title="Sten van Rosetta">
+				<section index="2" title="Steen van Rosetta">
 				</section>
 				<section index="3" title="Kamer onder water">
 				</section>
@@ -51,6 +52,12 @@
 			</sections>
 		</model>
 		<model type="moodle" collin="coach">
+			<task class="org.collin.core.task.AdviceTask" time="900"
+				uri="resources/advice">
+				<advice type="fail"
+					uri="https://nl.wikipedia.org/wiki/Egyptische_piramide" />
+				<advice type="success" uri="http://www.wikipedia.com/boats" />
+			</task>
 			<modules>
 				<module id="1" name="lesson1" index="0"
 					uri="http://www.condast.com">
@@ -58,7 +65,7 @@
 						<activity id="1" name="Activity1">
 							<task class="org.collin.core.task.AdviceTask" time="900"
 								uri="resources/advice">
-								<advice type="fail"
+								<advice type="fail" member="Amanda"
 									uri="https://nl.wikipedia.org/wiki/Egyptische_piramide" />
 								<advice type="success"
 									uri="http://www.wikipedia.com/boats" />

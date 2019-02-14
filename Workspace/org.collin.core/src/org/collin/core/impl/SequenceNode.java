@@ -6,15 +6,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.collin.core.advice.IAdvice;
 import org.collin.core.data.AbstractDataObject;
-
 import org.condast.commons.Utils;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 import org.xml.sax.Attributes;
 
-public class SequenceNode extends AbstractDataObject<IAdvice>{
+public class SequenceNode<D extends Object> extends AbstractDataObject<D>{
 
 	public enum Nodes{
 		COURSE,
@@ -77,11 +75,11 @@ public class SequenceNode extends AbstractDataObject<IAdvice>{
 	private float progress;
 	private long totalTime;
 
-	private SequenceNode parent;
+	private SequenceNode<D> parent;
 	
 	private Map<String, String> attributes;
 
-	private List<SequenceNode> children;
+	private List<SequenceNode<D>> children;
 
 	public SequenceNode( Nodes node, Locale locale, String id, String name, Attributes attributes, int index, String title) {
 		this( node, locale, id, name, null, attributes, index, -1 );
@@ -189,11 +187,11 @@ public class SequenceNode extends AbstractDataObject<IAdvice>{
 		return locale;
 	}
 
-	public SequenceNode getParent() {
+	public SequenceNode<D> getParent() {
 		return parent;
 	}
 
-	private void setParent(SequenceNode parent) {
+	private void setParent(SequenceNode<D> parent) {
 		this.parent = parent;
 	}
 
@@ -213,32 +211,32 @@ public class SequenceNode extends AbstractDataObject<IAdvice>{
 		return attributes.get(key);
 	}
 	
-	public void addChild( SequenceNode child ) {
+	public void addChild( SequenceNode<D> child ) {
 		this.children.add(child);
 		child.setParent(this);
 	}
 
-	public List<SequenceNode> getChildren(){
+	public List<SequenceNode<D>> getChildren(){
 		return children;
 	}
 	
-	public SequenceNode find( String id ) {
-		for( SequenceNode child: this.children ) {
+	public SequenceNode<D> find( String id ) {
+		for( SequenceNode<D> child: this.children ) {
 			if( child.getId().equals(id))
 				return child;
 		}
 		return null;
 	}
 
-	public SequenceNode firstChild() {
+	public SequenceNode<D> firstChild() {
 		return ( Utils.assertNull(children)?null: children.get(0)); 
 	}
 
-	public SequenceNode lastChild() {
+	public SequenceNode<D> lastChild() {
 		return ( Utils.assertNull(children)?null: children.get(children.size()-1)); 
 	}
 
-	public SequenceNode next( SequenceNode arg ) {
+	public SequenceNode<D> next( SequenceNode<D> arg ) {
 		if( !children.contains(arg))
 			return null;
 		if( arg.getIndex() >= children.size())
@@ -246,7 +244,7 @@ public class SequenceNode extends AbstractDataObject<IAdvice>{
 		return children.get( arg.getIndex()+1);
 	}
 
-	public SequenceNode previous( SequenceNode arg ) {
+	public SequenceNode<D> previous( SequenceNode<D> arg ) {
 		if( !children.contains(arg))
 			return null;
 		if( arg.getIndex() == 0)
@@ -254,7 +252,7 @@ public class SequenceNode extends AbstractDataObject<IAdvice>{
 		return children.get( arg.getIndex()-1);
 	}
 
-	public SequenceNode offset( SequenceNode arg, int offset ) {
+	public SequenceNode<D> offset( SequenceNode<D> arg, int offset ) {
 		if( !children.contains(arg))
 			return null;
 		int location = arg.getIndex() + offset;

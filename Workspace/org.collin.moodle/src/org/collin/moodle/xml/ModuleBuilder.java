@@ -17,11 +17,11 @@ import java.util.logging.Logger;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.collin.core.advice.IAdvice;
 import org.collin.core.impl.ISequenceEventListener;
 import org.collin.core.impl.SequenceEvent;
 import org.collin.core.impl.SequenceNode;
 import org.collin.core.impl.SequenceNode.Nodes;
+import org.collin.moodle.advice.IAdvice;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 import org.xml.sax.Attributes;
@@ -29,7 +29,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class ModuleBuilder{
+public class ModuleBuilder<D extends Object>{
 
 	public static String S_DEFAULT_FOLDER = "/design";
 	public static String S_DEFAULT_FILE = "lesson.xml";
@@ -91,7 +91,7 @@ public class ModuleBuilder{
 		}
 	}
 	
-	private XmlHandler handler;
+	private XmlHandler<D> handler;
 
 	private Collection<ISequenceEventListener> listeners;
 	
@@ -132,7 +132,7 @@ public class ModuleBuilder{
 			listener.notifySequenceEvent(event);
 	}
 
-	public SequenceNode build() {
+	public SequenceNode<D> build() {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		//URL schema_in = XMLFactoryBuilder.class.getResource( S_SCHEMA_LOCATION); 
 		//if( schema_in == null )
@@ -145,7 +145,7 @@ public class ModuleBuilder{
 		//Source schemaFile = new StreamSource( this.getClass().getResourceAsStream( S_SCHEMA_LOCATION ));
 		
 		//First parse the XML file
-		SequenceNode result = null;
+		SequenceNode<D> result = null;
 		try {
 			logger.info("Parsing code " );
 			//Schema schema = schemaFactory.newSchema(schemaFile);
@@ -157,7 +157,7 @@ public class ModuleBuilder{
 			
 			//saxParser.setProperty(JAXP_SCHEMA_LANGUAGE, W3C_XML_SCHEMA); 
 			//saxParser.setProperty(JAXP_SCHEMA_SOURCE, new File(JP2P_XSD_SCHEMA)); 
-			handler = new XmlHandler();
+			handler = new XmlHandler<D>();
 			saxParser.parse( in, handler);
 			result = handler.root;
 		}
@@ -200,11 +200,11 @@ public class ModuleBuilder{
 		return S_DEFAULT_FOLDER + "/" + S_DEFAULT_FILE;
 	}
 
-	public static class XmlHandler extends DefaultHandler{
+	public static class XmlHandler<D extends Object> extends DefaultHandler{
 		
 		public static final int MAX_COUNT = 200;	
 		
-		private SequenceNode root, current;
+		private SequenceNode<D> root, current;
 		private int index;
 		private Locale locale;
 		private IAdvice.AdviceTypes advice;
@@ -220,7 +220,7 @@ public class ModuleBuilder{
 			if(( current != null ) &&  Nodes.TEXT.equals( current.getNode()))
 				return;
 					
-			SequenceNode parent = current;
+			SequenceNode<D> parent = current;
 			String componentName = StringStyler.styleToEnum( qName );
 			
 			//The name is not a group. try the default JP2P components
@@ -234,7 +234,8 @@ public class ModuleBuilder{
 			String description = attributes.getValue( AttributeNames.DESCRIPTION.toXmlStyle());
 			
 			String key = AttributeNames.URI.toXmlStyle();
-			String url = parse( current, key, attributes.getValue( key));
+			String val = attributes.getValue( key);
+			String url = StringUtils.isEmpty(val)? null: parse( current, key, val );
 			String index_str = attributes.getValue( AttributeNames.INDEX.toXmlStyle());
 			String from = attributes.getValue( AttributeNames.FROM.toXmlStyle());
 			String to = attributes.getValue( AttributeNames.TO.toXmlStyle());
@@ -258,28 +259,28 @@ public class ModuleBuilder{
 			switch( node ){
 			case COURSE:
 				index = 0;
-				current = new SequenceNode( node, locale, id, name, attributes, index, title);
+				current = new SequenceNode<D>( node, locale, id, name, attributes, index, title);
 				root= current;
 				if( !StringUtils.isEmpty(title ))
 					current.setTitle(title);
 				break;
 			case MODEL:
 				index = 0;
-				current = new SequenceNode(node, locale, id, name, collin, attributes,index);
+				current = new SequenceNode<D>(node, locale, id, name, collin, attributes,index);
 				break;
 			case SECTIONS:
 				index = 0;
-				current = new SequenceNode(node, locale, id, name, collin, attributes,index);
+				current = new SequenceNode<D>(node, locale, id, name, collin, attributes,index);
 				break;
 			case SECTION:
-				current = new SequenceNode(node, locale, id, name, collin, attributes,index);
+				current = new SequenceNode<D>(node, locale, id, name, collin, attributes,index);
 				break;
 			case MODULES:
 				index = 0;
-				current = new SequenceNode(node, locale, id, name, collin, attributes,index);
+				current = new SequenceNode<D>(node, locale, id, name, collin, attributes,index);
 				break;
 			case MODULE:
-				current = new SequenceNode(node, locale, id, name, collin, attributes,index, totalTime);
+				current = new SequenceNode<D>(node, locale, id, name, collin, attributes,index, totalTime);
 				current.setUri(url);
 				if( !StringUtils.isEmpty(class_str)) {
 					this.current.setDelegate(class_str);
@@ -288,10 +289,10 @@ public class ModuleBuilder{
 				break;
 			case ACTIVITIES:
 				index = 0;
-				current = new SequenceNode(node, locale, id, name, collin, attributes,index);
+				current = new SequenceNode<D>(node, locale, id, name, collin, attributes,index);
 				break;
 			case ACTIVITY:
-				current = new SequenceNode(node, locale, id, name, collin, attributes,index, totalTime);
+				current = new SequenceNode<D>(node, locale, id, name, collin, attributes,index, totalTime);
 				current.setUri(url);
 				if( !StringUtils.isEmpty(class_str)) {
 					this.current.setDelegate(class_str);
@@ -300,34 +301,34 @@ public class ModuleBuilder{
 				break;
 			case VIEW:
 				index=0;
-				current = new SequenceNode(node, locale, id, name, collin, attributes,index);
+				current = new SequenceNode<D>(node, locale, id, name, collin, attributes,index);
 				if( !StringUtils.isEmpty(type))
 					current.setType(type);
 				break;
 			case PARTS:
 				index=0;
-				current = new SequenceNode(node, locale, id, name, collin, attributes, index);
+				current = new SequenceNode<D>(node, locale, id, name, collin, attributes, index);
 				completeFromTo(current, from, to);
 				break;	
 			case PART:
-				current = new SequenceNode(node, locale, id, name, collin, attributes, index);
+				current = new SequenceNode<D>(node, locale, id, name, collin, attributes, index);
 				index++;
 				break;	
 			case CONTROLLER:
 				index=0;
-				current = new SequenceNode(node, locale, id, name, collin, attributes, index);
+				current = new SequenceNode<D>(node, locale, id, name, collin, attributes, index);
 				break;	
 			case SEQUENCE:
 				index=0;
-				current = new SequenceNode(node, locale, id, name, collin, attributes, index);
+				current = new SequenceNode<D>(node, locale, id, name, collin, attributes, index);
 				break;	
 			case STEP:
-				current = new SequenceNode(node, locale, id, name, collin, attributes, index);
+				current = new SequenceNode<D>(node, locale, id, name, collin, attributes, index);
 				if( !StringUtils.isEmpty(name))
 					current.setTitle(name);
 				break;	
 			case ADVICE:
-				current = new SequenceNode(node, locale, id, name, collin, attributes, index);
+				current = new SequenceNode<D>(node, locale, id, name, collin, attributes, index);
 				current.setProgress( progress );
 				String adviceType = StringUtils.isEmpty(type)? advice.name(): StringStyler.styleToEnum(type);
 				current.setType(adviceType);
@@ -339,13 +340,13 @@ public class ModuleBuilder{
 				advice = IAdvice.AdviceTypes.valueOf(node.name());
 				break;
 			case TEXT:
-				current = new SequenceNode(node, locale, id, name, collin, attributes, index);
+				current = new SequenceNode<D>(node, locale, id, name, collin, attributes, index);
 				break;
 			case FUNCTION:
 			case GOAL:
 			case TASK:
 			case SOLUTION:
-				current = new SequenceNode(node, locale, id, name, collin, attributes, 0, totalTime);
+				current = new SequenceNode<D>(node, locale, id, name, collin, attributes, 0, totalTime);
 				current.setUri(url);
 				if( !StringUtils.isEmpty(class_str)) {
 					this.current.setDelegate(class_str);
@@ -365,15 +366,15 @@ public class ModuleBuilder{
 				current.setUri(description);
 		}
 		
-		protected void completeFromTo( SequenceNode node, String from, String to ) {
-			SequenceNode view = find( this.root, Nodes.VIEW);
-			SequenceNode parts= find( view, Nodes.PARTS);
-			SequenceNode frm_seq = null;
+		protected void completeFromTo( SequenceNode<D> node, String from, String to ) {
+			SequenceNode<D> view = find( this.root, Nodes.VIEW);
+			SequenceNode<D> parts= find( view, Nodes.PARTS);
+			SequenceNode<D> frm_seq = null;
 			if( !StringUtils.isEmpty(from)) {
 				frm_seq = find( parts, from );
 			};
 			if( frm_seq != null ) {
-				SequenceNode to_seq = StringUtils.isEmpty(to)? parts.lastChild(): parts.find( to );
+				SequenceNode<D> to_seq = StringUtils.isEmpty(to)? parts.lastChild(): parts.find( to );
 				int index = parts.getChildren().indexOf(frm_seq);
 				int last = parts.getChildren().indexOf(to_seq);
 				if( last < index)
@@ -422,11 +423,11 @@ public class ModuleBuilder{
 		}
 	}
 	
-	public static SequenceNode find( SequenceNode current, String id ) {
+	public static <D extends Object>SequenceNode<D> find( SequenceNode<D> current, String id ) {
 		if(( current == null ) || ( id.equals(current.getId())))
 			return current;
-		for( SequenceNode child: current.getChildren()) {
-			SequenceNode find = find( child, id);
+		for( SequenceNode<D> child: current.getChildren()) {
+			SequenceNode<D> find = find( child, id);
 			if( find != null )
 				return find;
 		}
@@ -434,20 +435,22 @@ public class ModuleBuilder{
 	}
 
 
-	protected static SequenceNode find( SequenceNode current, Nodes node ) {
+	protected static <D extends Object>SequenceNode<D> find( SequenceNode<D> current, Nodes node ) {
 		if(( current == null ) || node.equals( current.getNode() ))
 			return current;
 		
-		for( SequenceNode child: current.getChildren()) {
-			SequenceNode find = find( child, node);
+		for( SequenceNode<D> child: current.getChildren()) {
+			SequenceNode<D> find = find( child, node);
 			if( find != null )
 				return find;
 		}
 		return null;		
 	}
 	
-	protected static String parse( SequenceNode node, String key, String value ) {
+	protected static <D extends Object>String parse( SequenceNode<D> node, String key, String value ) {
 		String result = null;
+		if( node == null )
+			return null;
 		if( StringUtils.isEmpty(value)) {
 			result = getValue(node, key, value);
 			if(StringUtils.isEmpty(result))
@@ -469,7 +472,7 @@ public class ModuleBuilder{
 		return result;
 	}
 	
-	protected static final String getValue( SequenceNode node, String name, String key ) {
+	protected static final <D extends Object>String getValue( SequenceNode<D> node, String name, String key ) {
 		String nodeName = StringStyler.xmlStyleString(node.getNode().name());
 		if( nodeName.equals(name)) {
 			String result = node.getValue(key);

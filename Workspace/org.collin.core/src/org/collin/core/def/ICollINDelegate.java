@@ -2,7 +2,7 @@ package org.collin.core.def;
 
 import org.collin.core.essence.TetraEvent;
 
-public interface ICollINDelegate<T extends Object, D extends IDataObject<T>> {
+public interface ICollINDelegate<D extends Object> {
 
 	/**
 	 * Performs the required activities for the given node. This method returns a

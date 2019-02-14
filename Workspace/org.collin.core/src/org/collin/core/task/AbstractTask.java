@@ -1,10 +1,7 @@
 package org.collin.core.task;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Scanner;
 
 import org.collin.core.def.ICollINDelegate;
 import org.collin.core.def.IDataObject;
@@ -13,10 +10,10 @@ import org.collin.core.essence.TetraEvent;
 import org.collin.core.essence.TetraEvent.Results;
 import org.collin.core.transaction.TetraTransaction;
 
-public abstract class AbstractTask<T extends Object, D extends IDataObject<T>> implements ICollINDelegate<T,D>{
+public abstract class AbstractTask<D extends Object> implements ICollINDelegate<D>{
 
 	public static final int DEFAULT_TIME = 900;//sec
-	private IDataObject<T> sequence;
+	private IDataObject<D> sequence;
 
 	private Date start;
 	
@@ -24,12 +21,12 @@ public abstract class AbstractTask<T extends Object, D extends IDataObject<T>> i
 		super();
 	}
 
-	public AbstractTask(IDataObject<T> sequence, ITetraNode<D> node ) {
+	public AbstractTask(IDataObject<D> sequence, ITetraNode<D> node ) {
 		super();
 		this.sequence = sequence;
 	}
 
-	protected IDataObject<T> getData() {
+	protected IDataObject<D> getData() {
 		return sequence;
 	}
 

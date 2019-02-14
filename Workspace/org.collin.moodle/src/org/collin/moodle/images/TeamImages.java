@@ -11,8 +11,8 @@
  *******************************************************************************/
 package org.collin.moodle.images;
 
-import org.collin.core.advice.IAdvice;
 import org.collin.moodle.Activator;
+import org.collin.moodle.advice.IAdvice;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.ui.image.AbstractImages;
 import org.eclipse.swt.graphics.Image;

@@ -4,9 +4,9 @@ import javax.servlet.http.HttpSession;
 
 import org.condast.commons.authentication.ui.callback.AbstractCallbackHandler;
 import org.condast.commons.authentication.ui.core.CallbackData;
-import org.condast.commons.messaging.http.AbstractHttpRequest.HttpStatus;
 import org.condast.commons.number.NumberUtils;
 import org.condast.commons.messaging.http.IHttpClientListener;
+import org.condast.commons.messaging.http.IHttpRequest.HttpStatus;
 import org.condast.commons.messaging.http.ResponseEvent;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.service.UISession;

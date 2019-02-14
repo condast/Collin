@@ -7,13 +7,13 @@ import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.TetraEvent;
 import org.collin.core.essence.TetraEvent.Results;
 
-public class AdviceTask<T extends Object, D extends IDataObject<T>> extends AbstractTask<T,D>{
+public class AdviceTask<D extends Object> extends AbstractTask<D>{
 
 	public AdviceTask() {
 		super();
 	}
 
-	public AdviceTask(D sequence, ITetraNode<D> node ) {
+	public AdviceTask(IDataObject<D> sequence, ITetraNode<D> node ) {
 		super( sequence, node );
 	}
 
@@ -22,7 +22,7 @@ public class AdviceTask<T extends Object, D extends IDataObject<T>> extends Abst
 		Date start = super.getStart();
 		Date end = super.getEndTime();
 		Date current = super.getCurrentTime();
-		IDataObject<T> sequence = super.getData();
+		IDataObject<D> sequence = super.getData();
 		switch( event.getResult()) {
 		case SUCCESS:
 			break;

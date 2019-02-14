@@ -6,9 +6,9 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.collin.core.advice.IAdvice;
-import org.collin.core.advice.IAdvice.Notifications;
 import org.collin.core.impl.SequenceNode;
+import org.collin.moodle.advice.IAdvice;
+import org.collin.moodle.advice.IAdviceMap;
 import org.condast.commons.Utils;
 import org.condast.commons.date.DateUtils;
 
@@ -20,7 +20,7 @@ public class MoodleProcess {
 
 	private Date accessed;
 
-	private LinkedHashMap< IAdvice, ProgressData> progress;
+	private LinkedHashMap< IAdviceMap, ProgressData> progress;
 	
 	public MoodleProcess( long userId, long moduleId ) {
 		this.userId = userId;
@@ -37,25 +37,27 @@ public class MoodleProcess {
 		return moduleId;
 	}
 	
-	public IAdvice getRecent() {
+	public IAdviceMap getRecent() {
 		if( Utils.assertNull(this.progress))
 			return null;
-		List<IAdvice> advice = new ArrayList<>( progress.keySet());
+		List<IAdviceMap> advice = new ArrayList<>( progress.keySet());
 		return advice.get(advice.size()-1); 
 	}
 
 	public boolean isDue( IAdvice.AdviceTypes type, int delay ) {
-		if( !getRecent().getType().equals(type))
+		if( Utils.assertNull(this.progress))
+			return false;
+		if( !getRecent().contains(type))
 			return true;
 		return DateUtils.isOverdue(accessed, Calendar.SECOND, delay );
 	}
 	
-	public void addAdvice( IAdvice advice, SequenceNode node ) {
+	public void addAdvice( IAdviceMap advice, SequenceNode<IAdviceMap> node ) {
 		this.progress.put( advice, new ProgressData( node));
 	}
 
-	public void updateAdvice( long adviceId, Notifications notification ) {
-		for( IAdvice advice: this.progress.keySet()) {
+	public void updateAdvice( long adviceId, IAdvice.Notifications notification ) {
+		for( IAdviceMap advice: this.progress.keySet()) {
 			if( advice.getId() != adviceId )
 				continue;
 			ProgressData data = this.progress.get(advice );
@@ -64,29 +66,29 @@ public class MoodleProcess {
 		}
 	}
 
-	public void removeAdvice( IAdvice advice ) {
+	public void removeAdvice( IAdviceMap advice ) {
 		this.progress.remove(advice);
 	}
 	
 	private class ProgressData{
 		
-		private SequenceNode node;
-		private Notifications notification;
+		private SequenceNode<IAdviceMap> node;
+		private IAdvice.Notifications notification;
 		
-		public ProgressData(SequenceNode node) {
+		public ProgressData(SequenceNode<IAdviceMap> node) {
 			super();
 			this.node = node;
-			this.notification = Notifications.DONT_CARE;
+			this.notification = IAdvice.Notifications.DONT_CARE;
 		}
 		
-		public SequenceNode getNode() {
+		public SequenceNode<IAdviceMap> getNode() {
 			return node;
 		}
-		public Notifications getNotification() {
+		public IAdvice.Notifications getNotification() {
 			return notification;
 		}
 		
-		public void setNotification(Notifications notification) {
+		public void setNotification(IAdvice.Notifications notification) {
 			this.notification = notification;
 		}
 	}

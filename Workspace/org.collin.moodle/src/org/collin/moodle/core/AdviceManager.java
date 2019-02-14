@@ -1,14 +1,16 @@
 package org.collin.moodle.core;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
-import org.collin.core.advice.AdviceFactory;
-import org.collin.core.advice.IAdvice;
 import org.collin.core.impl.SequenceNode;
+import org.collin.core.impl.SequenceQuery;
+import org.collin.core.impl.SequenceNode.Nodes;
+import org.collin.moodle.advice.IAdvice;
+import org.collin.moodle.advice.IAdviceMap;
+import org.collin.moodle.images.TeamImages.Team;
+import org.condast.commons.strings.StringStyler;
+import org.condast.commons.strings.StringUtils;
 
 public class AdviceManager {
 
@@ -16,7 +18,7 @@ public class AdviceManager {
 	
 	private Map<Long, MoodleProcess> process;
 
-	public AdviceManager() {
+	public AdviceManager( ) {
 		process = new HashMap<>();
 	}
 	
@@ -24,26 +26,25 @@ public class AdviceManager {
 		process.put(userId, new MoodleProcess( userId, moduleId ));
 	}
 	
-	public IAdvice createAdvice( long userId, SequenceNode node, IAdvice.AdviceTypes type  ) {
-		MoodleProcess mp = this.process.get(userId );
-		if( !mp.isDue(type, DEFAULT_DELAY))
-			return null;
-
-		IAdvice recent = mp.getRecent();
-		AdviceFactory factory = new AdviceFactory( node );
-		factory.load( this.getClass(), AdviceFactory.S_DEFAULT_LOCATION);
-		Map<Long, IAdvice> results = factory.getAdvice( type );
-		if( results.size() > 1 )
-			results.remove(recent.getId());
-		List<IAdvice> advice = new ArrayList<>( results.values());
-		Random random = new Random();
-		int choice = (int)random.nextInt(advice.size());
-		return advice.get(choice );		
+	public IAdvice createAdvice( SequenceNode<IAdviceMap> node, IAdviceMap adviceMap, IAdvice.AdviceTypes type  ) {
+		SequenceQuery<IAdviceMap> query = new SequenceQuery<IAdviceMap>( node );
+		SequenceNode<IAdviceMap> task = query.getTetra(adviceMap.getModuleId(), adviceMap.getActivityId(), Nodes.TASK);
+		IAdvice advice = null;
+		for( SequenceNode<IAdviceMap> child: task.getChildren() ) {
+			if( type.equals( IAdvice.AdviceTypes.valueOf( child.getType()))) {
+				advice = new Advice( child );
+				adviceMap.addAdvice( advice);
+			}
+		}
+		return advice;
 	}
 	
-	public void addAdvice( long userId, SequenceNode node ) {
-			MoodleProcess mprocess = process.get(userId);
- 			mprocess.addAdvice( node.getData().iterator().next(), node);				
+	public boolean addAdvice( long userId, IAdviceMap advice ) {
+		if( advice == null )
+			return false;
+		MoodleProcess mprocess = process.get(userId);
+ 		mprocess.addAdvice( advice, null );	
+ 		return true;
 	}
 	
 	public MoodleProcess getAdvice( long userId ) {
@@ -58,5 +59,64 @@ public class AdviceManager {
 		catch( Exception ex ) {
 			ex.printStackTrace();
 		}
+	}
+	
+	private class Advice implements IAdvice{
+
+		private SequenceNode<IAdviceMap> node;
+		
+		public Advice(SequenceNode<IAdviceMap> node) {
+			super();
+			this.node = node;
+		}
+
+		@Override
+		public long getId() {
+			return Long.parseLong( node.getId());
+		}
+
+		@Override
+		public String getMember() {
+			String str =  node.getValue( StringStyler.styleToEnum( IAdvice.Attributes.MEMBER.name()));
+			return StringUtils.isEmpty(str)? Team.GINO.name(): Team.valueOf( str ).name();
+		}
+
+		@Override
+		public String getDescription() {
+			return node.getDescription();
+		}
+
+		@Override
+		public int getRepeat() {
+			String str =  node.getValue( StringStyler.styleToEnum( IAdvice.Attributes.REPEAT.name()));
+			return StringUtils.isEmpty(str)?0: Integer.parseInt(str);
+		}
+
+		@Override
+		public AdviceTypes getType() {
+			return AdviceTypes.valueOf(node.getType());
+		}
+
+		@Override
+		public Mood getMood() {
+			Mood mood = Mood.DOUBT;
+			switch( getType()){
+			case SUCCESS:
+				mood = Mood.HAPPY;
+				break;
+			case FAIL:
+				mood = Mood.NERVOUS;
+				break;
+			default:
+				break;
+			}
+			return mood;
+		}
+
+		@Override
+		public String getUri() {
+			return node.getUri();
+		}
+		
 	}
 }
