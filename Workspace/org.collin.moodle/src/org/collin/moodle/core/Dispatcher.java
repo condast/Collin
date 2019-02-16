@@ -14,11 +14,13 @@ import org.collin.core.transaction.TetraTransaction;
 import org.collin.core.transaction.TetraTransaction.States;
 import org.collin.core.xml.CollinBuilder;
 import org.collin.moodle.advice.AdviceMap;
+import org.collin.moodle.advice.IAdvice;
 import org.collin.moodle.advice.IAdviceMap;
 import org.collin.moodle.model.Coach;
 import org.collin.moodle.model.Student;
 import org.collin.moodle.xml.ModuleBuilder;
 import org.condast.commons.io.IOUtils;
+import org.condast.commons.messaging.push.ISubscription;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 
@@ -26,6 +28,11 @@ import nl.martijndwars.webpush.core.PushManager;
 
 
 public class Dispatcher {
+
+	public static final String S_PUBLIC_KEY = "BDvq04Lz9f7WBugyNHW2kdgFI7cjd65fzfFRpNdRpa9zWvi4yAD8nAvgb8c8PpRXdtgUqqZDG7KbamEgxotOcaA";
+	public static final String S_PRIVATE_KEY = "CxbJjjbVMABqzv72ZL4GH_0gNStbZV0TSBaNOIzLwbE";
+	
+	public static final String S_CODED = "BMfyyFPnyR8MRrzPJ6jloLC26FyXMcrL8v46d7QEUccbQVArghc9YHC6USyp4TggrFleNzAUq8df0RiSS13xwtM";
 
 	public enum Actors{
 		UNDEFINED,
@@ -90,6 +97,11 @@ public class Dispatcher {
 		}
 	}
 
+	/**
+	 * Start a module and register the user
+	 * @param userId
+	 * @param moduleId
+	 */
 	public void start( long userId, long moduleId ){
 		InputStream stream = null;
 		try {
@@ -104,7 +116,32 @@ public class Dispatcher {
 			IOUtils.closeQuietly(stream);
 		}
 	}
-	
+
+	/**
+	 * Request advice
+	 * @param userId
+	 * @param moduleId
+	 * @param activityId
+	 * @param progress
+	 * @return
+	 * @throws Exception
+	 */
+	public IAdviceMap getAdvice( long userId, long moduleId, long activityId, double progress ) throws Exception {
+		try {
+			IAdviceMap advice = new AdviceMap( userId, moduleId, activityId, progress );
+			TetraTransaction<IAdviceMap> transaction = new TetraTransaction<IAdviceMap>(this, userId, States.PROGRESS, advice, progress );
+			register( transaction );
+			Student student = (Student) this.implementations.get(Compass.Tetras.CONSUMER);
+ 			student.fire( transaction );
+ 			unregister( transaction);
+ 			return advice;
+		}
+		catch( Exception ex ) {
+			ex.printStackTrace();
+		}
+		return null;
+	}
+
 	protected SequenceNode<IAdviceMap> findNode( SequenceNode<IAdviceMap> node, String moduleId, String activityId ) {
 		if(( !StringUtils.isEmpty( node.getId())) && node.getId().equals(moduleId)) {
 			if(SequenceNode.Nodes.MODULE.equals( node.getNode() ) && ( activityId == null ) || ( activityId.equals("0" )))
@@ -122,22 +159,32 @@ public class Dispatcher {
 		return null;
 	}
 
-	public IAdviceMap getAdvice( long userId, long moduleId, long activityId, double progress ) throws Exception {
+	/**
+	 * Push the given advice to the user
+	 * @param userId
+	 * @param advice
+	 * @return
+	 */
+	public boolean sendPushMessage( long userId, IAdvice advice ) {
+		if(( advice ==  null ) ||( userId < 0 ))
+			return false;
+		PushManager pm = dispatcher.getPushMananger();
+		ISubscription subscription = pm.getSubscription( userId );
+		PushOptionsAdviceBuilder builder = new PushOptionsAdviceBuilder();
+		builder.createPayLoad( advice, true );
 		try {
-			IAdviceMap advice = new AdviceMap( userId, moduleId, activityId, progress );
-			TetraTransaction<IAdviceMap> transaction = new TetraTransaction<IAdviceMap>(this, userId, States.PROGRESS, advice, progress );
-			register( transaction );
-			Student student = (Student) this.implementations.get(Compass.Tetras.CONSUMER);
- 			student.fire( transaction );
- 			unregister( transaction);
- 			return advice;
-		}
-		catch( Exception ex ) {
-			ex.printStackTrace();
-		}
-		return null;
+			PushManager.sendPushMessage( Dispatcher.S_PUBLIC_KEY, Dispatcher.S_PRIVATE_KEY, subscription, builder.createPayLoad());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}				
+		return true;
 	}
 
+	/**
+	 * Read the modules
+	 * @return
+	 */
 	private SequenceNode<IAdviceMap> readModules() {
 		SequenceNode<IAdviceMap> node = null;
 		try {

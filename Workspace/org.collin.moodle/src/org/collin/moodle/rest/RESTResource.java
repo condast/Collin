@@ -16,10 +16,7 @@ import javax.ws.rs.core.Response.Status;
 import org.collin.moodle.advice.IAdviceMap;
 import org.collin.moodle.core.Dispatcher;
 import org.collin.moodle.core.MoodleProcess;
-import org.collin.moodle.core.PushOptionsAdviceBuilder;
-import org.condast.commons.messaging.push.ISubscription;
 import org.condast.commons.messaging.rest.RESTUtils;
-import nl.martijndwars.webpush.core.PushManager;
 
 //Sets the path to alias + path
 @Path("/module")
@@ -27,12 +24,7 @@ public class RESTResource{
 
 	public static final String S_ERR_UNKNOWN_REQUEST = "An invalid request was rertrieved: ";
 	public static final String S_ERR_INVALID_VESSEL = "A request was received from an unknown vessel:";
-	
-	public static final String S_PUBLIC_KEY = "BDvq04Lz9f7WBugyNHW2kdgFI7cjd65fzfFRpNdRpa9zWvi4yAD8nAvgb8c8PpRXdtgUqqZDG7KbamEgxotOcaA";
-	public static final String S_PRIVATE_KEY = "CxbJjjbVMABqzv72ZL4GH_0gNStbZV0TSBaNOIzLwbE";
-	
-	public static final String S_CODED = "BMfyyFPnyR8MRrzPJ6jloLC26FyXMcrL8v46d7QEUccbQVArghc9YHC6USyp4TggrFleNzAUq8df0RiSS13xwtM";
-	
+		
 	private Dispatcher dispatcher = Dispatcher.getInstance();
 
 	private Logger logger = Logger.getLogger(this.getClass().getName());
@@ -106,13 +98,8 @@ public class RESTResource{
 			if(( adviceMap == null ) || adviceMap.isEmpty() )
 				return Response.ok().build();
 
-			PushManager pm = dispatcher.getPushMananger();
-			ISubscription subscription = pm.getSubscription( userId );
-			PushOptionsAdviceBuilder builder = new PushOptionsAdviceBuilder();
-			builder.createPayLoad( adviceMap.getAdvice()[0], true );
-			logger.info(builder.toString());
-			PushManager.sendPushMessage( S_PUBLIC_KEY, S_PRIVATE_KEY, subscription, builder.createPayLoad());				
-			return Response.ok().build();
+			boolean result = dispatcher.sendPushMessage(userId, adviceMap.getAdvice()[0]);
+			return result?Response.ok().build(): Response.status(Status.BAD_REQUEST).build();
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();

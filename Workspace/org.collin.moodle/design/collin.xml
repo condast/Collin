@@ -62,7 +62,7 @@
 				<nodes>
 					<function type="product"></function>
 					<goal></goal>
-					<task operator="org.collin.moodle.operators.AdviceManager"></task>
+					<task operator="org.collin.moodle.operators.AdviceManager" poll-time="1000" duration="60"></task>
 					<solution></solution>
 				</nodes>
 				<ambition id="certification" />

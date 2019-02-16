@@ -84,6 +84,7 @@ public class CollinBuilder<D extends Object>{
 		INDEX,
 		LOCALE,
 		OPERATOR,
+		POLL_TIME,
 		PROGRESS,
 		SOURCE,
 		TETRA,

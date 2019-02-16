@@ -11,6 +11,8 @@ import org.collin.core.essence.TetraEvent.Results;
 import org.collin.core.impl.AbstractTetraImplementation;
 import org.collin.core.impl.SequenceDelegateFactory;
 import org.collin.core.impl.SequenceNode;
+import org.collin.core.impl.SequenceQuery;
+import org.collin.core.impl.SequenceNode.Nodes;
 import org.collin.core.transaction.TetraTransaction;
 import org.collin.moodle.advice.IAdvice;
 import org.collin.moodle.advice.IAdviceMap;
@@ -55,18 +57,21 @@ public class Coach extends AbstractTetraImplementation<SequenceNode<IAdviceMap>,
 			this.completed = true;
 			return result;
 		}
-		long userId, moduleId;
+		long userId;
 		switch( transaction.getState()) {
 		case START:
 			userId = adviceMap.getUserId();
-			moduleId = adviceMap.getModuleId();
-			AdviceManager manager = new AdviceManager();
-			this.managers.put( userId, manager );
-			manager.start(userId, moduleId );
+			AdviceManager manager = (AdviceManager) node.getOperator();
+			this.managers.put( userId, manager );			
 			break;
 		case PROGRESS:
 			userId = adviceMap.getUserId();
 			manager = managers.get(userId );
+			
+			SequenceQuery<IAdviceMap> query = new SequenceQuery<IAdviceMap> ( super.getData());
+			SequenceNode<IAdviceMap> task = query.getTetra( adviceMap.getModuleId(), adviceMap.getActivityId(), Nodes.TASK );
+			manager.start( task, transaction );
+
 			IAdvice.AdviceTypes type = IAdvice.AdviceTypes.SUCCESS;
 			switch( event.getResult()) {
 			case FAIL:

@@ -27,7 +27,7 @@ public abstract class AbstractTask<D extends Object> implements ICollINDelegate<
 		super();
 		this.sequence = sequence;
 	}
-
+	
 	protected IDataObject<D> getData() {
 		return sequence;
 	}

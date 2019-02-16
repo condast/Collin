@@ -54,9 +54,19 @@
 		<model type="moodle" collin="coach">
 			<task time="900"
 				uri="resources/advice">
-				<advice type="fail"
+				<advice type="fail" progress="10" duration="30"
+					uri="https://nl.wikipedia.org/wiki/Egyptische_piramide" >
+					Jammer joh, probeer het nog eens!
+					</advice>
+				<advice type="fail" progress="50" duration="30"
+					uri="https://nl.wikipedia.org/wiki/Egyptische_piramide" >
+					Je bent op de goede weg, kijk nog eens naar de les
+					</advice>
+				<advice type="fail" progress="80" duration="30"
 					uri="https://nl.wikipedia.org/wiki/Egyptische_piramide" />
-				<advice type="success" uri="http://www.wikipedia.com/boats" />
+				<advice type="success" uri="http://www.wikipedia.com/boats">
+					Je bent er bijna, nog even volhouden!
+				</advice>
 			</task>
 			<modules>
 				<module id="1" name="lesson1" index="0"

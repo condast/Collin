@@ -20,5 +20,4 @@ public interface IOperator<D extends Object>{
 	boolean select(ITetraNode<D> source, TetraEvent<D> event);
 
 	void dispose();
-
 }
