@@ -3,14 +3,19 @@ package org.collin.moodle.core;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.collin.core.impl.SequenceNode;
 import org.collin.moodle.advice.IAdvice;
 import org.collin.moodle.advice.IAdviceMap;
 import org.condast.commons.Utils;
 import org.condast.commons.date.DateUtils;
+
+import com.google.gson.Gson;
 
 public class MoodleProcess {
 
@@ -68,6 +73,20 @@ public class MoodleProcess {
 
 	public void removeAdvice( IAdviceMap advice ) {
 		this.progress.remove(advice);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static double getProgress( String progress ) {
+		Gson gson = new Gson();
+		Map<Integer,Boolean> map = gson.fromJson(progress, HashMap.class);
+		Iterator<Map.Entry<Integer,Boolean>> iterator = map.entrySet().iterator();
+		int counter = 0;
+		while( iterator.hasNext()) {
+			Map.Entry<Integer,Boolean> entry = iterator.next();
+			if( entry.getValue())
+				counter++;
+		}
+		return 100d*counter/map.size();
 	}
 	
 	private class ProgressData{

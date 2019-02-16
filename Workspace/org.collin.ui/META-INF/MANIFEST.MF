@@ -6,7 +6,8 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Condast
 Automatic-Module-Name: org.fgf.animal.count.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: org.collin.core.connector,
+Import-Package: com.google.gson;version="2.7.0",
+ org.collin.core.connector,
  org.collin.core.def,
  org.collin.core.essence,
  org.collin.core.graph,

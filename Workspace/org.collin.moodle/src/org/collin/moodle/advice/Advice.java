@@ -1,5 +1,10 @@
 package org.collin.moodle.advice;
 
+import org.collin.core.impl.SequenceNode;
+import org.collin.moodle.images.TeamImages.Team;
+import org.condast.commons.strings.StringStyler;
+import org.condast.commons.strings.StringUtils;
+
 public class Advice implements IAdvice {
 
 	private String member;
@@ -9,6 +14,18 @@ public class Advice implements IAdvice {
 	private IAdvice.Mood mood;
 	private String uri;
 	
+	public Advice(SequenceNode<IAdviceMap> node) {
+		super();
+		String str =  node.getValue( StringStyler.styleToEnum( IAdvice.Attributes.MEMBER.name()));
+		this.member = StringUtils.isEmpty(str)? Team.GINO.name(): Team.valueOf( str ).name();
+		this.type = AdviceTypes.valueOf(node.getType());
+		this.mood = getMood(type);
+		this.advice = node.getDescription();
+		str =  node.getValue( StringStyler.styleToEnum( IAdvice.Attributes.REPEAT.name()));
+		this.repeat = StringUtils.isEmpty(str)?0: Integer.parseInt(str);
+		this.uri = node.getUri();
+	}
+
 	public Advice( String[] arr) {
 		this( arr[0], IAdvice.AdviceTypes.valueOf( arr[1].trim().toUpperCase()), IAdvice.Mood.valueOf(arr[2].trim().toUpperCase()), arr[3], Integer.parseInt( arr[4].trim() ));
 	}
@@ -72,4 +89,20 @@ public class Advice implements IAdvice {
 	public void setUri(String uri) {
 		this.uri = uri;
 	}
+	
+	public static Mood getMood( IAdvice.AdviceTypes type ) {
+		Mood mood = Mood.DOUBT;
+		switch( type){
+		case SUCCESS:
+			mood = Mood.HAPPY;
+			break;
+		case FAIL:
+			mood = Mood.NERVOUS;
+			break;
+		default:
+			break;
+		}
+		return mood;
+	}
+
 }

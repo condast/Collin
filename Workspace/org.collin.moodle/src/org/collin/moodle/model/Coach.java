@@ -1,5 +1,7 @@
 package org.collin.moodle.model;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.collin.core.def.ITetraNode;
@@ -12,8 +14,7 @@ import org.collin.core.impl.SequenceNode;
 import org.collin.core.transaction.TetraTransaction;
 import org.collin.moodle.advice.IAdvice;
 import org.collin.moodle.advice.IAdviceMap;
-import org.collin.moodle.core.AdviceManager;
-import org.collin.moodle.core.Dispatcher;
+import org.collin.moodle.operators.AdviceManager;
 
 public class Coach extends AbstractTetraImplementation<SequenceNode<IAdviceMap>, IAdviceMap>{
 
@@ -21,11 +22,12 @@ public class Coach extends AbstractTetraImplementation<SequenceNode<IAdviceMap>,
 
 	private boolean completed; 
 	
-	private Dispatcher dispatcher = Dispatcher.getInstance();
+	private Map<Long,AdviceManager> managers;
 	
 	public Coach(SequenceNode<IAdviceMap> sequence, ITetra<IAdviceMap> tetra) {
 		super(tetra, sequence, new SequenceDelegateFactory<IAdviceMap>( sequence ));
 		this.completed = false;
+		this.managers = new HashMap<>();
 	}
 
 	@Override
@@ -46,12 +48,25 @@ public class Coach extends AbstractTetraImplementation<SequenceNode<IAdviceMap>,
 		this.completed = false;
 		TetraEvent.Results result = TetraEvent.Results.COMPLETE;
 		TetraTransaction<IAdviceMap> transaction = event.getTransaction();
+		
+		//If the student doens't add an advice request, then skip
+		IAdviceMap adviceMap = transaction.getData(); 
+		if( adviceMap == null ) {
+			this.completed = true;
+			return result;
+		}
+		long userId, moduleId;
 		switch( transaction.getState()) {
 		case START:
+			userId = adviceMap.getUserId();
+			moduleId = adviceMap.getModuleId();
+			AdviceManager manager = new AdviceManager();
+			this.managers.put( userId, manager );
+			manager.start(userId, moduleId );
 			break;
 		case PROGRESS:
-			IAdviceMap adviceMap = transaction.getData(); 
-			AdviceManager manager = dispatcher.getAdviceManager(adviceMap.getUserId());
+			userId = adviceMap.getUserId();
+			manager = managers.get(userId );
 			IAdvice.AdviceTypes type = IAdvice.AdviceTypes.SUCCESS;
 			switch( event.getResult()) {
 			case FAIL:
@@ -63,6 +78,7 @@ public class Coach extends AbstractTetraImplementation<SequenceNode<IAdviceMap>,
 				break;
 			}
 			IAdvice advice = manager.createAdvice( super.getData(), adviceMap, type );
+ 			adviceMap.addAdvice(advice);
 			this.completed = ( advice != null );
 			result = Results.COMPLETE;//the coach has successfully given an advice
 		default:

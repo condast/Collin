@@ -52,7 +52,7 @@
 			</sections>
 		</model>
 		<model type="moodle" collin="coach">
-			<task class="org.collin.core.task.AdviceTask" time="900"
+			<task time="900"
 				uri="resources/advice">
 				<advice type="fail"
 					uri="https://nl.wikipedia.org/wiki/Egyptische_piramide" />
@@ -62,7 +62,7 @@
 				<module id="1" name="lesson1" index="0"
 					uri="http://www.condast.com">
 					<activities>
-						<activity id="1" name="Activity1">
+						<activity id="1" name="Activity1" duration="600">
 							<task class="org.collin.core.task.AdviceTask" time="900"
 								uri="resources/advice">
 								<advice type="fail" member="Amanda"

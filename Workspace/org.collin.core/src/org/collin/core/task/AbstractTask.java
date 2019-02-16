@@ -8,9 +8,11 @@ import org.collin.core.def.IDataObject;
 import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.TetraEvent;
 import org.collin.core.essence.TetraEvent.Results;
+import org.collin.core.operator.IOperator;
 import org.collin.core.transaction.TetraTransaction;
+import org.xml.sax.Attributes;
 
-public abstract class AbstractTask<D extends Object> implements ICollINDelegate<D>{
+public abstract class AbstractTask<D extends Object> implements ICollINDelegate<D>, IOperator<D>{
 
 	public static final int DEFAULT_TIME = 900;//sec
 	private IDataObject<D> sequence;
@@ -28,6 +30,25 @@ public abstract class AbstractTask<D extends Object> implements ICollINDelegate<
 
 	protected IDataObject<D> getData() {
 		return sequence;
+	}
+
+	
+	@Override
+	public void setParameters(Attributes attrs) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean select(ITetraNode<D> source, TetraEvent<D> event) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void dispose() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	protected Date getStart() {

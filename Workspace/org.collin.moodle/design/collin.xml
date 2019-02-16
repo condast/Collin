@@ -62,7 +62,7 @@
 				<nodes>
 					<function type="product"></function>
 					<goal></goal>
-					<task></task>
+					<task operator="org.collin.moodle.operators.AdviceManager"></task>
 					<solution></solution>
 				</nodes>
 				<ambition id="certification" />

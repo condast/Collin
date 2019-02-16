@@ -70,13 +70,13 @@ public class ModuleBuilder<D extends Object>{
 		CLASS,
 		COLLIN,
 		DESCRIPTION,
+		DURATION,
 		ENABLED,
 		TYPE,
 		INDEX,
 		LOCALE,
 		PROGRESS,
 		SOURCE,
-		TOTAL_TIME,
 		URI,
 		FROM,
 		TO;
@@ -243,8 +243,8 @@ public class ModuleBuilder<D extends Object>{
 			float progress = StringUtils.isEmpty(progress_str)?0: Float.valueOf(progress_str);  
 			String locale_str = attributes.getValue( AttributeNames.LOCALE.toXmlStyle());
 			String class_str = attributes.getValue( AttributeNames.CLASS.toXmlStyle());
-			String totaltime_str = attributes.getValue( AttributeNames.TOTAL_TIME.toXmlStyle());
-			long totalTime = StringUtils.isEmpty(totaltime_str)?-1: Long.parseLong(totaltime_str);
+			String duration_str = attributes.getValue( AttributeNames.DURATION.toXmlStyle());
+			long totalTime = StringUtils.isEmpty(duration_str)?-1: Long.parseLong(duration_str);
 			if(!StringUtils.isEmpty(locale_str)) {
 				String[] split = locale_str.split("[-]");
 				locale = new Locale(split[0], split[1]);

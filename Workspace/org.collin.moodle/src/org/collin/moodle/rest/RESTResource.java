@@ -1,10 +1,11 @@
 package org.collin.moodle.rest;
 
-import java.net.URI;
+import com.google.gson.Gson;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -12,10 +13,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.collin.core.impl.SequenceNode;
-import org.collin.moodle.advice.IAdvice;
 import org.collin.moodle.advice.IAdviceMap;
 import org.collin.moodle.core.Dispatcher;
+import org.collin.moodle.core.MoodleProcess;
 import org.collin.moodle.core.PushOptionsAdviceBuilder;
 import org.condast.commons.messaging.push.ISubscription;
 import org.condast.commons.messaging.rest.RESTUtils;
@@ -38,25 +38,6 @@ public class RESTResource{
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	public RESTResource() {
-	}
-
-	// This method is called if TEXT_PLAIN is requested
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/lesson")
-	public Response getLesson( @QueryParam("id") long id, @QueryParam("token") String token, @QueryParam("module-id") long moduleId, @QueryParam("activity-id") long activityId ) {
-
-		try{
-			boolean response = RESTUtils.checkId(moduleId, token, moduleId);
-			if( !response )
-				return Response.status( Status.BAD_REQUEST).build();
-			SequenceNode<IAdviceMap> node = dispatcher.findLesson( moduleId, activityId ); 
-				return ( node != null )? Response.ok( node.getUri()).build(): Response.noContent().build();
-		}
-		catch( Exception ex ){
-			ex.printStackTrace();
-			return Response.serverError().build();
-		}
 	}
 
 	// This method is called if TEXT_PLAIN is requested
@@ -98,29 +79,35 @@ public class RESTResource{
 		}
 	}
 
-	@GET
+	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/advice")
-	public Response getAdvice( @QueryParam("id") long id, @QueryParam("token") String token, @QueryParam("module-id") long moduleId, @QueryParam("activity-id") long activityId, @QueryParam("progress") double progress ) {
+	public Response getAdvice( String input ) {
 		try{
-			boolean response = RESTUtils.checkId(id, token, moduleId);
+			Gson gson = new Gson();
+			String[] split = gson.fromJson(input, String[].class);
+			long userId = Long.parseLong( split[0] );
+			String token = split[1];
+			long courseId = Long.parseLong( split[2]);
+			long moduleId = Long.parseLong( split[3]);
+			double progress = MoodleProcess.getProgress(split[4]);
+			boolean response = RESTUtils.checkId(userId, token, courseId);
 			if( !response ) {
-				return ( moduleId < 0 )? Response.noContent().build(): Response.status( Status.UNAUTHORIZED ).build();
+				return ( courseId < 0 )? Response.noContent().build(): Response.status( Status.UNAUTHORIZED ).build();
 			}
-			response = RESTUtils.checkId(id, token, moduleId);
+			response = RESTUtils.checkId(userId, token, courseId);
 			if( !response ) {
-				return ( moduleId < 0 )? Response.noContent().build(): Response.status( Status.UNAUTHORIZED ).build();
+				return ( courseId < 0 )? Response.noContent().build(): Response.status( Status.UNAUTHORIZED ).build();
 			}
-			logger.info( "Subscriptions found: " + id );
+			logger.info( "Subscriptions found: " + userId );
 
-			PushManager pm = dispatcher.getPushMananger();
-			ISubscription subscription = pm.getSubscription( id );
-
-			IAdviceMap adviceMap = dispatcher.getAdvice( id, moduleId, activityId, progress);
+			IAdviceMap adviceMap = dispatcher.getAdvice( userId, courseId, moduleId, progress);
 			if(( adviceMap == null ) || adviceMap.isEmpty() )
 				return Response.ok().build();
 
+			PushManager pm = dispatcher.getPushMananger();
+			ISubscription subscription = pm.getSubscription( userId );
 			PushOptionsAdviceBuilder builder = new PushOptionsAdviceBuilder();
 			builder.createPayLoad( adviceMap.getAdvice()[0], true );
 			logger.info(builder.toString());
@@ -133,43 +120,17 @@ public class RESTResource{
 		}
 	}
 
-	// This method is called if TEXT_PLAIN is requested
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	@Path("/progress")
-	public Response getProgress( @QueryParam("id") long id, @QueryParam("token") String token, 
-			@QueryParam("module") long moduleId) {
-
-		try{
-			Dispatcher dispatcher = Dispatcher.getInstance();
-			int progress = dispatcher.getProgress(moduleId);
-			return Response.ok( String.valueOf( progress )).build();
-		}
-		catch( Exception ex ){
-			ex.printStackTrace();
-			return Response.serverError().build();
-		}
-	}
-
-	// This method is called if TEXT_PLAIN is requested
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/update")
-	public Response update( @QueryParam("id") String id, @QueryParam("token") String token, @QueryParam("adviceid") String adviceId, @QueryParam("notification") String notification_str) {
-		IAdvice.Notifications notification = IAdvice.Notifications.valueOf(notification_str );
-		logger.info("NOTIFICATION:" + notification);
+	public Response update( @QueryParam("id") String userId, @QueryParam("token") String token, @QueryParam("courseId") String courseId, @QueryParam("activity-id") long activityId, @QueryParam("progress") double progress) {
 		try{
-			dispatcher.updateAdvice(Long.parseLong(id), Long.parseLong( adviceId ), notification);
+			//dispatcher.getAdvice(Long.parseLong(id), Long.parseLong( adviceId ), notification);
 			Response response = Response.serverError().build();
-			switch( notification ) {
-			case HELP:
-				response = Response.seeOther( new URI( "http://www.condast.com")).build();
-				break;
-			default:
-				response = Response.ok().build();
-				break;
-			}
+			IAdviceMap adviceMap = dispatcher.getAdvice(Long.parseLong(userId), Long.parseLong(courseId),  activityId, progress);
+			if(( adviceMap == null ) || adviceMap.isEmpty() )
+				return Response.ok().build();
 			return response;
 		}
 		catch( Exception ex ){
@@ -177,4 +138,5 @@ public class RESTResource{
 			return Response.serverError().build();
 		}
 	}
+
 }

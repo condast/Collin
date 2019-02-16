@@ -57,7 +57,7 @@
 				<nodes>
 					<function type="product"></function>
 					<goal></goal>
-					<task></task>
+					<task operator="org.collin.dashboard.operators.AdviceManager"/>
 					<solution></solution>
 				</nodes>
 				<ambition id="certification" />

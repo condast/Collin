@@ -3,11 +3,12 @@ package org.collin.ui.test;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Label;
-
+import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.collin.moodle.xml.ModuleBuilder;
@@ -89,8 +90,8 @@ public class TestComposite extends Composite {
 		PASSWORD,
 		TOKEN,
 		PATH,
+		COURSE_ID,
 		MODULE_ID,
-		ACTIVITY_ID,
 		PROGRESS;
 		
 		@Override
@@ -205,8 +206,8 @@ public class TestComposite extends Composite {
 					int moduleId = spinner_module.getSelection();
 					params.put( Parameters.ID.toString(),  String.valueOf( spinnerUserId.getSelection()));
 					params.put( Parameters.TOKEN.toString(), "12");
-					params.put( Parameters.MODULE_ID.toString(), String.valueOf( moduleId ));
-					params.put( Parameters.ACTIVITY_ID.toString(), String.valueOf(0 ));
+					params.put( Parameters.COURSE_ID.toString(), String.valueOf( moduleId ));
+					params.put( Parameters.MODULE_ID.toString(), String.valueOf(0 ));
 					client.sendGet(Requests.LESSON, params);
 				} catch (Exception e1) {
 					e1.printStackTrace();
@@ -234,8 +235,8 @@ public class TestComposite extends Composite {
 					int activityId = spinner_activity.getSelection();
 					params.put( Parameters.ID.toString(),  String.valueOf( spinnerUserId.getSelection()));
 					params.put( Parameters.TOKEN.toString(), "12");
-					params.put( Parameters.MODULE_ID.toString(), String.valueOf( moduleId ));
-					params.put( Parameters.ACTIVITY_ID.toString(), String.valueOf( activityId ));
+					params.put( Parameters.COURSE_ID.toString(), String.valueOf( moduleId ));
+					params.put( Parameters.MODULE_ID.toString(), String.valueOf( activityId ));
 					client.sendGet(Requests.LESSON, params);
 				} catch (Exception e1) {
 					e1.printStackTrace();
@@ -256,18 +257,24 @@ public class TestComposite extends Composite {
 			public void widgetSelected(SelectionEvent e) {
 				WebClient client = new WebClient( S_CONTEXT_PATH);
 				client.addListener(listener);
-				Map<String, String> params = new HashMap<>();
+				Map<String, String> params = new LinkedHashMap<>();
 
 				try {
 					int moduleId = spinner_module.getSelection();
 					int activityId = spinner_activity.getSelection();
 					int progress = spinner_progress.getSelection();
+					Map<Integer,Boolean> details = new HashMap<>();
+					for( int i = 0; i<10; i++ ) {
+						details.put(i, progress>i*10);
+					}
+					Gson gson = new Gson();
 					params.put( Parameters.ID.toString(),  String.valueOf( spinnerUserId.getSelection()));
 					params.put( Parameters.TOKEN.toString(), "12");
-					params.put( Parameters.MODULE_ID.toString(), String.valueOf( moduleId ));
-					params.put( Parameters.ACTIVITY_ID.toString(), String.valueOf( activityId ));
-					params.put( Parameters.PROGRESS.toString(), String.valueOf( progress ));
-					client.sendGet(Requests.ADVICE, params);
+					params.put( Parameters.COURSE_ID.toString(), String.valueOf( moduleId ));
+					params.put( Parameters.MODULE_ID.toString(), String.valueOf( activityId ));
+					params.put( Parameters.PROGRESS.toString(),gson.toJson(details, HashMap.class));
+					String[] data = params.values().toArray( new String[ params.size()]);
+					client.sendPost(Requests.ADVICE, params, gson.toJson(data, String[].class));
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}

@@ -11,6 +11,10 @@ public class AdviceMap implements IAdviceMap {
 	private double progress;
 	
 	private Collection<IAdvice> advices;
+
+	public AdviceMap( long userId, long moduleId ) {
+		this( userId, moduleId, 0, 0);
+	}
 	
 	public AdviceMap( long userId, long moduleId, long activityId, double progress ) {
 		this.userId = userId;

@@ -1,7 +1,6 @@
 package org.collin.moodle.core;
 
 import java.io.InputStream;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,7 +14,6 @@ import org.collin.core.transaction.TetraTransaction;
 import org.collin.core.transaction.TetraTransaction.States;
 import org.collin.core.xml.CollinBuilder;
 import org.collin.moodle.advice.AdviceMap;
-import org.collin.moodle.advice.IAdvice;
 import org.collin.moodle.advice.IAdviceMap;
 import org.collin.moodle.model.Coach;
 import org.collin.moodle.model.Student;
@@ -62,23 +60,14 @@ public class Dispatcher {
 	
 	private static Dispatcher dispatcher = new Dispatcher();
 	
-	private Map<Long, Integer> progress;	
-	
-	private Map<Long, URI> modules;
-	
 	private Map<Compass.Tetras, ITetraImplementation<IAdviceMap>> implementations;
 	
 	private PushManager pushMananger;
 	
-	private Map<Long,AdviceManager> managers;
-	
 	private Dispatcher() {
 		super();
-		progress = new HashMap<>();
-		this.modules = new HashMap<>();
 		implementations = new HashMap<>();
 		pushMananger = new PushManager();
-		this.managers = new HashMap<>();
 	}
 
 	public static Dispatcher getInstance() {
@@ -87,19 +76,6 @@ public class Dispatcher {
 
 	public PushManager getPushMananger() {
 		return pushMananger;
-	}
-
-	public AdviceManager getAdviceManager( long userId) {
-		return managers.get(userId);
-	}
-
-	public long addModule( String path ) {
-		long lessonId = this.modules.size();
-		URI uri = URI.create(path);
-		if( uri == null )
-			return -1;
-		modules.put(lessonId, uri);
-		return lessonId;
 	}
 
 	protected void register( TetraTransaction<IAdviceMap> transaction ) {
@@ -118,31 +94,15 @@ public class Dispatcher {
 		InputStream stream = null;
 		try {
 			readModules();
-			TetraTransaction<IAdviceMap> transaction = new TetraTransaction<IAdviceMap>(this, userId );
+			TetraTransaction<IAdviceMap> transaction = new TetraTransaction<IAdviceMap>(this, userId, new AdviceMap( userId, moduleId) );
 			register( transaction );
 			Student student = (Student) this.implementations.get(Compass.Tetras.CONSUMER);
  			student.fire( transaction );
 			unregister( transaction);
-			AdviceManager manager = new AdviceManager();
-			this.managers.put(userId, manager);
-			manager.start(userId, moduleId );
 		}
 		finally {
 			IOUtils.closeQuietly(stream);
 		}
-	}
-
-	public SequenceNode<IAdviceMap> findLesson( long moduleId, long activityId ) throws Exception {
-		try {
-			SequenceNode<IAdviceMap> find = null;//findNode( node, String.valueOf( moduleId ), String.valueOf( activityId ));
-			if( find == null )
-				return find;
- 			return find;
-		}
-		catch( Exception ex ) {
-			ex.printStackTrace();
-		}
-		return null;
 	}
 	
 	protected SequenceNode<IAdviceMap> findNode( SequenceNode<IAdviceMap> node, String moduleId, String activityId ) {
@@ -169,8 +129,6 @@ public class Dispatcher {
 			register( transaction );
 			Student student = (Student) this.implementations.get(Compass.Tetras.CONSUMER);
  			student.fire( transaction );
- 			AdviceManager manager = this.managers.get(userId);
- 			manager.addAdvice(userId, advice);
  			unregister( transaction);
  			return advice;
 		}
@@ -178,22 +136,6 @@ public class Dispatcher {
 			ex.printStackTrace();
 		}
 		return null;
-	}
-
-	public void updateAdvice( long userId, long adviceId, IAdvice.Notifications notification ) throws Exception {
-			AdviceManager manager = this.managers.get(userId);
-			manager.updateAdvice(userId, adviceId, notification);
-	}
-
-	public int getProgress( long moduleId ) {
-		Integer value = progress.get( moduleId);
-		if( value != null ) {
-			int next = ( value >= 100 )? 1000: value + 10;
-			progress.put(moduleId, next );
-		}else {
-			progress.put(moduleId, 0);			
-		}
-		return ( value == null)?0: value;
 	}
 
 	private SequenceNode<IAdviceMap> readModules() {

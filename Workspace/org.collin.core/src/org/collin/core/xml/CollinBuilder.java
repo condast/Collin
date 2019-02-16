@@ -323,7 +323,7 @@ public class CollinBuilder<D extends Object>{
 				tid = StringUtils.isEmpty(id)?TetraNode.createId(parent, tnode): id;
 				String tname = StringUtils.isEmpty(name)?TetraNode.createName(parent, tnode): name;
 				if( isTetra ) {
-				currentNode = new Tetra<D>( parent, tid, tname, tnode );
+					currentNode = new Tetra<D>( parent, tid, tname, tnode );
 				}else{
 					currentNode = new TetraNode<D>( parent, tid, tname, tnode );
 					if( !StringUtils.isEmpty(operator_str)) {
