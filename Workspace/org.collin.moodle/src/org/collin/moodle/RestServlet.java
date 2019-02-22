@@ -4,7 +4,7 @@ import javax.servlet.Servlet;
 import javax.ws.rs.ApplicationPath;
 
 import org.collin.moodle.rest.PushResource;
-import org.collin.moodle.rest.RESTResource;
+import org.collin.moodle.rest.RESTStudent;
 import org.condast.commons.messaging.http.AbstractServletWrapper;
 import org.condast.commons.messaging.rest.CorsFilter;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -32,7 +32,7 @@ public class RestServlet extends AbstractServletWrapper {
 		//in equinox the scanning of packages may not work
 		private RestApplication() {
 			register( CorsFilter.class );
-			register( RESTResource.class );
+			register( RESTStudent.class );
 			register( PushResource.class );
 		}
 	}

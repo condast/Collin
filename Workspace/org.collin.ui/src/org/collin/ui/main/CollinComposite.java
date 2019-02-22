@@ -5,6 +5,7 @@ import java.util.EnumSet;
 import java.util.logging.Logger;
 
 import org.collin.core.impl.SequenceNode;
+import org.collin.moodle.advice.IAdviceMap;
 import org.collin.moodle.xml.Sequence;
 import org.condast.commons.ui.player.PlayerImages;
 import org.condast.commons.ui.widgets.AbstractButtonBar;
@@ -68,7 +69,7 @@ public class CollinComposite extends Composite {
 	public void setInput( Class<?> clss) {
 		try {
 			builder = new Sequence( clss);
-			SequenceNode se = builder.start();
+			SequenceNode<IAdviceMap> se = builder.start();
 			String uri = "/ponte?path=" + se.getUri() + " target=\"_blank\"";
 			browser.setUrl( uri );		
 		} catch (IOException e) {
@@ -124,7 +125,7 @@ public class CollinComposite extends Composite {
 
 								@Override
 								public void run() {
-									SequenceNode se = builder.next();
+									SequenceNode<IAdviceMap> se = builder.next();
 									String uri = "/ponte?path=" + se.getUri();
 									browser.setUrl(uri);
 									requestLayout();

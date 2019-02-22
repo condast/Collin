@@ -36,11 +36,10 @@ self.addEventListener('notificationclick', function(event) {
 	console.log(event.notification.data);
 	if( notification == 'HELP'){
 		const data = event.notification.data;
-		  const promiseChain = clients.openWindow(data.uri);
-		  event.waitUntil(promiseChain);
-	}else{
-		update( notification, event );
+		const promiseChain = clients.openWindow(data.uri);
+		event.waitUntil(promiseChain);
 	}
+	update( notification, event );
 });
 
 self.addEventListener('notificationclose', function(event) {

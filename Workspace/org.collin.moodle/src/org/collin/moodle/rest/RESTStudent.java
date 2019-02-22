@@ -13,23 +13,26 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.collin.moodle.advice.IAdvice;
 import org.collin.moodle.advice.IAdviceMap;
-import org.collin.moodle.core.Dispatcher;
 import org.collin.moodle.core.MoodleProcess;
+import org.collin.moodle.core.Push;
+import org.collin.moodle.service.ActorService;
 import org.condast.commons.messaging.rest.RESTUtils;
+import org.condast.commons.strings.StringUtils;
 
 //Sets the path to alias + path
 @Path("/module")
-public class RESTResource{
+public class RESTStudent{
 
 	public static final String S_ERR_UNKNOWN_REQUEST = "An invalid request was rertrieved: ";
 	public static final String S_ERR_INVALID_VESSEL = "A request was received from an unknown vessel:";
 		
-	private Dispatcher dispatcher = Dispatcher.getInstance();
+	private ActorService service = ActorService.getInstance();
 
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
-	public RESTResource() {
+	public RESTStudent() {
 	}
 
 	// This method is called if TEXT_PLAIN is requested
@@ -62,7 +65,7 @@ public class RESTResource{
 			response = RESTUtils.checkId( userId, token, moduleId);
 			if( !response )
 				return ( moduleId < 0 )? Response.noContent().build(): Response.status( Status.UNAUTHORIZED ).build();
-			dispatcher.start(userId, moduleId );
+			service.start(userId, moduleId );
 			return Response.ok().build();
 		}
 		catch( Exception ex ){
@@ -94,11 +97,11 @@ public class RESTResource{
 			}
 			logger.info( "Subscriptions found: " + userId );
 
-			IAdviceMap adviceMap = dispatcher.getAdvice( userId, courseId, moduleId, progress);
+			IAdviceMap adviceMap = service.createAdvice( userId, courseId, moduleId, progress);
 			if(( adviceMap == null ) || adviceMap.isEmpty() )
 				return Response.ok().build();
 
-			boolean result = dispatcher.sendPushMessage(userId, adviceMap.getAdvice()[0]);
+			boolean result = Push.sendPushMessage(userId, adviceMap.getAdvice()[0]);
 			return result?Response.ok().build(): Response.status(Status.BAD_REQUEST).build();
 		}
 		catch( Exception ex ){
@@ -111,11 +114,13 @@ public class RESTResource{
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/update")
-	public Response update( @QueryParam("id") String userId, @QueryParam("token") String token, @QueryParam("courseId") String courseId, @QueryParam("activity-id") long activityId, @QueryParam("progress") double progress) {
+	public Response update( @QueryParam("id") long userId, @QueryParam("token") String token, @QueryParam("adviceid") int adviceId, @QueryParam("notification") String notification, @QueryParam("progress") double progress ) {
 		try{
 			//dispatcher.getAdvice(Long.parseLong(id), Long.parseLong( adviceId ), notification);
+			logger.info("Notification received: " + notification);
 			Response response = Response.serverError().build();
-			IAdviceMap adviceMap = dispatcher.getAdvice(Long.parseLong(userId), Long.parseLong(courseId),  activityId, progress);
+			IAdvice.Notifications notif = StringUtils.isEmpty(notification)? IAdvice.Notifications.DONT_CARE: IAdvice.Notifications.valueOf(notification);
+ 			IAdviceMap adviceMap = service.updateAdvice(userId, adviceId, notif, progress);
 			if(( adviceMap == null ) || adviceMap.isEmpty() )
 				return Response.ok().build();
 			return response;

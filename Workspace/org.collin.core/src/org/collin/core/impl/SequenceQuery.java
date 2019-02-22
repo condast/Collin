@@ -67,7 +67,7 @@ public class SequenceQuery<D extends Object> {
 	}
 	
 	protected SequenceNode<D> find( Nodes node, String id, SequenceNode<D> nd ) {
-		if( node == null )
+		if(( node == null ) ||(  nd==null ))
 			return null;
 		if(( node.equals(nd.getNode())) && ( nd.getId().equals(id )))
 			return nd;

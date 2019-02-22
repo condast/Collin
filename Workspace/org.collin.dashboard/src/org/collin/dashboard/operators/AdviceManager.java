@@ -3,12 +3,14 @@ package org.collin.dashboard.operators;
 import java.util.Date;
 
 import org.collin.core.def.IDataObject;
+import org.collin.core.def.ITetraImplementation;
 import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.TetraEvent;
 import org.collin.core.essence.TetraEvent.Results;
+import org.collin.core.impl.SequenceNode;
 import org.collin.core.task.AbstractTask;
 
-public class AdviceManager<D extends Object> extends AbstractTask<D>{
+public class AdviceManager<D extends Object> extends AbstractTask<SequenceNode<D>,D>{
 
 	public AdviceManager() {
 		super();
@@ -18,8 +20,9 @@ public class AdviceManager<D extends Object> extends AbstractTask<D>{
 		super( sequence, node );
 	}
 
+
 	@Override
-	protected Results onProgress(ITetraNode<D> node, TetraEvent<D> event) {
+	protected Results onProgress(ITetraImplementation<SequenceNode<D>, D> node, TetraEvent<D> event) {
 		Date start = super.getStart();
 		Date end = super.getEndTime();
 		Date current = super.getCurrentTime();
@@ -30,7 +33,7 @@ public class AdviceManager<D extends Object> extends AbstractTask<D>{
 		case FAIL:
 			double diff = getDifference();
 			if( end.getTime()%120 == 0 ) {
-				
+
 			}
 			break;
 		default:
@@ -40,10 +43,9 @@ public class AdviceManager<D extends Object> extends AbstractTask<D>{
 	}
 
 	@Override
-	protected Results onComplete(ITetraNode<D> node, TetraEvent<D> event) {
+	protected Results onComplete(ITetraImplementation<SequenceNode<D>, D> node, TetraEvent<D> event) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	
 }
+

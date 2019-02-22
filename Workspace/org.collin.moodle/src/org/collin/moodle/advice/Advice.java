@@ -7,6 +7,8 @@ import org.condast.commons.strings.StringUtils;
 
 public class Advice implements IAdvice {
 
+	private long adviceId;
+	private long userId;
 	private String member;
 	private String advice;
 	private int repeat;
@@ -14,26 +16,30 @@ public class Advice implements IAdvice {
 	private IAdvice.Mood mood;
 	private String uri;
 	
-	public Advice(SequenceNode<IAdviceMap> node) {
+	public Advice( long userId, long adviceId,  SequenceNode<IAdviceMap> node) {
 		super();
+		this.userId = userId;
+		this.adviceId = adviceId;
 		String str =  node.getValue( StringStyler.styleToEnum( IAdvice.Attributes.MEMBER.name()));
 		this.member = StringUtils.isEmpty(str)? Team.GINO.name(): Team.valueOf( str ).name();
 		this.type = AdviceTypes.valueOf(node.getType());
 		this.mood = getMood(type);
 		this.advice = node.getDescription();
-		str =  node.getValue( StringStyler.styleToEnum( IAdvice.Attributes.REPEAT.name()));
+		str = node.getValue( StringStyler.styleToEnum( IAdvice.Attributes.REPEAT.name()));
 		this.repeat = StringUtils.isEmpty(str)?0: Integer.parseInt(str);
 		this.uri = node.getUri();
 	}
 
-	public Advice( String[] arr) {
-		this( arr[0], IAdvice.AdviceTypes.valueOf( arr[1].trim().toUpperCase()), IAdvice.Mood.valueOf(arr[2].trim().toUpperCase()), arr[3], Integer.parseInt( arr[4].trim() ));
+	public Advice(long userId, long adviceId, String[] arr) {
+		this( userId, adviceId, arr[0], IAdvice.AdviceTypes.valueOf( arr[1].trim().toUpperCase()), IAdvice.Mood.valueOf(arr[2].trim().toUpperCase()), arr[3], Integer.parseInt( arr[4].trim() ));
 	}
 	
-	public Advice( String member, IAdvice.AdviceTypes type, Mood mood, String advice, int repeat) {
+	public Advice( long userId, long adviceId, String member, IAdvice.AdviceTypes type, Mood mood, String advice, int repeat) {
 		super();
+		this.userId = userId;
 		this.member = member;
 		this.type = type;
+		this.adviceId = adviceId;
 		this.mood = mood;
 		this.advice = advice;
 		this.repeat = repeat;
@@ -41,7 +47,12 @@ public class Advice implements IAdvice {
 
 	@Override
 	public long getId() {
-		return this.type.ordinal();
+		return this.adviceId;
+	}
+	
+	@Override
+	public long getUserId() {
+		return this.userId;
 	}
 
 	/* (non-Javadoc)

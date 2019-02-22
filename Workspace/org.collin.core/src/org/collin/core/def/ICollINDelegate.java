@@ -2,7 +2,7 @@ package org.collin.core.def;
 
 import org.collin.core.essence.TetraEvent;
 
-public interface ICollINDelegate<D extends Object> {
+public interface ICollINDelegate<N,D extends Object> {
 
 	/**
 	 * Performs the required activities for the given node. This method returns a
@@ -10,5 +10,5 @@ public interface ICollINDelegate<D extends Object> {
 	 * @param node
 	 * @return
 	 */
-	public TetraEvent.Results perform( ITetraNode<D> node, TetraEvent<D> transaction );
+	public TetraEvent.Results perform( ITetraImplementation<N,D> node, TetraEvent<D> transaction );
 }

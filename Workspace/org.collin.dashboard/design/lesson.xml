@@ -13,7 +13,7 @@
 							uri="https://www.plusklas.nu/course/view.php?${id}#{name}-${index}">
 							<activities>
 								<activity id="1" name="Activity1" index="1"
-									uri="http://www.condast.com">
+									uri="http://www.condast.com" duration="600">
 									<task class="org.collin.core.task.TimedTask" time="900">
 									</task>
 									<function></function>
@@ -22,7 +22,7 @@
 									</solution>
 								</activity>
 								<activity id="2" name="Activity2" index="2"
-									uri="http://www.condast.com">
+									uri="http://www.condast.com" duration="600">
 									<task time="900" />
 								</activity>
 								<activity id="3" name="Activity3" index="3"

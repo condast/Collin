@@ -11,7 +11,9 @@ import org.collin.core.impl.AbstractTetraImplementation;
 import org.collin.core.impl.SequenceDelegateFactory;
 import org.collin.core.impl.SequenceNode;
 import org.collin.core.transaction.TetraTransaction;
+import org.collin.core.transaction.TetraTransaction.States;
 import org.collin.moodle.advice.IAdviceMap;
+import org.collin.moodle.operators.StudentAdviceTask;
 
 public class Student extends AbstractTetraImplementation<SequenceNode<IAdviceMap>, IAdviceMap>{
 
@@ -21,6 +23,14 @@ public class Student extends AbstractTetraImplementation<SequenceNode<IAdviceMap
 		super(tetra, sequence, new SequenceDelegateFactory<IAdviceMap>( sequence ));
 	}
 
+	public TetraTransaction<IAdviceMap> createTransaction( int adviceId ) {
+		StudentAdviceTask task = (StudentAdviceTask) super.getTetra().getOperator();
+		IAdviceMap map = task.getAdvice(adviceId);
+		if( map == null )
+			return null;
+		return new TetraTransaction<IAdviceMap>(this, map.getUserId(), States.PROGRESS, map, map.getProgress()  );
+	}
+	
 	@Override
 	protected TetraEvent.Results onCallFunction(ITetraNode<IAdviceMap> node, TetraEvent<IAdviceMap> event) {
 		logger.info(node.getId() + ": " + event.getTransaction().getState().toString());
@@ -40,8 +50,11 @@ public class Student extends AbstractTetraImplementation<SequenceNode<IAdviceMap
 		logger.info(node.getId() + ": " + event.getTransaction().getState().toString());
 		TetraEvent.Results result = TetraEvent.Results.CONTINUE;
 		TetraTransaction<IAdviceMap> transaction = event.getTransaction();		
-		ICollINDelegate<IAdviceMap> delegate = getDelegate( node );
-		result = (delegate == null)? result: delegate.perform(node, event );
+		ICollINDelegate<SequenceNode<IAdviceMap>, IAdviceMap> delegate = getDelegate( node );
+		result = (delegate == null)? result: delegate.perform(this, event );
+		
+		StudentAdviceTask task = (StudentAdviceTask) super.getTetra().getOperator();
+		task.perform(this, event);
 		switch( transaction.getState()) {
 		case START:
 			break;

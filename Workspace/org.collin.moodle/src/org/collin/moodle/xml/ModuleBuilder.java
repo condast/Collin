@@ -244,7 +244,7 @@ public class ModuleBuilder<D extends Object>{
 			String locale_str = attributes.getValue( AttributeNames.LOCALE.toXmlStyle());
 			String class_str = attributes.getValue( AttributeNames.CLASS.toXmlStyle());
 			String duration_str = attributes.getValue( AttributeNames.DURATION.toXmlStyle());
-			long totalTime = StringUtils.isEmpty(duration_str)?-1: Long.parseLong(duration_str);
+			long duration = StringUtils.isEmpty(duration_str)?-1: Long.parseLong(duration_str);
 			if(!StringUtils.isEmpty(locale_str)) {
 				String[] split = locale_str.split("[-]");
 				locale = new Locale(split[0], split[1]);
@@ -280,7 +280,7 @@ public class ModuleBuilder<D extends Object>{
 				current = new SequenceNode<D>(node, locale, id, name, collin, attributes,index);
 				break;
 			case MODULE:
-				current = new SequenceNode<D>(node, locale, id, name, collin, attributes,index, totalTime);
+				current = new SequenceNode<D>(node, locale, id, name, collin, attributes,index, duration);
 				current.setUri(url);
 				if( !StringUtils.isEmpty(class_str)) {
 					this.current.setDelegate(class_str);
@@ -292,7 +292,7 @@ public class ModuleBuilder<D extends Object>{
 				current = new SequenceNode<D>(node, locale, id, name, collin, attributes,index);
 				break;
 			case ACTIVITY:
-				current = new SequenceNode<D>(node, locale, id, name, collin, attributes,index, totalTime);
+				current = new SequenceNode<D>(node, locale, id, name, collin, attributes,index, duration);
 				current.setUri(url);
 				if( !StringUtils.isEmpty(class_str)) {
 					this.current.setDelegate(class_str);
@@ -346,7 +346,7 @@ public class ModuleBuilder<D extends Object>{
 			case GOAL:
 			case TASK:
 			case SOLUTION:
-				current = new SequenceNode<D>(node, locale, id, name, collin, attributes, 0, totalTime);
+				current = new SequenceNode<D>(node, locale, id, name, collin, attributes, 0, duration);
 				current.setUri(url);
 				if( !StringUtils.isEmpty(class_str)) {
 					this.current.setDelegate(class_str);

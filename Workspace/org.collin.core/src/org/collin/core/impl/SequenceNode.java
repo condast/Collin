@@ -73,7 +73,7 @@ public class SequenceNode<D extends Object> extends AbstractDataObject<D>{
 	private String type;
 	private String uri;
 	private float progress;
-	private long totalTime;
+	private long duration;
 
 	private SequenceNode<D> parent;
 	
@@ -106,7 +106,7 @@ public class SequenceNode<D extends Object> extends AbstractDataObject<D>{
 		this( node, locale, id, name, collin, attributes, index, -1 );
 	}
 	
-	public SequenceNode( Nodes node, Locale locale, String id, String name, String collin, Attributes attributes, int index, long totalTime ) {
+	public SequenceNode( Nodes node, Locale locale, String id, String name, String collin, Attributes attributes, int index, long duration ) {
 		super();
 		this.node = node;
 		this.locale = locale.toString();
@@ -115,7 +115,7 @@ public class SequenceNode<D extends Object> extends AbstractDataObject<D>{
 		this.collin = collin;
 		this.index = index;
 		this.locale = Locale.ENGLISH.toString();
-		this.totalTime = totalTime;
+		this.duration = duration;
 		this.attributes = new HashMap<>();
 		for( int i=0; i<attributes.getLength(); i++ ) {
 			this.attributes.put(attributes.getQName(i), attributes.getValue(i));
@@ -203,8 +203,8 @@ public class SequenceNode<D extends Object> extends AbstractDataObject<D>{
 		this.delegate = delegate;
 	}
 
-	public long getTotalTime() {
-		return totalTime;
+	public long getDuration() {
+		return duration;
 	}
 
 	public String getValue( String key ) {

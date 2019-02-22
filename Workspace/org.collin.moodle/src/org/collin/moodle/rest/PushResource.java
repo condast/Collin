@@ -11,10 +11,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.collin.moodle.core.Dispatcher;
+import org.collin.moodle.core.Push;
 import org.condast.commons.messaging.push.ISubscription;
-
-import nl.martijndwars.webpush.core.PushManager;
 
 //Sets the path to alias + path
 @Path("/push")
@@ -28,8 +26,6 @@ public class PushResource{
 	
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
-	private Dispatcher dispatcher = Dispatcher.getInstance();
-	
 	public PushResource() {
 	}
 
@@ -40,8 +36,7 @@ public class PushResource{
 	public Response subscribe( @QueryParam("id") long id, @QueryParam("token") String token, String subscription ) {
 		try{
 			logger.info( "Subscription request for " + id + ": " + subscription );
-			PushManager pm = dispatcher.getPushMananger();
-			ISubscription sub = pm.subscribe(id, token, subscription);
+			ISubscription sub = Push.subscribe(id, token, subscription);
 			return ( sub == null )? Response.status( Status.BAD_REQUEST).build(): 
 				Response.ok().build();
 		}

@@ -17,7 +17,7 @@ import org.collin.core.graph.ICollINVertex;
 import org.collin.core.transaction.ITransactionListener;
 import org.collin.core.transaction.TetraTransaction;
 
-public abstract class AbstractTetraImplementation<N,D extends Object> extends AbstractCollINVertex<D> implements ITetraImplementation<D> {
+public abstract class AbstractTetraImplementation<N,D extends Object> extends AbstractCollINVertex<D> implements ITetraImplementation<N,D> {
 
 	//The data needed to build the tetra
 	private N data;
@@ -26,9 +26,9 @@ public abstract class AbstractTetraImplementation<N,D extends Object> extends Ab
 	
 	private Map<ICollINVertex<D>, Integer> progress;
 	
-	private IDelegateFactory<D> factory;
+	private IDelegateFactory<N,D> factory;
 
-	private Map<ITetraNode<D>, ICollINDelegate<D>> delegates;
+	private Map<ITetraNode<D>, ICollINDelegate<N,D>> delegates;
 
 	private ITransactionListener<D> tlistener = new ITransactionListener<D>() {
 	
@@ -75,11 +75,11 @@ public abstract class AbstractTetraImplementation<N,D extends Object> extends Ab
 		}
 	};
 	
-	public AbstractTetraImplementation( ITetra<D> tetra, N data, IDelegateFactory<D> factory) {
+	public AbstractTetraImplementation( ITetra<D> tetra, N data, IDelegateFactory<N,D> factory) {
 		this( tetra.getId(), tetra.getName(), tetra, data, factory );
 	}
 	
-	public AbstractTetraImplementation( String id, String name, ITetra<D> tetra, N data, IDelegateFactory<D> factory) {
+	public AbstractTetraImplementation( String id, String name, ITetra<D> tetra, N data, IDelegateFactory<N,D> factory) {
 		super(id, name, null);
 		this.tetra = tetra;
 		this.data = data;
@@ -96,12 +96,13 @@ public abstract class AbstractTetraImplementation<N,D extends Object> extends Ab
 	/**
 	 * Data needed to build the tetra
 	 * @return
-	 */
-	protected N getData() {
+	*/
+	@Override
+	public N getData() {
 		return data;
 	}
 
-	protected IDelegateFactory<D> getFactory() {
+	protected IDelegateFactory<N,D> getFactory() {
 		return factory;
 	}
 
@@ -149,8 +150,8 @@ public abstract class AbstractTetraImplementation<N,D extends Object> extends Ab
 		this.tetra.removeCollINListener(listener);
 	}
 	
-	protected ICollINDelegate<D> getDelegate( ITetraNode<D> node ){
-		ICollINDelegate<D> delegate = this.delegates.get(node);
+	protected ICollINDelegate<N,D> getDelegate( ITetraNode<D> node ){
+		ICollINDelegate<N,D> delegate = this.delegates.get(node);
 		if( delegate == null ) {
 			delegate = factory.createDelegate(this.getClass(), node);
 			if( delegate != null )

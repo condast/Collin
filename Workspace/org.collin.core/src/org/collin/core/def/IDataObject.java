@@ -8,5 +8,5 @@ public interface IDataObject<D extends Object> {
 	
 	public Collection<D> getData();
 	
-	public long getTotalTime();
+	public long getDuration();
 }

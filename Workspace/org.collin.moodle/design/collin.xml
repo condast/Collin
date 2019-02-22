@@ -35,7 +35,7 @@
 				<nodes>
 					<function type="subject"></function>
 					<goal type="question">What is your goal</goal>
-					<task type="question">How will you achieve this</task>
+					<task operator="org.collin.moodle.operators.StudentAdviceTask" type="question">How will you achieve this</task>
 					<solution></solution>
 				</nodes>
 				<ambition id="module.introduction" question="why, where?" />
