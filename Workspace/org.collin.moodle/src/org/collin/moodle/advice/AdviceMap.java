@@ -60,7 +60,7 @@ public class AdviceMap implements IAdviceMap {
 	}
 
 	@Override
-	public long getAdviceId() {
+	public int getAdviceId() {
 		return adviceId;
 	}
 

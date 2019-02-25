@@ -4,6 +4,7 @@
 	<models type="moodle">
 		<model type="moodle" collin="student">
 			<sections uri="https://www.plusklas.nu/course/view.php?id=${course.id}#${type}-${index}">
+				<task delegate="org.collin.moodle.delegates.StudentAdviceDelegate"></task>
 				<section index="0" title="Algemeen">
 				</section>
 				<section index="1" title="Het Avontuur">
@@ -13,7 +14,7 @@
 							<activities>
 								<activity id="1" name="Activity1" index="1"
 									uri="http://www.condast.com">
-									<task class="org.collin.core.task.TimedTask" time="900">
+									<task time="900">
 									</task>
 									<function></function>
 									<goal></goal>
@@ -51,6 +52,7 @@
 			</sections>
 		</model>
 		<model type="moodle" collin="coach">
+			<task delegate="org.collin.moodle.advice.AdviceManager" poll-time="1000" duration="60"></task>
 			<modules>
 				<module id="1" name="lesson1" index="0"
 					uri="http://www.condast.com">

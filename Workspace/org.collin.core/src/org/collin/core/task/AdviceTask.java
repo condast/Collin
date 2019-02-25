@@ -8,7 +8,7 @@ import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.TetraEvent;
 import org.collin.core.essence.TetraEvent.Results;
 
-public class AdviceTask<N,D extends Object> extends AbstractTask<N, D>{
+public class AdviceTask<N,D extends Object> extends AbstractDelegate<N, D>{
 
 	public AdviceTask() {
 		super();

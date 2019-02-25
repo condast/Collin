@@ -10,6 +10,6 @@ public interface ITetraImplementation<N,D extends Object> {
 
 	void unregister( TetraTransaction<D> transaction );
 
-	N getData();
+	N getSource();
 
 }

@@ -121,9 +121,8 @@ public class RESTStudent{
 			Response response = Response.serverError().build();
 			IAdvice.Notifications notif = StringUtils.isEmpty(notification)? IAdvice.Notifications.DONT_CARE: IAdvice.Notifications.valueOf(notification);
  			IAdviceMap adviceMap = service.updateAdvice(userId, adviceId, notif, progress);
-			if(( adviceMap == null ) || adviceMap.isEmpty() )
-				return Response.ok().build();
-			return response;
+			return (( adviceMap == null ) || adviceMap.isEmpty() )? response:
+				Response.ok().build();
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();

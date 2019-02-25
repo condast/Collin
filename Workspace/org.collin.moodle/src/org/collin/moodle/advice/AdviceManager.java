@@ -1,23 +1,22 @@
-package org.collin.moodle.operators;
+package org.collin.moodle.advice;
 
 import java.util.LinkedHashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.collin.core.def.IDataObject;
 import org.collin.core.def.ITetraImplementation;
+import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.TetraEvent;
 import org.collin.core.essence.TetraEvent.Results;
 import org.collin.core.impl.SequenceNode;
 import org.collin.core.impl.SequenceQuery;
 import org.collin.core.impl.SequenceNode.Nodes;
-import org.collin.core.task.AbstractTask;
+import org.collin.core.task.AbstractDelegate;
 import org.collin.core.transaction.TetraTransaction;
-import org.collin.moodle.advice.Advice;
-import org.collin.moodle.advice.IAdvice;
 import org.collin.moodle.advice.IAdvice.AdviceTypes;
 import org.collin.moodle.advice.IAdvice.Mood;
 import org.collin.moodle.advice.IAdvice.Notifications;
-import org.collin.moodle.advice.IAdviceMap;
 import org.collin.moodle.core.MoodleProcess;
 import org.collin.moodle.core.Push;
 import org.collin.moodle.images.TeamImages.Team;
@@ -25,7 +24,7 @@ import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 import org.xml.sax.Attributes;
 
-public class AdviceManager extends AbstractTask<SequenceNode<IAdviceMap>, IAdviceMap> {
+public class AdviceManager extends AbstractDelegate<SequenceNode<IAdviceMap>, IAdviceMap> {
 
 	public static final int DEFAULT_COUNT = 120;//two minutes
 	public static final int DEFAULT_POLL_TIME = 1000;//1 seconds
@@ -40,17 +39,18 @@ public class AdviceManager extends AbstractTask<SequenceNode<IAdviceMap>, IAdvic
 	}
 	private MoodleProcess process;
 
-	private LinkedHashMap<Long, IAdviceMap> advice;
+	private LinkedHashMap<Integer, IAdviceMap> advice;
 
 	private long userId;
-	private long currentAdvice;
+	private int currentAdvice;
 
 	private Timer timer;
 	private int counter;
 	private int maxCount;
 	private int pollTime;
 
-	public AdviceManager() {
+	public AdviceManager(IDataObject<IAdviceMap> sequence, ITetraNode<IAdviceMap> node) {
+		super(sequence, node);
 		this.counter = 0;
 		this.maxCount = DEFAULT_COUNT;
 		this.pollTime = DEFAULT_POLL_TIME;
@@ -106,7 +106,7 @@ public class AdviceManager extends AbstractTask<SequenceNode<IAdviceMap>, IAdvic
 		return this.process;
 	}
 
-	protected void updateAdvice( long adviceId ) {
+	protected void updateAdvice( int adviceId ) {
 		try {
 			IAdviceMap current = this.advice.get(adviceId);
 			if(current == null )
@@ -129,7 +129,7 @@ public class AdviceManager extends AbstractTask<SequenceNode<IAdviceMap>, IAdvic
 		}
 		switch( adviceMap.getInteraction()) {
 		case CREATE:
-			SequenceQuery<IAdviceMap> query = new SequenceQuery<IAdviceMap> ( node.getData() );
+			SequenceQuery<IAdviceMap> query = new SequenceQuery<IAdviceMap> ( node.getSource() );
 			SequenceNode<IAdviceMap> task = query.getTetra( adviceMap.getModuleId(), adviceMap.getActivityId(), Nodes.TASK );
 			start( task, transaction );
 
@@ -143,7 +143,7 @@ public class AdviceManager extends AbstractTask<SequenceNode<IAdviceMap>, IAdvic
 			default:
 				break;
 			}
-			IAdvice advice = createAdvice( node.getData(), adviceMap, type );
+			IAdvice advice = createAdvice( node.getSource(), adviceMap, type );
 			adviceMap.addAdvice(advice);
 			//this.completed = ( advice != null );
 			result = Results.COMPLETE;//the coach has successfully given an advice

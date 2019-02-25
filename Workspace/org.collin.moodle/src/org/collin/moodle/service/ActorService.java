@@ -11,7 +11,6 @@ import org.collin.core.impl.SequenceNode;
 import org.collin.core.impl.SequenceQuery;
 import org.collin.core.impl.SequenceNode.Nodes;
 import org.collin.core.transaction.TetraTransaction;
-import org.collin.core.transaction.TetraTransaction.States;
 import org.collin.core.xml.CollinBuilder;
 import org.collin.moodle.advice.AdviceMap;
 import org.collin.moodle.advice.IAdvice;
@@ -112,13 +111,12 @@ public class ActorService {
 	 */
 	public IAdviceMap createAdvice( long userId, long moduleId, long activityId, double progress ) throws Exception {
 		try {
-			IAdviceMap advice = new AdviceMap( userId, moduleId, activityId, progress );
-			TetraTransaction<IAdviceMap> transaction = new TetraTransaction<IAdviceMap>(this, userId, States.PROGRESS, advice, progress );
-			register( transaction );
 			Student student = (Student) this.implementations.get(Compass.Tetras.CONSUMER);
+			TetraTransaction<IAdviceMap> transaction = student.createTransaction( userId, moduleId, activityId, progress );
+			register( transaction );
  			student.fire( transaction );
  			unregister( transaction);
- 			return advice;
+ 			return transaction.getData();
 		}
 		catch( Exception ex ) {
 			ex.printStackTrace();
@@ -138,7 +136,7 @@ public class ActorService {
 	public IAdviceMap updateAdvice( long userId, int adviceId, IAdvice.Notifications notification, double progress ) throws Exception {
 		try {
 			Student student = (Student) this.implementations.get(Compass.Tetras.CONSUMER);
-			TetraTransaction<IAdviceMap> transaction = student.createTransaction(adviceId);
+			TetraTransaction<IAdviceMap> transaction = student.updateTransaction(adviceId);
 			register( transaction );
 			student.fire( transaction );
  			unregister( transaction);

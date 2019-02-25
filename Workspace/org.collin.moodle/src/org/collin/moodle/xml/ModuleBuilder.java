@@ -63,11 +63,11 @@ public class ModuleBuilder<D extends Object>{
 		COMPLETE;
 	}
 
-	private enum AttributeNames{
+	public enum AttributeNames{
 		ID,
 		TITLE,
 		NAME,
-		CLASS,
+		DELEGATE,
 		COLLIN,
 		DESCRIPTION,
 		DURATION,
@@ -75,6 +75,7 @@ public class ModuleBuilder<D extends Object>{
 		TYPE,
 		INDEX,
 		LOCALE,
+		POLL_TIME,
 		PROGRESS,
 		SOURCE,
 		URI,
@@ -242,7 +243,7 @@ public class ModuleBuilder<D extends Object>{
 			String progress_str = attributes.getValue( AttributeNames.PROGRESS.toXmlStyle());
 			float progress = StringUtils.isEmpty(progress_str)?0: Float.valueOf(progress_str);  
 			String locale_str = attributes.getValue( AttributeNames.LOCALE.toXmlStyle());
-			String class_str = attributes.getValue( AttributeNames.CLASS.toXmlStyle());
+			String delegate_str = attributes.getValue( AttributeNames.DELEGATE.toXmlStyle());
 			String duration_str = attributes.getValue( AttributeNames.DURATION.toXmlStyle());
 			long duration = StringUtils.isEmpty(duration_str)?-1: Long.parseLong(duration_str);
 			if(!StringUtils.isEmpty(locale_str)) {
@@ -282,9 +283,6 @@ public class ModuleBuilder<D extends Object>{
 			case MODULE:
 				current = new SequenceNode<D>(node, locale, id, name, collin, attributes,index, duration);
 				current.setUri(url);
-				if( !StringUtils.isEmpty(class_str)) {
-					this.current.setDelegate(class_str);
-				}
 				index++;
 				break;
 			case ACTIVITIES:
@@ -294,9 +292,6 @@ public class ModuleBuilder<D extends Object>{
 			case ACTIVITY:
 				current = new SequenceNode<D>(node, locale, id, name, collin, attributes,index, duration);
 				current.setUri(url);
-				if( !StringUtils.isEmpty(class_str)) {
-					this.current.setDelegate(class_str);
-				}
 				index++;
 				break;
 			case VIEW:
@@ -348,11 +343,6 @@ public class ModuleBuilder<D extends Object>{
 			case SOLUTION:
 				current = new SequenceNode<D>(node, locale, id, name, collin, attributes, 0, duration);
 				current.setUri(url);
-				if( !StringUtils.isEmpty(class_str)) {
-					this.current.setDelegate(class_str);
-				}else if( !StringUtils.isEmpty(parent.getDelegate())){
-					this.current.setDelegate( parent.getDelegate());					
-				}
 				break;
 			default:
 				break;
@@ -364,6 +354,9 @@ public class ModuleBuilder<D extends Object>{
 				current.setUri(url);
 			if(!StringUtils.isEmpty( description))
 				current.setUri(description);
+			if( !StringUtils.isEmpty(delegate_str)) {
+				this.current.setDelegate(delegate_str);
+			}
 		}
 		
 		protected void completeFromTo( SequenceNode<D> node, String from, String to ) {

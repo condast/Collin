@@ -28,7 +28,7 @@ public interface IAdviceMap {
 
 	Interactions getInteraction();
 
-	long getAdviceId();
+	int getAdviceId();
 
 	Notifications getNotification();
 

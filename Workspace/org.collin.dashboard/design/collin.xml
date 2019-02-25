@@ -8,7 +8,7 @@
 				<nodes>
 					<function type="supplier" activity="1.1"></function>
 					<goal type="module">Introduction in the area</goal>
-					<task id="multi-tasking" type="paragraph"/>
+					<task id="multi-tasking" type="paragraph" />
 				</nodes>
 			</tetra>
 			<!-- This tetra provides the coach of the consumer, with a focus on keeping 
@@ -57,7 +57,7 @@
 				<nodes>
 					<function type="product"></function>
 					<goal></goal>
-					<task operator="org.collin.dashboard.operators.AdviceManager"/>
+					<task/>
 					<solution></solution>
 				</nodes>
 				<ambition id="certification" />

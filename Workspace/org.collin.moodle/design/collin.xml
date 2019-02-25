@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<collin id="org.collin.dashboard.test" name="Collin Test"
+<collin id="org.collin.moodle.test" name="Collin Moodle Test"
 	title="HowAComputer.Thinks">
 	<compasses>
-		<compass id="org.collin.dashboard.test">
+		<compass id="org.collin.moodle.test">
 			<!-- This tetra describes the approach of the provider -->
-			<tetra type="consumer" id="moodle-course">
+			<tetra type="consumer" name="student" id="moodle-course">
 				<nodes>
 					<function type="supplier" activity="1.1"></function>
 					<goal type="module">Introduction in the area</goal>
@@ -30,12 +30,12 @@
 				<operation />
 				<recovery />
 			</tetra>
-			<!-- This tetra monitors the student -->
-			<tetra type="producer" name="student">
+			<!-- This tetra monitors the producer -->
+			<tetra type="producer" name="ponte">
 				<nodes>
 					<function type="subject"></function>
 					<goal type="question">What is your goal</goal>
-					<task operator="org.collin.moodle.operators.StudentAdviceTask" type="question">How will you achieve this</task>
+					<task type="question">How will you achieve this</task>
 					<solution></solution>
 				</nodes>
 				<ambition id="module.introduction" question="why, where?" />
@@ -62,7 +62,7 @@
 				<nodes>
 					<function type="product"></function>
 					<goal></goal>
-					<task operator="org.collin.moodle.operators.AdviceManager" poll-time="1000" duration="60"></task>
+					<task></task>
 					<solution></solution>
 				</nodes>
 				<ambition id="certification" />

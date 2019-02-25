@@ -1,11 +1,8 @@
 package org.collin.core.impl;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.collin.core.def.ICollINDelegate;
-import org.collin.core.def.IDelegateFactory;
 import org.collin.core.def.ITetraImplementation;
 import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.ITetra;
@@ -26,25 +23,19 @@ public abstract class AbstractTetraImplementation<N,D extends Object> extends Ab
 	
 	private Map<ICollINVertex<D>, Integer> progress;
 	
-	private IDelegateFactory<N,D> factory;
-
-	private Map<ITetraNode<D>, ICollINDelegate<N,D>> delegates;
-
 	private ITransactionListener<D> tlistener = new ITransactionListener<D>() {
 	
 		@Override
 		public TetraEvent.Results transactionUpdateRequest(ICollINVertex<D> source, TetraEvent<D> event) {
-			if( source instanceof ITetraNode ) {
-				ITetraNode<D> tnode = (ITetraNode<D>) source;
-				if( !tetra.equals(tnode.getParent()))
-					return Results.CONTINUE;
-			}
 			if( TetraEvent.Results.COMPLETE.equals( event.getResult()))
 				return event.getResult();
 			
 			TetraEvent.Results result = TetraEvent.Results.COMPLETE;
 			if( source instanceof ITetraNode ) {
 				ITetraNode<D> node = (ITetraNode<D>) source;
+				if( !tetra.equals(node.getParent()))
+              		return Results.CONTINUE;
+				
 				switch( node.getType() ) {
 				case FUNCTION:
 					result = onCallFunction(node, event);
@@ -75,18 +66,16 @@ public abstract class AbstractTetraImplementation<N,D extends Object> extends Ab
 		}
 	};
 	
-	public AbstractTetraImplementation( ITetra<D> tetra, N data, IDelegateFactory<N,D> factory) {
-		this( tetra.getId(), tetra.getName(), tetra, data, factory );
+	public AbstractTetraImplementation( ITetra<D> tetra, N data) {
+		this( tetra.getId(), tetra.getName(), tetra, data );
 	}
 	
-	public AbstractTetraImplementation( String id, String name, ITetra<D> tetra, N data, IDelegateFactory<N,D> factory) {
+	public AbstractTetraImplementation( String id, String name, ITetra<D> tetra, N data) {
 		super(id, name, null);
 		this.tetra = tetra;
 		this.data = data;
 		this.tetra.addCollINListener(listener);
 		progress = new LinkedHashMap<>();
-		delegates = new HashMap<>(); 
-		this.factory = factory;
 	}
 
 	protected ITetra<D> getTetra() {
@@ -98,12 +87,8 @@ public abstract class AbstractTetraImplementation<N,D extends Object> extends Ab
 	 * @return
 	*/
 	@Override
-	public N getData() {
+	public N getSource() {
 		return data;
-	}
-
-	protected IDelegateFactory<N,D> getFactory() {
-		return factory;
 	}
 
 	protected abstract TetraEvent.Results onCallFunction( ITetraNode<D> node, TetraEvent<D> event );
@@ -149,15 +134,4 @@ public abstract class AbstractTetraImplementation<N,D extends Object> extends Ab
 		transaction.removeTransactionListener( tlistener);
 		this.tetra.removeCollINListener(listener);
 	}
-	
-	protected ICollINDelegate<N,D> getDelegate( ITetraNode<D> node ){
-		ICollINDelegate<N,D> delegate = this.delegates.get(node);
-		if( delegate == null ) {
-			delegate = factory.createDelegate(this.getClass(), node);
-			if( delegate != null )
-				delegates.put(node, delegate);
-		}
-		return delegate;
-	}
-
 }

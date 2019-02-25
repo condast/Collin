@@ -6,7 +6,7 @@ import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.TetraEvent;
 import org.collin.core.essence.TetraEvent.Results;
 
-public class TimedTask<N,D extends Object> extends AbstractTask<N,D>{
+public class TimedTask<N,D extends Object> extends AbstractDelegate<N,D>{
 
 	public TimedTask() {
 		super();
@@ -18,8 +18,7 @@ public class TimedTask<N,D extends Object> extends AbstractTask<N,D>{
 
 	@Override
 	protected Results onProgress(ITetraImplementation<N, D> node, TetraEvent<D> event) {
-		// TODO Auto-generated method stub
-		return null;
+		return Results.CONTINUE;
 	}
 
 	@Override

@@ -8,18 +8,13 @@ import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.TetraEvent;
 import org.collin.core.essence.TetraEvent.Results;
 import org.collin.core.impl.SequenceNode;
-import org.collin.core.task.AbstractTask;
+import org.collin.core.task.AbstractDelegate;
 
-public class AdviceManager<D extends Object> extends AbstractTask<SequenceNode<D>,D>{
-
-	public AdviceManager() {
-		super();
-	}
+public class AdviceManager<D extends Object> extends AbstractDelegate<SequenceNode<D>,D>{
 
 	public AdviceManager(IDataObject<D> sequence, ITetraNode<D> node ) {
 		super( sequence, node );
 	}
-
 
 	@Override
 	protected Results onProgress(ITetraImplementation<SequenceNode<D>, D> node, TetraEvent<D> event) {

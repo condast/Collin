@@ -43,6 +43,33 @@ public class SequenceQuery<D extends Object> {
 		return searchParent(node, sn.getParent());
 	}
 
+	/**
+	 * Returns the first upstream occurrence of a non-null attribute
+	 * with the given name  
+	 * @param attribute
+	 * @param sn
+	 * @return
+	 */
+	/**
+	 * Returns the first upstream occurrence of a non-null attribute
+	 * with the given name  
+	 * @param attribute
+	 * @param sn
+	 * @return
+	 */
+	public String findUpStream( String attribute ) {
+		return findUpStream(attribute, this.root);
+	}
+		
+	protected String findUpStream( String attribute, SequenceNode<D> sn ) {
+		if( sn == null )
+			return null;
+		String result = sn.getValue(attribute);
+		if( !StringUtils.isEmpty(result))
+			return result;
+		return findUpStream( attribute, sn.getParent());
+	}
+
 	public SequenceNode<D> find( Nodes node ) {
 		return find( node, root );
 	}

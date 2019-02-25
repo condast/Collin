@@ -13,18 +13,18 @@ import org.collin.core.operator.IOperator;
 import org.collin.core.transaction.TetraTransaction;
 import org.xml.sax.Attributes;
 
-public abstract class AbstractTask<N,D extends Object> implements ICollINDelegate<N,D>, IOperator<D>{
+public abstract class AbstractDelegate<N,D extends Object> implements ICollINDelegate<N,D>, IOperator<D>{
 
 	public static final int DEFAULT_TIME = 900;//sec
 	private IDataObject<D> sequence;
 
 	private Date start;
 	
-	public AbstractTask() {
+	public AbstractDelegate() {
 		super();
 	}
 
-	public AbstractTask(IDataObject<D> sequence, ITetraNode<D> node ) {
+	public AbstractDelegate(IDataObject<D> sequence, ITetraNode<D> node ) {
 		super();
 		this.sequence = sequence;
 	}
@@ -42,8 +42,7 @@ public abstract class AbstractTask<N,D extends Object> implements ICollINDelegat
 
 	@Override
 	public boolean select(ITetraNode<D> source, TetraEvent<D> event) {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
@@ -105,7 +104,7 @@ public abstract class AbstractTask<N,D extends Object> implements ICollINDelegat
 		default:
 			break;
 		}
-		return Results.FAIL;//result;
+		return result;
 	}
 	
 	protected Results calculate( TetraTransaction<D> transaction) {

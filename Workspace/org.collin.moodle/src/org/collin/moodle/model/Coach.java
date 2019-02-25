@@ -11,8 +11,8 @@ import org.collin.core.impl.AbstractTetraImplementation;
 import org.collin.core.impl.SequenceDelegateFactory;
 import org.collin.core.impl.SequenceNode;
 import org.collin.core.transaction.TetraTransaction;
+import org.collin.moodle.advice.AdviceManager;
 import org.collin.moodle.advice.IAdviceMap;
-import org.collin.moodle.operators.AdviceManager;
 
 public class Coach extends AbstractTetraImplementation<SequenceNode<IAdviceMap>, IAdviceMap>{
 
@@ -23,7 +23,7 @@ public class Coach extends AbstractTetraImplementation<SequenceNode<IAdviceMap>,
 	private Map<Long,AdviceManager> managers;
 	
 	public Coach(SequenceNode<IAdviceMap> sequence, ITetra<IAdviceMap> tetra) {
-		super(tetra, sequence, new SequenceDelegateFactory<IAdviceMap>( sequence ));
+		super(tetra, sequence );
 		this.completed = false;
 		this.managers = new HashMap<>();
 	}
@@ -57,7 +57,8 @@ public class Coach extends AbstractTetraImplementation<SequenceNode<IAdviceMap>,
 		AdviceManager manager = null;
 		switch( transaction.getState()) {
 		case START:
-			manager = (AdviceManager) node.getOperator();
+			SequenceDelegateFactory<IAdviceMap> factory = new SequenceDelegateFactory<>(super.getSource());
+			manager = (AdviceManager)factory.createDelegate( this.getClass(), node );
 			this.managers.put( userId, manager );			
 			break;
 		default:
