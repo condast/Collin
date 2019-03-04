@@ -75,6 +75,7 @@ public class ModuleBuilder<D extends Object>{
 		TYPE,
 		INDEX,
 		LOCALE,
+		PERCENT,
 		POLL_TIME,
 		PROGRESS,
 		SOURCE,
@@ -244,8 +245,6 @@ public class ModuleBuilder<D extends Object>{
 			float progress = StringUtils.isEmpty(progress_str)?0: Float.valueOf(progress_str);  
 			String locale_str = attributes.getValue( AttributeNames.LOCALE.toXmlStyle());
 			String delegate_str = attributes.getValue( AttributeNames.DELEGATE.toXmlStyle());
-			String duration_str = attributes.getValue( AttributeNames.DURATION.toXmlStyle());
-			long duration = StringUtils.isEmpty(duration_str)?-1: Long.parseLong(duration_str);
 			if(!StringUtils.isEmpty(locale_str)) {
 				String[] split = locale_str.split("[-]");
 				locale = new Locale(split[0], split[1]);
@@ -281,7 +280,7 @@ public class ModuleBuilder<D extends Object>{
 				current = new SequenceNode<D>(node, locale, id, name, collin, attributes,index);
 				break;
 			case MODULE:
-				current = new SequenceNode<D>(node, locale, id, name, collin, attributes,index, duration);
+				current = new SequenceNode<D>(node, locale, id, name, collin, attributes,index);
 				current.setUri(url);
 				index++;
 				break;
@@ -290,7 +289,7 @@ public class ModuleBuilder<D extends Object>{
 				current = new SequenceNode<D>(node, locale, id, name, collin, attributes,index);
 				break;
 			case ACTIVITY:
-				current = new SequenceNode<D>(node, locale, id, name, collin, attributes,index, duration);
+				current = new SequenceNode<D>(node, locale, id, name, collin, attributes,index);
 				current.setUri(url);
 				index++;
 				break;
@@ -329,8 +328,11 @@ public class ModuleBuilder<D extends Object>{
 				current.setType(adviceType);
 				current.setUri(uri);
 				break;	
-			case SUCCESS:
 			case PROGRESS:
+				current = new SequenceNode<D>(node, locale, id, name, collin, attributes, index);
+				current.setProgress( progress );
+				break;
+			case SUCCESS:
 			case FAIL:
 				advice = IAdvice.AdviceTypes.valueOf(node.name());
 				break;
@@ -341,7 +343,7 @@ public class ModuleBuilder<D extends Object>{
 			case GOAL:
 			case TASK:
 			case SOLUTION:
-				current = new SequenceNode<D>(node, locale, id, name, collin, attributes, 0, duration);
+				current = new SequenceNode<D>(node, locale, id, name, collin, attributes, 0);
 				current.setUri(url);
 				break;
 			default:
@@ -390,6 +392,17 @@ public class ModuleBuilder<D extends Object>{
 
 		@Override
 		public void characters(char ch[], int start, int length) throws SAXException {
+			if( current == null )
+				return;
+			StringBuilder builder = new StringBuilder();
+			for( int i=start; i< start + length; i++ )
+				builder.append(ch[i]);
+			builder.trimToSize();
+			String description = builder.toString().trim();
+			if( StringUtils.isEmpty(description))
+				return;
+			current.setDescription(description);
+			Logger.getLogger( this.getClass().getName()).info( builder.toString());			
 		}
 
 		private void print(SAXParseException x)

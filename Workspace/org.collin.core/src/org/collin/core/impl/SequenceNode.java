@@ -14,6 +14,8 @@ import org.xml.sax.Attributes;
 
 public class SequenceNode<D extends Object> extends AbstractDataObject<D>{
 
+	public static final int DEFAULT_DURATION = 5000;//5 seconds
+
 	public enum Nodes{
 		COURSE,
 		MODEL,
@@ -58,7 +60,6 @@ public class SequenceNode<D extends Object> extends AbstractDataObject<D>{
 		}
 	}
 
-	
 	private Nodes node;
 	private String id;
 	private String name;
@@ -73,7 +74,6 @@ public class SequenceNode<D extends Object> extends AbstractDataObject<D>{
 	private String type;
 	private String uri;
 	private float progress;
-	private long duration;
 
 	private SequenceNode<D> parent;
 	
@@ -82,31 +82,27 @@ public class SequenceNode<D extends Object> extends AbstractDataObject<D>{
 	private List<SequenceNode<D>> children;
 
 	public SequenceNode( Nodes node, Locale locale, String id, String name, Attributes attributes, int index, String title) {
-		this( node, locale, id, name, null, attributes, index, -1 );
+		this( node, locale, id, name, null, attributes, index );
 	}
 
 	public SequenceNode( Nodes node, Locale locale, String id, String name, String collin, Attributes attributes, int index, String title) {
-		this( node, locale, id, name, collin, attributes, index, -1 );
+		this( node, locale, id, name, collin, attributes, index );
 	}
 	
-	public SequenceNode( Nodes node, String id, String name, String collin, Attributes attributes, int index, String title, long totalTime) {
-		this( node, Locale.ENGLISH, id, name, collin, attributes, index, totalTime );
+	public SequenceNode( Nodes node, String id, String name, String collin, Attributes attributes, int index, String title) {
+		this( node, Locale.ENGLISH, id, name, collin, attributes, index );
 	}
 	
 	public SequenceNode( Nodes node, Locale locale, String id, String name, String collin, Attributes attributes, int index, String title, long totalTime) {
-		this( node, locale, id, name, collin, attributes, index, totalTime );
+		this( node, locale, id, name, collin, attributes, index);
 		this.title = title;
 	}
 
-	public SequenceNode( Nodes node, String id, String name, String collin, Attributes attributes, int index, long totalTime ) {
-		this( node, Locale.ENGLISH, id, name, collin, attributes, index, totalTime );
-	}
-
-	public SequenceNode( Nodes node, Locale locale, String id, String name, String collin, Attributes attributes, int index ) {
-		this( node, locale, id, name, collin, attributes, index, -1 );
+	public SequenceNode( Nodes node, String id, String name, String collin, Attributes attributes, int index ) {
+		this( node, Locale.ENGLISH, id, name, collin, attributes, index );
 	}
 	
-	public SequenceNode( Nodes node, Locale locale, String id, String name, String collin, Attributes attributes, int index, long duration ) {
+	public SequenceNode( Nodes node, Locale locale, String id, String name, String collin, Attributes attributes, int index ) {
 		super();
 		this.node = node;
 		this.locale = locale.toString();
@@ -115,7 +111,6 @@ public class SequenceNode<D extends Object> extends AbstractDataObject<D>{
 		this.collin = collin;
 		this.index = index;
 		this.locale = Locale.ENGLISH.toString();
-		this.duration = duration;
 		this.attributes = new HashMap<>();
 		for( int i=0; i<attributes.getLength(); i++ ) {
 			this.attributes.put(attributes.getQName(i), attributes.getValue(i));
@@ -147,20 +142,20 @@ public class SequenceNode<D extends Object> extends AbstractDataObject<D>{
 		return title;
 	}
 
-	public String getDescription() {
-		return description;
-	}
-
-	public String getType() {
-		return type;
-	}
-
 	public void setTitle(String title) {
 		this.title = title;
 	}
 
+	public String getDescription() {
+		return description;
+	}
+
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getType() {
+		return type;
 	}
 
 	public void setType(String type) {
@@ -203,8 +198,9 @@ public class SequenceNode<D extends Object> extends AbstractDataObject<D>{
 		this.delegate = delegate;
 	}
 
-	public long getDuration() {
-		return duration;
+	public int getDuration() {
+		String duration = this.getValue( StringStyler.xmlStyleString( AttributeNames.DURATION.name()));
+		return StringUtils.isEmpty(duration)?DEFAULT_DURATION: Integer.parseInt(duration);
 	}
 
 	public String getValue( String key ) {

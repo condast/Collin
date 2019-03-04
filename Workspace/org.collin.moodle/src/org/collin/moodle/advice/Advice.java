@@ -16,16 +16,19 @@ public class Advice implements IAdvice {
 	private IAdvice.Mood mood;
 	private String uri;
 	
-	public Advice( long userId, long adviceId,  SequenceNode<IAdviceMap> node) {
+	public Advice( long userId, long adviceId, Team member, Mood mood, SequenceNode<IAdviceMap> node) {
+		this( userId, adviceId, node.getDescription() ,member, mood, node );
+	}
+	
+	public Advice( long userId, long adviceId, String advice, Team member, Mood mood, SequenceNode<IAdviceMap> node) {
 		super();
 		this.userId = userId;
 		this.adviceId = adviceId;
-		String str =  node.getValue( StringStyler.styleToEnum( IAdvice.Attributes.MEMBER.name()));
-		this.member = StringUtils.isEmpty(str)? Team.GINO.name(): Team.valueOf( str ).name();
+		this.member = member.name();
 		this.type = AdviceTypes.valueOf(node.getType());
-		this.mood = getMood(type);
-		this.advice = node.getDescription();
-		str = node.getValue( StringStyler.styleToEnum( IAdvice.Attributes.REPEAT.name()));
+		this.mood = mood;
+		this.advice = advice;
+		String str = node.getValue( StringStyler.styleToEnum( IAdvice.Attributes.REPEAT.name()));
 		this.repeat = StringUtils.isEmpty(str)?0: Integer.parseInt(str);
 		this.uri = node.getUri();
 	}
@@ -68,7 +71,7 @@ public class Advice implements IAdvice {
 	 */
 	@Override
 	public String getDescription() {
-		return advice;
+		return this.advice;
 	}
 
 	/* (non-Javadoc)
@@ -100,15 +103,60 @@ public class Advice implements IAdvice {
 	public void setUri(String uri) {
 		this.uri = uri;
 	}
-	
-	public static Mood getMood( IAdvice.AdviceTypes type ) {
-		Mood mood = Mood.DOUBT;
+
+	/**
+	 * Get the mood for the given team member, for the type (success/fail/progress)
+	 * and tracking. Tracking is defined as the difference between the expected
+	 * progress and the actual progress (>0 => better than expected, < 0 slower)  
+	 * @param member
+	 * @param type
+	 * @param tracking
+	 * @return
+	 */
+	public static Mood getMood( Team member, IAdvice.AdviceTypes type, double tracking ) {
+		Mood mood = Mood.ANIMATED;
 		switch( type){
 		case SUCCESS:
-			mood = Mood.HAPPY;
+			switch ( member ) {
+			case RUBEN:
+				mood = (tracking < -50)?Mood.HAPPY: (tracking<0)? Mood.ANIMATED: (tracking>100)?Mood.ANGRY: (tracking>50)?Mood.DOUBT: Mood.ANIMATED;
+				break;
+			case NELLY:
+				mood = (tracking < -50)?Mood.HAPPY: (tracking<0)? Mood.ANIMATED: (tracking>100)?Mood.NERVOUS: (tracking>50)?Mood.DOUBT: Mood.ANIMATED;
+				break;
+			case AMANDA:
+				mood = (tracking < -50)?Mood.DOUBT: (tracking<0)? Mood.HAPPY: (tracking>100)?Mood.SAD: (tracking>50)?Mood.NERVOUS: Mood.ANIMATED;
+				break;
+			case CHARLES:
+				mood = (tracking < -50)?Mood.NERVOUS: (tracking<0)? Mood.HAPPY: (tracking>100)?Mood.NERVOUS: (tracking>50)?Mood.DOUBT: Mood.ANIMATED;
+				break;
+			case GINO:
+				mood = (tracking <- 50)?Mood.DOUBT: (tracking<0)? Mood.HAPPY: (tracking>100)?Mood.SCARED: (tracking>50)?Mood.NERVOUS: Mood.HAPPY;
+				break;
+			default:
+				break;
+			}
 			break;
 		case FAIL:
-			mood = Mood.NERVOUS;
+			switch ( member ) {
+			case RUBEN:
+				mood = (tracking > 50)?Mood.ANIMATED: (tracking>0)? Mood.NERVOUS: (tracking>-50)?Mood.DOUBT: Mood.ANGRY;
+				break;
+			case NELLY:
+				mood = (tracking > 50)?Mood.ANIMATED: (tracking>0)? Mood.ANIMATED: (tracking>-50)?Mood.ANIMATED: Mood.DOUBT;
+				break;
+			case AMANDA:
+				mood = (tracking > 50)?Mood.NERVOUS: (tracking>0)? Mood.ANIMATED: (tracking>-50)?Mood.ANIMATED: Mood.SAD;
+				break;
+			case CHARLES:
+				mood = (tracking > 50)?Mood.SCARED: (tracking>0)? Mood.DOUBT: (tracking>-50)?Mood.NERVOUS: Mood.SCARED;
+				break;
+			case GINO:
+				mood = (tracking > 50)?Mood.ANIMATED: (tracking>0)? Mood.HAPPY: (tracking>-50)?Mood.NERVOUS: Mood.SCARED;
+				break;
+			default:
+				break;
+			}
 			break;
 		default:
 			break;

@@ -6,6 +6,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Random;
 
+import org.collin.moodle.images.TeamImages.Team;
+import org.condast.commons.strings.StringUtils;
+
 public class AdviceMap implements IAdviceMap {
 
 	public enum Interactions{
@@ -117,4 +120,22 @@ public class AdviceMap implements IAdviceMap {
 	public IAdvice[] getAdvice() {
 		return this.advices.toArray( new IAdvice[ this.advices.size()]);
 	} 
+	
+	/* (non-Javadoc)
+	 * @see org.collin.moodle.core.IAdvice#getAdvice()
+	 */
+	public static String createDescription( Team team, IAdvice.AdviceTypes type, double tracking ) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(team.name());
+		builder.append("_");
+		builder.append(type);
+		String group = (tracking < -50)?"100": 
+			(tracking < 0)? "50": (tracking > 100)? "M100": (tracking >50)?"M50": null;
+		if( !StringUtils.isEmpty(group)) {
+			builder.append("_");
+			builder.append(group);
+		}
+		return builder.toString();
+	}
+
 }

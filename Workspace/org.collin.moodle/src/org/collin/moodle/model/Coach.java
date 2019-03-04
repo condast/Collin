@@ -58,7 +58,8 @@ public class Coach extends AbstractTetraImplementation<SequenceNode<IAdviceMap>,
 		switch( transaction.getState()) {
 		case START:
 			SequenceDelegateFactory<IAdviceMap> factory = new SequenceDelegateFactory<>(super.getSource());
-			manager = (AdviceManager)factory.createDelegate( this.getClass(), node );
+			manager = (AdviceManager)factory.createDelegate( this.getClass() );
+			manager.perform(this, event);
 			this.managers.put( userId, manager );			
 			break;
 		default:

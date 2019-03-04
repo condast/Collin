@@ -57,9 +57,17 @@ public class TeamImages extends AbstractImages {
 			case PLUSKLAS:
 				str = member.name().toLowerCase() + ".png";
 				break;
+			case AMANDA:
+			case GINO:
+			case NELLY:
+				String mood_str = advice.getMood().toString();
+				mood_str += IAdvice.Mood.ANIMATED.equals(advice.getMood())? ".gif":".png";
+				str = member.name().toLowerCase() + "/" + member.toString() + 
+						"_" + mood_str;
+				break;
 			default:
-			str = member.name().toLowerCase() + "/" + member.toString() + 
-					"_" + advice.getMood().toString() + ".png";
+				str = member.name().toLowerCase() + "/" + member.toString() + 
+				"_" + advice.getMood().toString() + ".png";
 			}
 			return S_DEFAULT_LOCATION + str;
 		}

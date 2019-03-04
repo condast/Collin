@@ -22,7 +22,7 @@ public class Student extends AbstractTetraImplementation<SequenceNode<IAdviceMap
 	public Student(SequenceNode<IAdviceMap> sequence, ITetra<IAdviceMap> tetra) {
 		super(tetra, sequence );
 		SequenceDelegateFactory<IAdviceMap> factory = new SequenceDelegateFactory<>(super.getSource());
-		delegate = (StudentAdviceDelegate) factory.createDelegate( this.getClass(), tetra );
+		delegate = (StudentAdviceDelegate) factory.createDelegate( this.getClass() );
 	}
 
 	public TetraTransaction<IAdviceMap> updateTransaction( int adviceId ) {

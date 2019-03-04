@@ -24,7 +24,7 @@ public abstract class AbstractDelegate<N,D extends Object> implements ICollINDel
 		super();
 	}
 
-	public AbstractDelegate(IDataObject<D> sequence, ITetraNode<D> node ) {
+	public AbstractDelegate(IDataObject<D> sequence ) {
 		super();
 		this.sequence = sequence;
 	}
@@ -37,7 +37,6 @@ public abstract class AbstractDelegate<N,D extends Object> implements ICollINDel
 	@Override
 	public void setParameters(Attributes attrs) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -69,9 +68,20 @@ public abstract class AbstractDelegate<N,D extends Object> implements ICollINDel
 		return Calendar.getInstance().getTime();
 	}
 	
-	public double getDifference() {
-		long end = getEndTime().getTime();
-		long begin = getStart().getTime();
+	protected double getDifference() {
+		return getDifference( getStart(), getEndTime());
+	}
+
+	protected double getDifference( int field, int duration ) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(start);
+		calendar.add(field, duration);
+		return getDifference( getStart(), calendar.getTime());
+	}
+
+	protected double getDifference( Date beginDate, Date endDate) {
+		long end = endDate.getTime();
+		long begin = beginDate.getTime();
 		long current = getCurrentTime().getTime();
 		if( current < end )
 			return 100d*( begin - current)/( end - begin);
@@ -79,27 +89,28 @@ public abstract class AbstractDelegate<N,D extends Object> implements ICollINDel
 			return 100d*( current - end)/( end - begin);
 	}
 	protected Results onStart( ITetraImplementation<N,D> node, TetraEvent<D> event ) {
+		TetraTransaction<D> transaction = event.getTransaction();
+		start = transaction.getCreate();
 		return Results.COMPLETE;
 	}
 	
-	protected abstract Results onProgress( ITetraImplementation<N,D> node, TetraEvent<D> event );
+	protected abstract Results onProgress( ITetraImplementation<N,D> owner, TetraEvent<D> event );
 
-	protected abstract Results onComplete( ITetraImplementation<N,D> node, TetraEvent<D> event );
+	protected abstract Results onComplete( ITetraImplementation<N,D> owner, TetraEvent<D> event );
 
 	@Override
-	public Results perform(ITetraImplementation<N,D> node, TetraEvent<D> event) {
+	public Results perform(ITetraImplementation<N,D> owner, TetraEvent<D> event) {
 		Results result = Results.COMPLETE;
 		TetraTransaction<D> transaction = event.getTransaction();
 		switch( transaction.getState()) {
 		case START:
-			start = ( start == null )? transaction.getCreate(): start;
-			result = onStart(node, event);
+			result = onStart(owner, event);
 			break;
 		case PROGRESS:
-			result = onProgress(node, event);			
+			result = onProgress(owner, event);			
 			break;
 		case COMPLETE:
-			result = onComplete(node, event);			
+			result = onComplete(owner, event);			
 			break;
 		default:
 			break;

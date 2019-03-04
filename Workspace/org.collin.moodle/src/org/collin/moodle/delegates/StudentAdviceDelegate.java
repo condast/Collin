@@ -1,10 +1,7 @@
 package org.collin.moodle.delegates;
 
-import java.util.LinkedHashMap;
-
 import org.collin.core.def.IDataObject;
 import org.collin.core.def.ITetraImplementation;
-import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.TetraEvent;
 import org.collin.core.essence.TetraEvent.Results;
 import org.collin.core.impl.SequenceNode;
@@ -28,13 +25,11 @@ public class StudentAdviceDelegate extends AbstractDelegate<SequenceNode<IAdvice
 			return StringStyler.xmlStyleString( super.toString() );
 		}
 	}
-	private LinkedHashMap<Integer, IAdviceMap> advice;
 
 	private long userId;
 
-	public StudentAdviceDelegate(IDataObject<IAdviceMap> sequence, ITetraNode<IAdviceMap> node) {
-		super(sequence, node);
-		this.advice = new LinkedHashMap<>();
+	public StudentAdviceDelegate(IDataObject<IAdviceMap> sequence) {
+		super(sequence);
 	}
 
 	protected long getUserId() {
@@ -44,14 +39,11 @@ public class StudentAdviceDelegate extends AbstractDelegate<SequenceNode<IAdvice
 	public TetraTransaction<IAdviceMap> createTransaction( long userId, long moduleId, long activityId, double progress ) {
 		IAdviceMap map = new AdviceMap( userId, moduleId, activityId, progress );
 		TetraTransaction<IAdviceMap> transaction = new TetraTransaction<IAdviceMap>(this, userId, States.PROGRESS, map, progress );
-		this.advice.put( map.getAdviceId(), map );
 		return transaction;
 	}
 
 	public TetraTransaction<IAdviceMap> updateTransaction( int adviceId ) {
-		IAdviceMap map = this.advice.remove(adviceId);
-		if( map == null )
-			return null;
+		IAdviceMap map = new AdviceMap( userId, adviceId );
 		return new TetraTransaction<IAdviceMap>(this, map.getUserId(), States.PROGRESS, map, map.getProgress()  );
 	}
 
@@ -62,13 +54,8 @@ public class StudentAdviceDelegate extends AbstractDelegate<SequenceNode<IAdvice
 		TetraTransaction<IAdviceMap> transaction = event.getTransaction();
 		IAdviceMap map = transaction.getData();
 		this.userId = map.getUserId();
-		this.advice.put( map.getAdviceId(), map );
 		result = Results.CONTINUE;
 		return result;
-	}
-
-	public IAdviceMap getAdvice( int adviceId ) {
-		return this.advice.get(adviceId);
 	}
 
 	@Override

@@ -2,6 +2,6 @@ package org.collin.core.def;
 
 public interface IDelegateFactory<N,D extends Object> {
 
-	ICollINDelegate<N,D> createDelegate(Class<?> clss, ITetraNode<D> node);
+	ICollINDelegate<N,D> createDelegate(Class<?> clss);
 
 }

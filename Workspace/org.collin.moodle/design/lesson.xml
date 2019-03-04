@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <course id="329" name="CodeHeroes_1"
-	title="CodeHeroes 1: Het geheim van de tempel">
-	<models type="moodle">
+	title="CodeHeroes 1: Het geheim van de tempel" duration="120">
+	<models>
 		<model type="moodle" collin="student">
-			<sections uri="https://www.plusklas.nu/course/view.php?id=${course.id}#${type}-${index}">
-				<task delegate="org.collin.moodle.delegates.StudentAdviceDelegate"></task>
-				<section index="0" title="Algemeen">
-				</section>
+			<sections
+				uri="https://www.plusklas.nu/course/view.php?id=${course.id}#${type}-${index}">
+				<task
+					delegate="org.collin.moodle.delegates.StudentAdviceDelegate"></task>
+				<section index="0" title="Algemeen" />
 				<section index="1" title="Het Avontuur">
 					<modules uri="https://www.plusklas.nu/mod/url/view.php">
 						<module id="22456" index="1"
@@ -52,7 +53,24 @@
 			</sections>
 		</model>
 		<model type="moodle" collin="coach">
-			<task delegate="org.collin.moodle.advice.AdviceManager" poll-time="1000" duration="60"></task>
+			<task delegate="org.collin.moodle.advice.AdviceManager"
+				poll-time="1000" duration="30">
+				<progress percent="10">
+					<advice type="fail"
+						uri="https://nl.wikipedia.org/wiki/Egyptische_piramide">FAIL1</advice>
+					<advice type="success" uri="http://www.wikipedia.com/boats">SUCCESS1</advice>
+				</progress>
+				<progress percent="20">
+					<advice type="fail"
+						uri="https://nl.wikipedia.org/wiki/Egyptische_piramide" >FAIL2</advice>
+					<advice type="success" uri="http://www.wikipedia.com/boats">SUCCESS2</advice>
+				</progress>
+				<progress>
+					<advice type="fail"
+						uri="https://nl.wikipedia.org/wiki/Egyptische_piramide">FAIL3</advice>
+					<advice type="success" uri="http://www.wikipedia.com/boats">SUCCESS3</advice>
+				</progress>
+			</task>
 			<modules>
 				<module id="1" name="lesson1" index="0"
 					uri="http://www.condast.com">
@@ -60,10 +78,12 @@
 						<activity id="1" name="Activity1">
 							<task class="org.collin.core.task.AdviceTask" time="900"
 								uri="resources/advice">
-								<advice type="fail"
-									uri="https://nl.wikipedia.org/wiki/Egyptische_piramide" />
-								<advice type="success"
-									uri="http://www.wikipedia.com/boats" />
+								<progress>
+									<advice type="fail"
+										uri="https://nl.wikipedia.org/wiki/Egyptische_piramide" />
+									<advice type="success"
+										uri="http://www.wikipedia.com/boats" />
+								</progress>
 							</task>
 						</activity>
 						<activity id="2" name="Activity2" index="2"
@@ -89,51 +109,4 @@
 			</modules>
 		</model>
 	</models>
-	<view type="story">
-		<parts>
-			<part id="org.pillargames.teamzodiac.intro"
-				uri="http://demo.condast.com/TeamZodiac/embed.html" />
-			<part id="org.pillargames.teamzodiac.meets.lizard"
-				uri="http://www.plusklas.nu" />
-			<part id="org.pillargames.teamzodiac.meets.team" />
-			<part id="org.pillargames.teamzodiac.start.quest">
-				<advice type="delay" character="lizard" />
-			</part>
-			<part id="org.pillargames.teamzodiac.travel.to.temple" />
-			<part id="org.pillargames.teamzodiac.at.doors" />
-		</parts>
-	</view>
-	<controller>
-		<sequence>
-			<step name="intro">
-				<parts from="org.pillargames.teamzodiac.intro"
-					to="org.pillargames.teamzodiac.at.doors" />
-			</step>
-			<step>
-				<modules access="concurrent" from="lesson1" to="lesson3">
-					<advice type="delay">
-						<text locale="en-uk" type="text/html">
-							<html>
-								<p>
-									Do you need help with the assignment? Take a look at
-									<a href="https://nl.wikipedia.org/wiki/Pyramid" />
-								</p>
-							</html>
-						</text>
-					</advice>
-					<advice type="delay" progress="80">
-						<text locale="en-uk" type="text/html">
-							<html>
-								<p>
-									Hmm..we have entered the tomb? Take a look at
-									<a href="https://en.wikipedia.org/wiki/Great_Pyramid_of_Giza" />
-								</p>
-							</html>
-						</text>
-					</advice>
-				</modules>
-			</step>
-			<step name="conclusion" />
-		</sequence>
-	</controller>
 </course>

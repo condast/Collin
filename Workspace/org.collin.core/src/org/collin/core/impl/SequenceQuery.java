@@ -1,5 +1,6 @@
 package org.collin.core.impl;
 
+import org.collin.core.def.IDataObject;
 import org.collin.core.def.ITetraNode;
 import org.collin.core.impl.SequenceNode.Nodes;
 import org.condast.commons.strings.StringStyler;
@@ -26,6 +27,8 @@ public class SequenceQuery<D extends Object> {
 	}
 
 	public SequenceNode<D> getTetra( long moduleId, long activityId, Nodes node ) {
+		if( node.equals( this.root.getNode()))
+			return this.root;
 		SequenceNode<D> module = find( Nodes.MODULE, String.valueOf(moduleId), root );
 		SequenceNode<D> activity = find( Nodes.ACTIVITY, String.valueOf(activityId), module );
 		return searchParent(node, activity);
@@ -43,6 +46,15 @@ public class SequenceQuery<D extends Object> {
 		return searchParent(node, sn.getParent());
 	}
 
+	/**
+	 * Get the duration of the given node. Select the first
+	 * occurrence in the parents if possible
+	 * @return
+	 */
+	public int getDuration() {
+		String str = findUpStream(StringStyler.xmlStyleString( IDataObject.AttributeNames.DURATION.name()));
+		return StringUtils.isEmpty(str)? 0: Integer.parseInt(str);
+	}
 	/**
 	 * Returns the first upstream occurrence of a non-null attribute
 	 * with the given name  

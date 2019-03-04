@@ -183,7 +183,7 @@ public class ActorService {
 			implementations.put( Compass.Tetras.CONSUMER, new Student( actor, compass.getTetra(Tetras.CONSUMER) ));
 			actor = query.findCollin(Actors.COACH.toString());
 			if( actor == null)
-				actor = new SequenceNode<IAdviceMap>( Nodes.MODEL, Actors.COACH.name(), Actors.COACH.toString(), Actors.COACH.toString(), null, 0, 900 );
+				actor = new SequenceNode<IAdviceMap>( Nodes.MODEL, Actors.COACH.name(), Actors.COACH.toString(), Actors.COACH.toString(), null, 0 );
 			implementations.put( Compass.Tetras.COACH, new Coach( actor, compass.getTetra( Tetras.COACH ) ));
 		}
 		catch( Exception ex ) {

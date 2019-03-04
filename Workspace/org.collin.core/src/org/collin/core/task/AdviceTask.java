@@ -4,7 +4,6 @@ import java.util.Date;
 
 import org.collin.core.def.IDataObject;
 import org.collin.core.def.ITetraImplementation;
-import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.TetraEvent;
 import org.collin.core.essence.TetraEvent.Results;
 
@@ -14,8 +13,8 @@ public class AdviceTask<N,D extends Object> extends AbstractDelegate<N, D>{
 		super();
 	}
 
-	public AdviceTask(IDataObject<D> sequence, ITetraNode<D> node ) {
-		super( sequence, node );
+	public AdviceTask(IDataObject<D> sequence ) {
+		super( sequence );
 	}
 
 	

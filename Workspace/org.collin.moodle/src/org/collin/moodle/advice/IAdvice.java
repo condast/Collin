@@ -11,6 +11,7 @@ public interface IAdvice {
 	}
 
 	enum Mood{
+		ANIMATED,
 		ANGRY,
 		SCARED,
 		HAPPY,
@@ -74,5 +75,4 @@ public interface IAdvice {
 	IAdvice.Mood getMood();
 
 	String getUri();
-
 }
