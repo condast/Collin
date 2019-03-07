@@ -1,9 +1,11 @@
 package org.collin.moodle.core;
 
+import java.util.Iterator;
+import java.util.Map;
+
 import org.collin.moodle.LanguagePack;
 import org.collin.moodle.LanguagePack.Fields;
 import org.collin.moodle.advice.IAdvice;
-import org.collin.moodle.advice.IAdvice.Mood;
 import org.collin.moodle.images.TeamImages;
 import org.collin.moodle.images.TeamImages.Team;
 import org.condast.commons.strings.StringUtils;
@@ -30,8 +32,11 @@ public class PushOptionsAdviceBuilder extends PushOptionsBuilder {
 		addOption( Options.TAG, S_ADVICE_TAG);
 			
 		addOption( Options.VIBRATE, new int[]{500,110,500,110,450,110,200,110,170,40,450,110,200,110,170,40,500});
-		addAction( IAdvice.Notifications.HELP.name(), language.getString(IAdvice.Notifications.HELP.toString()), Team.getPath(Team.NELLY, Mood.DOUBT));
-		addAction( IAdvice.Notifications.THANKS.name(), language.getString( IAdvice.Notifications.THANKS.toString()), Team.getPath(Team.GINO, Mood.HAPPY));
+		Iterator<Map.Entry<IAdvice.Notifications, String>>iterator = advice.getNotifications().entrySet().iterator();
+		while( iterator.hasNext() ) {
+			Map.Entry<IAdvice.Notifications, String> entry = iterator.next();
+			addAction( entry.getKey().name(), language.getString( entry.getKey()), entry.getValue());
+		}
 		return createPayLoad(renotify, false );
 	}
 }

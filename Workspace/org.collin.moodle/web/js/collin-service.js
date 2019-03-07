@@ -34,7 +34,7 @@ self.addEventListener('notificationclick', function(event) {
 	clickedNotification.close();
 	const notification = !event.action?'DONT_CARE': event.action;
 	console.log(event.notification.data);
-	if( notification == 'HELP'){
+	if(( notification == 'HELP') || ( notification == 'PAUSE')){
 		const data = event.notification.data;
 		const promiseChain = clients.openWindow(data.uri);
 		event.waitUntil(promiseChain);

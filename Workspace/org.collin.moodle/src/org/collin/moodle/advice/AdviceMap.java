@@ -126,16 +126,23 @@ public class AdviceMap implements IAdviceMap {
 	 */
 	public static String createDescription( Team team, IAdvice.AdviceTypes type, double tracking ) {
 		StringBuilder builder = new StringBuilder();
-		builder.append(team.name());
-		builder.append("_");
-		builder.append(type);
-		String group = (tracking < -50)?"100": 
-			(tracking < 0)? "50": (tracking > 100)? "M100": (tracking >50)?"M50": null;
-		if( !StringUtils.isEmpty(group)) {
+		switch( type ) {
+		case PROGRESS:
+			builder.append(type);
+			builder.append("_MSG");
+			break;
+		default:
+			builder.append(team.name());
 			builder.append("_");
-			builder.append(group);
+			builder.append(type);
+			String group = (tracking < -50)?"M100": 
+				(tracking < 0)? "M50": (tracking > 100)? "100": (tracking >50)?"50": null;
+			if( !StringUtils.isEmpty(group)) {
+				builder.append("_");
+				builder.append(group);
+			}
+			break;
 		}
 		return builder.toString();
 	}
-
 }

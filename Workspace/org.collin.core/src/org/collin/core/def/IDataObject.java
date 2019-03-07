@@ -15,6 +15,8 @@ public interface IDataObject<D extends Object> {
 		}
 	}
 
+	public String getValue( String key );
+	
 	public boolean addDatum( D data );
 	
 	public Collection<D> getData();

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <course id="329" name="CodeHeroes_1"
-	title="CodeHeroes 1: Het geheim van de tempel" duration="120">
+	title="CodeHeroes 1: Het geheim van de tempel" duration="900">
 	<models>
 		<model type="moodle" collin="student">
 			<sections
@@ -54,20 +54,26 @@
 		</model>
 		<model type="moodle" collin="coach">
 			<task delegate="org.collin.moodle.advice.AdviceManager"
-				poll-time="1000" duration="30">
+				poll-time="1000" duration="30" pause="120">
 				<progress percent="10">
 					<advice type="fail"
+						uri="https://nl.wikipedia.org/wiki/Egyptische_piramide">FAIL1</advice>
+					<advice type="pause"
 						uri="https://nl.wikipedia.org/wiki/Egyptische_piramide">FAIL1</advice>
 					<advice type="success" uri="http://www.wikipedia.com/boats">SUCCESS1</advice>
 				</progress>
 				<progress percent="20">
 					<advice type="fail"
 						uri="https://nl.wikipedia.org/wiki/Egyptische_piramide" >FAIL2</advice>
+					<advice type="pause"
+						uri="https://nl.wikipedia.org/wiki/Egyptische_piramide">FAIL1</advice>
 					<advice type="success" uri="http://www.wikipedia.com/boats">SUCCESS2</advice>
 				</progress>
 				<progress>
 					<advice type="fail"
 						uri="https://nl.wikipedia.org/wiki/Egyptische_piramide">FAIL3</advice>
+					<advice type="pause"
+						uri="https://nl.wikipedia.org/wiki/Egyptische_piramide">FAIL1</advice>
 					<advice type="success" uri="http://www.wikipedia.com/boats">SUCCESS3</advice>
 				</progress>
 			</task>

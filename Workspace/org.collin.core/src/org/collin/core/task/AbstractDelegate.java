@@ -6,17 +6,14 @@ import java.util.Date;
 import org.collin.core.def.ICollINDelegate;
 import org.collin.core.def.IDataObject;
 import org.collin.core.def.ITetraImplementation;
-import org.collin.core.def.ITetraNode;
 import org.collin.core.essence.TetraEvent;
 import org.collin.core.essence.TetraEvent.Results;
-import org.collin.core.operator.IOperator;
 import org.collin.core.transaction.TetraTransaction;
-import org.xml.sax.Attributes;
 
-public abstract class AbstractDelegate<N,D extends Object> implements ICollINDelegate<N,D>, IOperator<D>{
+public abstract class AbstractDelegate<N,D extends Object> implements ICollINDelegate<N,D>{
 
 	public static final int DEFAULT_TIME = 900;//sec
-	private IDataObject<D> sequence;
+	private IDataObject<D> settings;
 
 	private Date start;
 	
@@ -26,28 +23,11 @@ public abstract class AbstractDelegate<N,D extends Object> implements ICollINDel
 
 	public AbstractDelegate(IDataObject<D> sequence ) {
 		super();
-		this.sequence = sequence;
+		this.settings = sequence;
 	}
 	
 	protected IDataObject<D> getData() {
-		return sequence;
-	}
-
-	
-	@Override
-	public void setParameters(Attributes attrs) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public boolean select(ITetraNode<D> source, TetraEvent<D> event) {
-		return true;
-	}
-
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
-		
+		return settings;
 	}
 
 	protected Date getStart() {
@@ -55,7 +35,7 @@ public abstract class AbstractDelegate<N,D extends Object> implements ICollINDel
 	}
 
 	protected Date getEndTime() {
-		int time = (int) sequence.getDuration();
+		int time = (int) settings.getDuration();
 		if( time < 0 )
 			time = DEFAULT_TIME;
 		Calendar calendar = Calendar.getInstance();
@@ -68,8 +48,31 @@ public abstract class AbstractDelegate<N,D extends Object> implements ICollINDel
 		return Calendar.getInstance().getTime();
 	}
 	
-	protected double getDifference() {
+	protected double getDuration() {
 		return getDifference( getStart(), getEndTime());
+	}
+
+	/**
+	 * The actual progress since starting the task 
+	 * @return
+	 */
+	protected double getActualProgress() {
+		double total = 1000* getDuration();//seconds
+		Calendar calendar = Calendar.getInstance();
+		double currentProgress = getDifference(start, calendar.getTime());
+		double actualProgress = 100* currentProgress/total;
+		return actualProgress;		
+	}
+
+	/**
+	 * The expected progress is the tracking' is a measure for the progress. If it is 
+	 * >= 0:  the task is performing faster than expected
+	 * <0: the task is progressing slower than expected.
+	 * @param completion (0-100%)
+	 * @return
+	 */
+	protected double getExpectedProgress( double progress) {
+		return progress - getActualProgress();		
 	}
 
 	protected double getDifference( int field, int duration ) {
@@ -79,14 +82,10 @@ public abstract class AbstractDelegate<N,D extends Object> implements ICollINDel
 		return getDifference( getStart(), calendar.getTime());
 	}
 
-	protected double getDifference( Date beginDate, Date endDate) {
+	protected long getDifference( Date beginDate, Date endDate) {
 		long end = endDate.getTime();
 		long begin = beginDate.getTime();
-		long current = getCurrentTime().getTime();
-		if( current < end )
-			return 100d*( begin - current)/( end - begin);
-		else
-			return 100d*( current - end)/( end - begin);
+		return (end - begin);
 	}
 	protected Results onStart( ITetraImplementation<N,D> node, TetraEvent<D> event ) {
 		TetraTransaction<D> transaction = event.getTransaction();

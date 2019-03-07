@@ -12,6 +12,7 @@ public class SequenceDelegateFactory<D extends Object> extends AbstractDelegateF
 		super( sequence );
 	}
 	
+	
 	@Override
 	public ICollINDelegate<SequenceNode<D>,D> createDelegate(Class<?> clss) {
 		SequenceQuery<D> query = new SequenceQuery<D>( super.getData() );
@@ -19,6 +20,8 @@ public class SequenceDelegateFactory<D extends Object> extends AbstractDelegateF
 		String delegate_str = task.getDelegate();
 		if( StringUtils.isEmpty(delegate_str))
 			return null;
-		return constructDelegate(clss, delegate_str, task);
+		ICollINDelegate<SequenceNode<D>,D> delegate= constructDelegate(clss, delegate_str, task);
+		delegate.setParameters(task);
+		return delegate;
 	}
 }

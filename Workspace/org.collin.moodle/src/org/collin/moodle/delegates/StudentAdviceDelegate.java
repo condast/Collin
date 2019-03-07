@@ -9,28 +9,23 @@ import org.collin.core.task.AbstractDelegate;
 import org.collin.core.transaction.TetraTransaction;
 import org.collin.core.transaction.TetraTransaction.States;
 import org.collin.moodle.advice.AdviceMap;
+import org.collin.moodle.advice.IAdvice;
 import org.collin.moodle.advice.IAdviceMap;
-import org.condast.commons.strings.StringStyler;
 
 public class StudentAdviceDelegate extends AbstractDelegate<SequenceNode<IAdviceMap>, IAdviceMap> {
-
-	public static final int DEFAULT_COUNT = 120;//two minutes
-	public static final int DEFAULT_POLL_TIME = 1000;//1 seconds
-
-	public enum AttributeNames{
-		DURATION,
-		POLL_TIME;
-
-		public String toXmlStyle() {
-			return StringStyler.xmlStyleString( super.toString() );
-		}
-	}
 
 	private long userId;
 
 	public StudentAdviceDelegate(IDataObject<IAdviceMap> sequence) {
 		super(sequence);
 	}
+
+	
+	@Override
+	public void setParameters(IDataObject<IAdviceMap> settings) {
+		// NOTHING	
+	}
+
 
 	protected long getUserId() {
 		return userId;
@@ -42,8 +37,8 @@ public class StudentAdviceDelegate extends AbstractDelegate<SequenceNode<IAdvice
 		return transaction;
 	}
 
-	public TetraTransaction<IAdviceMap> updateTransaction( int adviceId ) {
-		IAdviceMap map = new AdviceMap( userId, adviceId );
+	public TetraTransaction<IAdviceMap> updateTransaction( int adviceId, IAdvice.Notifications notification ) {
+		IAdviceMap map = new AdviceMap( userId, adviceId, notification );
 		return new TetraTransaction<IAdviceMap>(this, map.getUserId(), States.PROGRESS, map, map.getProgress()  );
 	}
 

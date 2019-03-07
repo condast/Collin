@@ -1,5 +1,7 @@
 package org.collin.moodle.advice;
 
+import java.util.Map;
+
 import org.condast.commons.strings.StringStyler;
 
 public interface IAdvice {
@@ -7,6 +9,7 @@ public interface IAdvice {
 	enum AdviceTypes{
 		FAIL,
 		PROGRESS,
+		PAUSE,
 		SUCCESS,
 	}
 
@@ -28,9 +31,10 @@ public interface IAdvice {
 	enum Notifications{
 		UNKNOWN(1),
 		DONT_CARE(2),
-		THANKS(3),
-		SHUT_UP(4),
-		HELP(5);
+		PAUSE(3),
+		THANKS(4),
+		SHUT_UP(5),
+		HELP(6);
 	
 		public int getIndex() {
 			return index;
@@ -75,4 +79,10 @@ public interface IAdvice {
 	IAdvice.Mood getMood();
 
 	String getUri();
+
+	void addNotification(Notifications notification, String uri);
+	
+	void removeNotification(Notifications notification);
+
+	Map<Notifications, String> getNotifications();
 }

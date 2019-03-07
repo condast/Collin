@@ -1,6 +1,10 @@
 package org.collin.moodle.rest;
 
 import com.google.gson.Gson;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
@@ -15,7 +19,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.collin.moodle.advice.IAdvice;
 import org.collin.moodle.advice.IAdviceMap;
-import org.collin.moodle.core.MoodleProcess;
 import org.collin.moodle.core.Push;
 import org.collin.moodle.service.ActorService;
 import org.condast.commons.messaging.rest.RESTUtils;
@@ -86,7 +89,7 @@ public class RESTStudent{
 			String token = split[1];
 			long courseId = Long.parseLong( split[2]);
 			long moduleId = Long.parseLong( split[3]);
-			double progress = MoodleProcess.getProgress(split[4]);
+			double progress = getProgress(split[4]);
 			boolean response = RESTUtils.checkId(userId, token, courseId);
 			if( !response ) {
 				return ( courseId < 0 )? Response.noContent().build(): Response.status( Status.UNAUTHORIZED ).build();
@@ -130,4 +133,17 @@ public class RESTStudent{
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public static double getProgress( String progress ) {
+		Gson gson = new Gson();
+		Map<Integer,Boolean> map = gson.fromJson(progress, HashMap.class);
+		Iterator<Map.Entry<Integer,Boolean>> iterator = map.entrySet().iterator();
+		int counter = 0;
+		while( iterator.hasNext()) {
+			Map.Entry<Integer,Boolean> entry = iterator.next();
+			if( entry.getValue())
+				counter++;
+		}
+		return 100d*counter/map.size();
+	}
 }

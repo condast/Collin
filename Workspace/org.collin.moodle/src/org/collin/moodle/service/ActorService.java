@@ -136,7 +136,7 @@ public class ActorService {
 	public IAdviceMap updateAdvice( long userId, int adviceId, IAdvice.Notifications notification, double progress ) throws Exception {
 		try {
 			Student student = (Student) this.implementations.get(Compass.Tetras.CONSUMER);
-			TetraTransaction<IAdviceMap> transaction = student.updateTransaction(adviceId);
+			TetraTransaction<IAdviceMap> transaction = student.updateTransaction(adviceId, notification);
 			register( transaction );
 			student.fire( transaction );
  			unregister( transaction);

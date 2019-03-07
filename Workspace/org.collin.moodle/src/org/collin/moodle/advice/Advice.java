@@ -1,5 +1,9 @@
 package org.collin.moodle.advice;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.collin.core.impl.SequenceNode;
 import org.collin.moodle.images.TeamImages.Team;
 import org.condast.commons.strings.StringStyler;
@@ -15,22 +19,25 @@ public class Advice implements IAdvice {
 	private IAdvice.AdviceTypes type;
 	private IAdvice.Mood mood;
 	private String uri;
-	
-	public Advice( long userId, long adviceId, Team member, Mood mood, SequenceNode<IAdviceMap> node) {
-		this( userId, adviceId, node.getDescription() ,member, mood, node );
-	}
-	
-	public Advice( long userId, long adviceId, String advice, Team member, Mood mood, SequenceNode<IAdviceMap> node) {
-		super();
-		this.userId = userId;
-		this.adviceId = adviceId;
-		this.member = member.name();
-		this.type = AdviceTypes.valueOf(node.getType());
-		this.mood = mood;
-		this.advice = advice;
+	private Map<Notifications, String> notifications;
+
+	public Advice( IAdviceMap advice, IAdvice.AdviceTypes type, String description, Team member, Mood mood, SequenceNode<IAdviceMap> node) {
+		this( advice, type, description, member, mood, node.getUri(), 0 );
 		String str = node.getValue( StringStyler.styleToEnum( IAdvice.Attributes.REPEAT.name()));
 		this.repeat = StringUtils.isEmpty(str)?0: Integer.parseInt(str);
-		this.uri = node.getUri();
+	}
+	
+	public Advice( IAdviceMap advice, IAdvice.AdviceTypes type, String description, Team member, Mood mood, String uri, int repeat) {
+		super();
+		this.userId = advice.getUserId();
+		this.adviceId = advice.getId();
+		this.member = member.name();
+		this.type = type;
+		this.mood = mood;
+		this.advice = description;
+		this.repeat = repeat;
+		this.uri = uri;
+		this.notifications = new HashMap<>();
 	}
 
 	public Advice(long userId, long adviceId, String[] arr) {
@@ -46,6 +53,7 @@ public class Advice implements IAdvice {
 		this.mood = mood;
 		this.advice = advice;
 		this.repeat = repeat;
+		this.notifications = new LinkedHashMap<>();
 	}
 
 	@Override
@@ -72,6 +80,20 @@ public class Advice implements IAdvice {
 	@Override
 	public String getDescription() {
 		return this.advice;
+	}
+
+	@Override
+	public void addNotification( IAdvice.Notifications notification, String uri ) {
+		this.notifications.put(notification, uri );
+	}
+
+	@Override
+	public void removeNotification( IAdvice.Notifications notification ) {
+		this.notifications.remove(notification);
+	}
+
+	public Map<Notifications, String> getNotifications() {
+		return notifications;
 	}
 
 	/* (non-Javadoc)
@@ -158,10 +180,30 @@ public class Advice implements IAdvice {
 				break;
 			}
 			break;
+		case PAUSE:
+			switch ( member ) {
+			case RUBEN:
+				mood = (tracking > 50)?Mood.ANIMATED: (tracking>0)? Mood.NERVOUS: (tracking>-50)?Mood.DOUBT: Mood.ANGRY;
+				break;
+			case NELLY:
+				mood = (tracking > 50)?Mood.ANIMATED: (tracking>0)? Mood.ANIMATED: (tracking>-50)?Mood.ANIMATED: Mood.DOUBT;
+				break;
+			case AMANDA:
+				mood = (tracking > 50)?Mood.NERVOUS: (tracking>0)? Mood.ANIMATED: (tracking>-50)?Mood.ANIMATED: Mood.SAD;
+				break;
+			case CHARLES:
+				mood = (tracking > 50)?Mood.SCARED: (tracking>0)? Mood.DOUBT: (tracking>-50)?Mood.NERVOUS: Mood.SCARED;
+				break;
+			case GINO:
+				mood = (tracking > 50)?Mood.ANIMATED: (tracking>0)? Mood.HAPPY: (tracking>-50)?Mood.NERVOUS: Mood.SCARED;
+				break;
+			default:
+				break;
+			}
+			break;
 		default:
 			break;
 		}
 		return mood;
 	}
-
 }

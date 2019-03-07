@@ -239,8 +239,6 @@ public class ModuleBuilder<D extends Object>{
 			String val = attributes.getValue( key);
 			String url = StringUtils.isEmpty(val)? null: parse( current, key, val );
 			String index_str = attributes.getValue( AttributeNames.INDEX.toXmlStyle());
-			String from = attributes.getValue( AttributeNames.FROM.toXmlStyle());
-			String to = attributes.getValue( AttributeNames.TO.toXmlStyle());
 			String progress_str = attributes.getValue( AttributeNames.PROGRESS.toXmlStyle());
 			float progress = StringUtils.isEmpty(progress_str)?0: Float.valueOf(progress_str);  
 			String locale_str = attributes.getValue( AttributeNames.LOCALE.toXmlStyle());
@@ -293,25 +291,6 @@ public class ModuleBuilder<D extends Object>{
 				current.setUri(url);
 				index++;
 				break;
-			case VIEW:
-				index=0;
-				current = new SequenceNode<D>(node, locale, id, name, collin, attributes,index);
-				if( !StringUtils.isEmpty(type))
-					current.setType(type);
-				break;
-			case PARTS:
-				index=0;
-				current = new SequenceNode<D>(node, locale, id, name, collin, attributes, index);
-				completeFromTo(current, from, to);
-				break;	
-			case PART:
-				current = new SequenceNode<D>(node, locale, id, name, collin, attributes, index);
-				index++;
-				break;	
-			case CONTROLLER:
-				index=0;
-				current = new SequenceNode<D>(node, locale, id, name, collin, attributes, index);
-				break;	
 			case SEQUENCE:
 				index=0;
 				current = new SequenceNode<D>(node, locale, id, name, collin, attributes, index);
@@ -361,24 +340,6 @@ public class ModuleBuilder<D extends Object>{
 			}
 		}
 		
-		protected void completeFromTo( SequenceNode<D> node, String from, String to ) {
-			SequenceNode<D> view = find( this.root, Nodes.VIEW);
-			SequenceNode<D> parts= find( view, Nodes.PARTS);
-			SequenceNode<D> frm_seq = null;
-			if( !StringUtils.isEmpty(from)) {
-				frm_seq = find( parts, from );
-			};
-			if( frm_seq != null ) {
-				SequenceNode<D> to_seq = StringUtils.isEmpty(to)? parts.lastChild(): parts.find( to );
-				int index = parts.getChildren().indexOf(frm_seq);
-				int last = parts.getChildren().indexOf(to_seq);
-				if( last < index)
-					last = parts.getChildren().size()-1;
-				for( int i=index; i<last; i++ ) {
-					current.addChild(parts.getChildren().get(i));
-				}
-			}	
-		}
 		
 		@Override
 		public void endElement(String uri, String localName, String qName) throws SAXException {

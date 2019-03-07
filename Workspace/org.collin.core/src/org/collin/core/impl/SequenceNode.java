@@ -19,8 +19,6 @@ public class SequenceNode<D extends Object> extends AbstractDataObject<D>{
 	public enum Nodes{
 		COURSE,
 		MODEL,
-		VIEW,
-		CONTROLLER,
 		SECTIONS,
 		SECTION,
 		MODULES,
@@ -34,8 +32,6 @@ public class SequenceNode<D extends Object> extends AbstractDataObject<D>{
 		QUESTIONS,
 		QUESTION,
 		ANSWER,
-		PARTS,
-		PART,
 		SEQUENCE,
 		ADVICE,
 		TEXT,

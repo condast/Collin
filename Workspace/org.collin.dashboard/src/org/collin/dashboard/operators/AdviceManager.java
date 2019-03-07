@@ -16,6 +16,12 @@ public class AdviceManager<D extends Object> extends AbstractDelegate<SequenceNo
 	}
 
 	@Override
+	public void setParameters(IDataObject<D> settings) {
+		// NOTHING	
+	}
+
+
+	@Override
 	protected Results onProgress(ITetraImplementation<SequenceNode<D>, D> node, TetraEvent<D> event) {
 		Date start = super.getStart();
 		Date end = super.getEndTime();
@@ -25,7 +31,7 @@ public class AdviceManager<D extends Object> extends AbstractDelegate<SequenceNo
 		case SUCCESS:
 			break;
 		case FAIL:
-			double diff = getDifference();
+			double diff = getDuration();
 			if( end.getTime()%120 == 0 ) {
 
 			}

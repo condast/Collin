@@ -10,6 +10,7 @@ import org.collin.core.impl.AbstractTetraImplementation;
 import org.collin.core.impl.SequenceDelegateFactory;
 import org.collin.core.impl.SequenceNode;
 import org.collin.core.transaction.TetraTransaction;
+import org.collin.moodle.advice.IAdvice;
 import org.collin.moodle.advice.IAdviceMap;
 import org.collin.moodle.delegates.StudentAdviceDelegate;
 
@@ -25,8 +26,14 @@ public class Student extends AbstractTetraImplementation<SequenceNode<IAdviceMap
 		delegate = (StudentAdviceDelegate) factory.createDelegate( this.getClass() );
 	}
 
-	public TetraTransaction<IAdviceMap> updateTransaction( int adviceId ) {
-		return delegate.updateTransaction(adviceId);
+	/**
+	 * Update the advice with the given notification, returned by the student
+	 * @param adviceId
+	 * @param notification
+	 * @return
+	 */
+	public TetraTransaction<IAdviceMap> updateTransaction( int adviceId, IAdvice.Notifications notification ) {
+		return delegate.updateTransaction(adviceId, notification);
 	}
 
 	public TetraTransaction<IAdviceMap> createTransaction( long userId, long moduleId, long activityId, double progress ) {
@@ -71,5 +78,6 @@ public class Student extends AbstractTetraImplementation<SequenceNode<IAdviceMap
 	@Override
 	protected void onTetraEventReceived(TetraEvent<IAdviceMap> event) {
 		logger.info(event.getTransaction().getState().toString());
-	}		
+	}
+	
 }
