@@ -30,6 +30,8 @@ public abstract class AbstractTimedDelegate<N,D extends Object> extends Abstract
 	private int duration;
 	private int pollTime;
 	private boolean pause;
+
+	private int actualPauseTime;
 	private int pauseTime;
 	private int pauseCounter;
 
@@ -45,6 +47,7 @@ public abstract class AbstractTimedDelegate<N,D extends Object> extends Abstract
 		this.pollTime = pollTime;
 		this.duration = duration;
 		this.pauseTime = 0;
+		this.actualPauseTime = 0;
 		timer = new Timer();
 	}
 
@@ -60,6 +63,7 @@ public abstract class AbstractTimedDelegate<N,D extends Object> extends Abstract
 		this.duration = StringUtils.isEmpty(str)?DEFAULT_COUNT: Integer.valueOf( str );
 		str = attrs.getValue( Fields.PAUSE.toXmlStyle());
 		this.pauseTime = StringUtils.isEmpty(str)?0: Integer.valueOf( str );
+		this.actualPauseTime = this.pauseTime;
 	}
 
 	@Override
@@ -96,6 +100,17 @@ public abstract class AbstractTimedDelegate<N,D extends Object> extends Abstract
 	
 	protected int getPauseTime() {
 		return pauseTime;
+	}
+
+	protected int getActualPauseTime() {
+		return actualPauseTime;
+	}
+
+	protected boolean setActualPauseTime(int actualPauseTime) {
+		if( actualPauseTime < this.pauseTime)
+			return false;
+		this.actualPauseTime = actualPauseTime;
+		return true;
 	}
 
 	@Override
@@ -137,7 +152,7 @@ public abstract class AbstractTimedDelegate<N,D extends Object> extends Abstract
 		public void run() {
 			try {
 				pauseCounter++;
-				if(!pause && ( pauseCounter >= pauseTime )) {
+				if(!pause && ( pauseCounter >= actualPauseTime )) {
 					pause = onPauseEvent(counter, duration, getData());
 				}
 				if( pause )

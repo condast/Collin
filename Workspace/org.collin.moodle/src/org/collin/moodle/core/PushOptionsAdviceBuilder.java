@@ -22,10 +22,10 @@ public class PushOptionsAdviceBuilder extends PushOptionsBuilder {
 	public byte[] createPayLoad( IAdvice advice, boolean renotify ) {
 		LanguagePack language = LanguagePack.getInstance();
 		String description = advice.getDescription();
-		LanguagePack.Fields field = StringUtils.isEmpty(description)? LanguagePack.Fields.SUCCESS1: LanguagePack.Fields.valueOf(description);
+		String body = StringUtils.isEmpty(description)? LanguagePack.Fields.SUCCESS1.name(): description;
 
 		addOption( Options.TITLE, language.getString( advice.getMember()) + " " + Fields.SAYS.toString() + ":") ;		
-		addOption( Options.BODY, field.toString());
+		addOption( Options.BODY, language.getString(body));
 		addOption( Options.DATA, advice );
 		addOption( Options.ICON, TeamImages.Team.getPath(advice));
 		addOption( Options.BADGE, TeamImages.Team.getPath(Team.PLUSKLAS));

@@ -72,19 +72,32 @@ public class AdviceManager extends AbstractTimedDelegate<SequenceNode<IAdviceMap
 		SequenceNode<IAdviceMap> adviceNode = getAdviceNode(node, adviceMap, type);
 		description = StringUtils.isEmpty(node.getDescription())? AdviceMap.createDescription( member, type, tracking ): node.getDescription();
 		advice =  ( adviceNode == null )? null: new Advice( adviceMap, type, description, member, mood, adviceNode );
+		member = getTeam(tracking);
 		switch( type ) {
 		case PAUSE:
 			advice.addNotification( IAdvice.Notifications.THANKS, Team.getPath(Team.GINO, mood));
-			advice.addNotification( IAdvice.Notifications.PAUSE, Team.getPath(Team.NELLY, mood ));
+			advice.addNotification( IAdvice.Notifications.PAUSE, Team.getPath(member, mood ));
 			break;
 		default:
 			advice.addNotification( IAdvice.Notifications.THANKS, Team.getPath(Team.GINO, mood));
-			advice.addNotification( IAdvice.Notifications.HELP, Team.getPath(Team.NELLY, mood ));
+			IAdvice.Notifications notification = (tracking > 0)? IAdvice.Notifications.PAUSE: IAdvice.Notifications.HELP;
+			advice.addNotification( notification, Team.getPath(member, mood ));
 			break;
 		}
 		return advice;
 	}
 
+	protected Team getTeam( double tracking ) {
+		Random random = new Random();
+		EnumSet<Team> selection = EnumSet.of(Team.CHARLES, Team.AMANDA);
+		List<Team> slow = new ArrayList<>( );
+		if( tracking < 0) {
+			slow.addAll(selection);
+		}else
+			slow.addAll( EnumSet.complementOf(selection));
+		return slow.get(random.nextInt(slow.size()));
+	}
+	
 	protected boolean addAdvice( IAdviceMap advice ) {
 		if( advice == null )
 			return false;
@@ -95,12 +108,21 @@ public class AdviceManager extends AbstractTimedDelegate<SequenceNode<IAdviceMap
 
 	protected IAdviceMap updateAdvice( IAdviceMap adviceMap ) {
 		logger.info("Notification: " + adviceMap.getNotification());
+		int pause = super.getActualPauseTime();
 		switch( adviceMap.getNotification()) {
+		case DONT_CARE:
+			super.setActualPauseTime(pause + 10);
+			break;
 		case THANKS:
+			super.setActualPauseTime(pause - 10);
 			break;
 		case PAUSE:
+			super.setActualPauseTime(pause - 10);
+			super.setPause(true);
 			break;
 		case HELP:
+			super.setActualPauseTime(pause - 10);
+			super.setPause(true);
 			break;
 		default:
 			break;
