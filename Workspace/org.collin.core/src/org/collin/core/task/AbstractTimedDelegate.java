@@ -66,10 +66,8 @@ public abstract class AbstractTimedDelegate<N,D extends Object> extends Abstract
 		this.actualPauseTime = this.pauseTime;
 	}
 
-	@Override
-	protected Results onProgress(ITetraImplementation<N, D> owner, TetraEvent<D> event) {
-		// TODO Auto-generated method stub
-		return null;
+	protected int getCounter() {
+		return counter;
 	}
 
 	protected double getDuration() {

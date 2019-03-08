@@ -3,10 +3,8 @@
 	title="CodeHeroes 1: Het geheim van de tempel" duration="900">
 	<models>
 		<model type="moodle" collin="student">
-			<sections
-				uri="https://www.plusklas.nu/course/view.php?id=${course.id}#${type}-${index}">
-				<task
-					delegate="org.collin.moodle.delegates.StudentAdviceDelegate"></task>
+			<sections uri="https://www.plusklas.nu/course/view.php?id=${course.id}#${type}-${index}">
+				<task delegate="org.collin.moodle.delegates.StudentAdviceDelegate"></task>
 				<section index="0" title="Algemeen" />
 				<section index="1" title="Het Avontuur">
 					<modules uri="https://www.plusklas.nu/mod/url/view.php">
@@ -54,7 +52,7 @@
 		</model>
 		<model type="moodle" collin="coach">
 			<task delegate="org.collin.moodle.advice.AdviceManager"
-				poll-time="1000" duration="30" pause="120">
+				poll-time="1000" duration="120" pause="60">
 				<progress percent="10">
 					<advice type="fail"
 						uri="https://nl.wikipedia.org/wiki/Egyptische_piramide">FAIL1</advice>

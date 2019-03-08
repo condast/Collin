@@ -24,12 +24,15 @@ import org.condast.commons.strings.StringUtils;
 
 public class AdviceManager extends AbstractTimedDelegate<SequenceNode<IAdviceMap>, IAdviceMap> {
 
+	public static final int DEFAULT_LESSON_TIME = 900;
 	private LinkedHashMap<Integer, IAdviceMap> advice;
 
 	private long userId;
 	private IAdviceMap currentAdvice;
 
 	private int adviceCounter;
+	
+	private int nominalTimeLesson;
 	
 	private static Logger logger = Logger.getLogger(AdviceManager.class.getName());
 
@@ -39,6 +42,9 @@ public class AdviceManager extends AbstractTimedDelegate<SequenceNode<IAdviceMap
 		String poll_str = sequence.getValue( StringStyler.xmlStyleString(SequenceNode.AttributeNames.POLL_TIME.name()));
 		super.setPollTime( StringUtils.isEmpty( poll_str )? DEFAULT_POLL_TIME: Integer.parseInt(poll_str));
 		super.setDuration(( sequence.getDuration() <= 0 )? DEFAULT_COUNT: sequence.getDuration());
+		SequenceQuery<IAdviceMap> query = new SequenceQuery<IAdviceMap>( sequence.getParent() );
+		String str = query.findUpStream( ModuleBuilder.AttributeNames.DURATION.toXmlStyle());
+		this.nominalTimeLesson = StringUtils.isEmpty(str)?DEFAULT_LESSON_TIME: Integer.parseInt(str);
 		this.advice = new LinkedHashMap<>();
 		this.adviceCounter = 0;
 	}
@@ -62,10 +68,12 @@ public class AdviceManager extends AbstractTimedDelegate<SequenceNode<IAdviceMap
 		members.remove(Team.PLUSKLAS);
 		Team member = members.get(random.nextInt(members.size()));
 		
-		double tracking = getExpectedProgress( adviceMap.getProgress());
-		IAdvice.Mood mood = Advice.getMood(member, type, tracking);
+		int tracking = this.nominalTimeLesson - super.getCounter();
+		double actualProgress= 100 * super.getCounter()/this.nominalTimeLesson;
+		double diffProgess = adviceMap.getProgress() - actualProgress;
+		IAdvice.Mood mood = Advice.getMood(member, type, diffProgess);
 		logger.info("Percent complete: " + adviceMap.getProgress() 
-		+ "(" + type + ")"	+ ", Tracking: " + tracking + ", Member:" + member.toString() + "(" + mood.toString() +")" );
+		+ "(" + type + ")"	+ ", Progress Tracking: " + diffProgess + ", Member:" + member.toString() + "(" + mood.toString() +")" );
 
 		IAdvice advice = null;
 		String description = null;
@@ -75,13 +83,13 @@ public class AdviceManager extends AbstractTimedDelegate<SequenceNode<IAdviceMap
 		member = getTeam(tracking);
 		switch( type ) {
 		case PAUSE:
-			advice.addNotification( IAdvice.Notifications.THANKS, Team.getPath(Team.GINO, mood));
 			advice.addNotification( IAdvice.Notifications.PAUSE, Team.getPath(member, mood ));
+			advice.addNotification( IAdvice.Notifications.THANKS, Team.getPath(Team.GINO, mood));
 			break;
 		default:
-			advice.addNotification( IAdvice.Notifications.THANKS, Team.getPath(Team.GINO, mood));
 			IAdvice.Notifications notification = (tracking > 0)? IAdvice.Notifications.PAUSE: IAdvice.Notifications.HELP;
 			advice.addNotification( notification, Team.getPath(member, mood ));
+			advice.addNotification( IAdvice.Notifications.THANKS, Team.getPath(Team.GINO, mood));
 			break;
 		}
 		return advice;
@@ -107,7 +115,8 @@ public class AdviceManager extends AbstractTimedDelegate<SequenceNode<IAdviceMap
 	}
 
 	protected IAdviceMap updateAdvice( IAdviceMap adviceMap ) {
-		logger.info("Notification: " + adviceMap.getNotification());
+		logger.info("Notification: " + adviceMap.getNotification() + 
+				": " + getActualPauseTime());
 		int pause = super.getActualPauseTime();
 		switch( adviceMap.getNotification()) {
 		case DONT_CARE:
@@ -194,6 +203,8 @@ public class AdviceManager extends AbstractTimedDelegate<SequenceNode<IAdviceMap
 
 	@Override
 	protected boolean onPauseEvent(int counter, int duration, IDataObject<IAdviceMap> settings) {
+		if( currentAdvice == null )
+			return false;
 		IAdviceMap map = updateAdvice( currentAdvice);
 		if( map == null )
 			return true;
