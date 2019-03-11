@@ -1,3 +1,6 @@
+//const UPDATE_URL = 'http://localhost:10080/moodle/module/update';
+const UPDATE_URL = 'http://www.condast.com:8080/moodle/module/update';
+
 /**
  * Show the push notification
  * @param event
@@ -54,7 +57,7 @@ function update( notification, event ){
 	console.log(notification);
 	const data = event.notification.data;
 	console.log(data.adviceId);
-	const url = 'http://localhost:10080/moodle/module/update?id='+ 
+	const url = UPDATE_URL + '?id='+ 
 		data.userId + '&token=12&adviceid=' + data.adviceId + '&notification=' + notification;
 	console.log( url );
 	fetch(url , {

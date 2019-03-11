@@ -1,3 +1,7 @@
+//ALWAYS call this method from localhost or https 
+//const SUBSCRIBE_URL = 'http://localhost:10080/moodle/push/subscribe';
+const SUBSCRIBE_URL = 'https://www.condast.com:8443/moodle/push/subscribe';
+	
 function registerServiceWorker(userid ) { 
 	console.log('userid: ' + userid );
 	if (!('serviceWorker' in navigator)) {
@@ -57,7 +61,7 @@ function callServer(userid, subscription) {
 
 	console.log("fetch from server");
 	//Send the subscription details to the server using the Fetch API.
-	fetch('http://localhost:10080/moodle/push/subscribe?id='+ userid + '&token=12', {
+	fetch( SUBSCRIBE_URL + '?id='+ userid + '&token=12', {
 		method: 'post',
 		headers: {
 			'Content-type': 'application/json'

@@ -3,8 +3,10 @@
 	title="CodeHeroes 1: Het geheim van de tempel" duration="900">
 	<models>
 		<model type="moodle" collin="student">
-			<sections uri="https://www.plusklas.nu/course/view.php?id=${course.id}#${type}-${index}">
-				<task delegate="org.collin.moodle.delegates.StudentAdviceDelegate"></task>
+			<sections
+				uri="https://www.plusklas.nu/course/view.php?id=${course.id}#${type}-${index}">
+				<task
+					delegate="org.collin.moodle.delegates.StudentAdviceDelegate"></task>
 				<section index="0" title="Algemeen" />
 				<section index="1" title="Het Avontuur">
 					<modules uri="https://www.plusklas.nu/mod/url/view.php">
@@ -42,7 +44,7 @@
 							uri="http://www.condast.com"></module>
 					</modules>
 				</section>
-				<section index="2" title="Sten van Rosetta">
+				<section index="2" title="Steen van Rosetta">
 				</section>
 				<section index="3" title="Kamer onder water">
 				</section>
@@ -53,26 +55,54 @@
 		<model type="moodle" collin="coach">
 			<task delegate="org.collin.moodle.advice.AdviceManager"
 				poll-time="1000" duration="120" pause="60">
-				<progress percent="10">
+				<progress percent="15">
 					<advice type="fail"
-						uri="https://nl.wikipedia.org/wiki/Egyptische_piramide">FAIL1</advice>
+						uri="https://wikikids.nl/Steen_van_Rosetta">FAIL1</advice>
 					<advice type="pause"
-						uri="https://nl.wikipedia.org/wiki/Egyptische_piramide">FAIL1</advice>
-					<advice type="success" uri="http://www.wikipedia.com/boats">SUCCESS1</advice>
+						uri="https://nl.wikipedia.org/wiki/Steen_van_Rosetta">FAIL1</advice>
+					<advice type="success"
+						uri="https://nl.wikipedia.org/wiki/Steen_van_Rosetta">SUCCESS1</advice>
 				</progress>
-				<progress percent="20">
-					<advice type="fail"
-						uri="https://nl.wikipedia.org/wiki/Egyptische_piramide" >FAIL2</advice>
+				<progress percent="30">
+					<advice type="fail" uri="https://wikikids.nl/Spijkerschrift">
+						FAIL2</advice>
+					<advice type="pause" uri="https://wikikids.nl/Talstelsel">FAIL1</advice>
+					<advice type="success"
+						uri="https://nl.wikipedia.org/wiki/Spijkerschrift">SUCCESS2</advice>
+				</progress>
+				<progress percent="45">
+					<advice type="fail" uri="https://wikikids.nl/Morse">FAIL3</advice>
 					<advice type="pause"
-						uri="https://nl.wikipedia.org/wiki/Egyptische_piramide">FAIL1</advice>
-					<advice type="success" uri="http://www.wikipedia.com/boats">SUCCESS2</advice>
+						uri="https://nl.wikipedia.org/wiki/Baudotcode">FAIL1</advice>
+					<advice type="success"
+						uri="https://nl.wikipedia.org/wiki/Morse">SUCCESS3</advice>
+				</progress>
+				<progress percent="60">
+					<advice type="fail" uri="https://wikikids.nl/Computer">FAIL3</advice>
+					<advice type="pause" uri="https://wikikids.nl/Rekenmachine">FAIL1</advice>
+					<advice type="success"
+						uri="https://nl.wikipedia.org/wiki/Code_(representatie_van_gegevens)">SUCCESS3</advice>
+				</progress>
+				<progress percent="75">
+					<advice type="fail"
+						uri="https://wiki.kidzsearch.com/wiki/ASCII">FAIL3</advice>
+					<advice type="pause"
+						uri="https://www.playr.org/play/ascii_wars/1745">FAIL1</advice>
+					<advice type="success"
+						uri="https://nl.wikipedia.org/wiki/Morse">SUCCESS3</advice>
+				</progress>
+				<progress percent="90">
+					<advice type="fail" uri="https://wikikids.nl/Morse">FAIL3</advice>
+					<advice type="pause" uri="http://www.asciimation.co.nz/">FAIL1</advice>
+					<advice type="success"
+						uri="https://www.quest.nl/artikel/smiley-bestaat-30-jaar">SUCCESS3</advice>
 				</progress>
 				<progress>
 					<advice type="fail"
-						uri="https://nl.wikipedia.org/wiki/Egyptische_piramide">FAIL3</advice>
+						uri="https://mesopotamia.mrdonn.org/cuneiform.html">FAIL3</advice>
 					<advice type="pause"
-						uri="https://nl.wikipedia.org/wiki/Egyptische_piramide">FAIL1</advice>
-					<advice type="success" uri="http://www.wikipedia.com/boats">SUCCESS3</advice>
+						uri="https://wikikids.nl/Guglielmo_Marconi">FAIL1</advice>
+					<advice type="success" uri="https://wikikids.nl/Vuurtoren">SUCCESS3</advice>
 				</progress>
 			</task>
 			<modules>
@@ -82,11 +112,57 @@
 						<activity id="1" name="Activity1">
 							<task class="org.collin.core.task.AdviceTask" time="900"
 								uri="resources/advice">
+								<progress percent="15">
+									<advice type="fail"
+										uri="https://wikikids.nl/Steen_van_Rosetta">FAIL1</advice>
+									<advice type="pause"
+										uri="https://nl.wikipedia.org/wiki/Steen_van_Rosetta">FAIL1</advice>
+									<advice type="success"
+										uri="https://nl.wikipedia.org/wiki/Steen_van_Rosetta">SUCCESS1</advice>
+								</progress>
+								<progress percent="30">
+									<advice type="fail"
+										uri="https://wikikids.nl/Spijkerschrift">FAIL2</advice>
+									<advice type="pause"
+										uri="https://wikikids.nl/Talstelsel">FAIL1</advice>
+									<advice type="success"
+										uri="https://nl.wikipedia.org/wiki/Spijkerschrift">SUCCESS2</advice>
+								</progress>
+								<progress percent="45">
+									<advice type="fail" uri="https://wikikids.nl/Morse">FAIL3</advice>
+									<advice type="pause"
+										uri="https://nl.wikipedia.org/wiki/Baudotcode">FAIL1</advice>
+									<advice type="success"
+										uri="https://nl.wikipedia.org/wiki/Morse">SUCCESS3</advice>
+								</progress>
+								<progress percent="60">
+									<advice type="fail" uri="https://wikikids.nl/Computer">FAIL3</advice>
+									<advice type="pause"
+										uri="https://wikikids.nl/Rekenmachine">FAIL1</advice>
+									<advice type="success"
+										uri="https://nl.wikipedia.org/wiki/Code_(representatie_van_gegevens)">SUCCESS3</advice>
+								</progress>
+								<progress percent="75">
+									<advice type="fail"
+										uri="https://wiki.kidzsearch.com/wiki/ASCII">FAIL3</advice>
+									<advice type="pause"
+										uri="https://www.playr.org/play/ascii_wars/1745">FAIL1</advice>
+									<advice type="success"
+										uri="https://nl.wikipedia.org/wiki/Morse">SUCCESS3</advice>
+								</progress>
+								<progress percent="90">
+									<advice type="fail" uri="https://wikikids.nl/Morse">FAIL3</advice>
+									<advice type="pause" uri="http://www.asciimation.co.nz/">FAIL1</advice>
+									<advice type="success"
+										uri="https://www.quest.nl/artikel/smiley-bestaat-30-jaar">SUCCESS3</advice>
+								</progress>
 								<progress>
 									<advice type="fail"
-										uri="https://nl.wikipedia.org/wiki/Egyptische_piramide" />
+										uri="https://mesopotamia.mrdonn.org/cuneiform.html">FAIL3</advice>
+									<advice type="pause"
+										uri="https://wikikids.nl/Guglielmo_Marconi">FAIL1</advice>
 									<advice type="success"
-										uri="http://www.wikipedia.com/boats" />
+										uri="https://wikikids.nl/Vuurtoren">SUCCESS3</advice>
 								</progress>
 							</task>
 						</activity>

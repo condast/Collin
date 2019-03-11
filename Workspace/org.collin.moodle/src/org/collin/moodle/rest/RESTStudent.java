@@ -84,6 +84,7 @@ public class RESTStudent{
 	public Response getAdvice( String input ) {
 		try{
 			Gson gson = new Gson();
+			logger.info( "Advice received: " + input);
 			String[] split = gson.fromJson(input, String[].class);
 			long userId = Long.parseLong( split[0] );
 			String token = split[1];

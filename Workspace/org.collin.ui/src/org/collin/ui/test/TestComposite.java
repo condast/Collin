@@ -32,7 +32,7 @@ public class TestComposite extends Composite {
 	private static final long serialVersionUID = 1L;
 
 	//public static final String S_CONTEXT_PATH = "http://www.condast.com:8080/moodle/module/";
-	//public static final String S_PUSH_CONTEXT_PATH = "http://www.condast.com:8080/moodle/push/";
+	//public static final String S_PUSH_CONTEXT_PATH = "http://www.condast.com:8080/moodleresources/push/";
 
 	public static final String S_CONTEXT_PATH = "http://127.0.0.1:10080/moodle/module/";
 	public static final String S_PUSH_CONTEXT_PATH = "http://127.0.0.1:10080/moodle/push/";
@@ -274,7 +274,7 @@ public class TestComposite extends Composite {
 					params.put( Parameters.MODULE_ID.toString(), String.valueOf( activityId ));
 					params.put( Parameters.PROGRESS.toString(),gson.toJson(details, HashMap.class));
 					String[] data = params.values().toArray( new String[ params.size()]);
-					client.sendPost(Requests.ADVICE, params, gson.toJson(data, String[].class));
+					client.sendPost(Requests.ADVICE, new HashMap<String, String>(), gson.toJson(data, String[].class));
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
