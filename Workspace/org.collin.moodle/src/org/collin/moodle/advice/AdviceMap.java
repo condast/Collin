@@ -28,6 +28,10 @@ public class AdviceMap implements IAdviceMap {
 	
 	private Collection<IAdvice> advices;
 
+	public AdviceMap( long userId ) {
+		this( userId, 0);
+	}
+	
 	public AdviceMap( long userId, int adviceId ) {
 		this( userId, adviceId, IAdvice.Notifications.UNKNOWN );
 	}

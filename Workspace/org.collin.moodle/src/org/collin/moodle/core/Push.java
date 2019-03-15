@@ -1,5 +1,7 @@
 package org.collin.moodle.core;
 
+import java.util.logging.Logger;
+
 import org.collin.moodle.advice.IAdvice;
 import org.condast.commons.messaging.push.ISubscription;
 
@@ -13,8 +15,11 @@ public class Push {
 	
 	public static final String S_CODED = "BMfyyFPnyR8MRrzPJ6jloLC26FyXMcrL8v46d7QEUccbQVArghc9YHC6USyp4TggrFleNzAUq8df0RiSS13xwtM";
 
+	public static final String S_ERR_NO_USER_REGISTERED = "This user was not registered for push messages: ";
 	
 	private static PushManager pushManager = new PushManager();
+	
+	private static Logger logger = Logger.getLogger(Push.class.getName());
 	
 	private Push() {
 		super();
@@ -35,6 +40,10 @@ public class Push {
 		if(( advice ==  null ) ||( userId < 0 ))
 			return false;
 		PushManager pm = pushManager;
+		if( !pm.hasSubscription(userId)) {
+			logger.warning(S_ERR_NO_USER_REGISTERED + userId );
+			return false;
+		}
 		ISubscription subscription = pm.getSubscription( userId );
 		PushOptionsAdviceBuilder builder = new PushOptionsAdviceBuilder();
 		try {

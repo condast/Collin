@@ -1,8 +1,11 @@
 package org.collin.moodle.service;
 
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeSet;
+import java.util.logging.Logger;
 
 import org.collin.core.def.ITetraImplementation;
 import org.collin.core.essence.Compass;
@@ -57,15 +60,24 @@ public class ActorService {
 	
 	private Map<Compass.Tetras, ITetraImplementation<SequenceNode<IAdviceMap>, IAdviceMap>> implementations;
 	
+	private Collection<Long> users;
+	
 	private static ActorService service = new ActorService();
+	
+	private Logger logger = Logger.getLogger( this.getClass().getName());
 	
 	private ActorService() {
 		super();
 		implementations = new HashMap<>();
+		users = new TreeSet<>();
 	}
 
 	public static ActorService getInstance() {
 		return service;
+	}
+	
+	public boolean isregistered( long userId ) {
+		return this.users.contains(userId );
 	}
 	
 	protected void register( TetraTransaction<IAdviceMap> transaction ) {
@@ -87,6 +99,7 @@ public class ActorService {
 	 */
 	public void start( long userId, long moduleId ){
 		InputStream stream = null;
+		this.users.add(userId);
 		try {
 			readModules();
 			TetraTransaction<IAdviceMap> transaction = new TetraTransaction<IAdviceMap>(this, userId, new AdviceMap( userId, 0) );
@@ -111,6 +124,9 @@ public class ActorService {
 	 */
 	public IAdviceMap createAdvice( long userId, long moduleId, long activityId, double progress ) throws Exception {
 		try {
+			if( !isregistered(userId)) {
+				start( userId, moduleId );
+			}
 			Student student = (Student) this.implementations.get(Compass.Tetras.CONSUMER);
 			TetraTransaction<IAdviceMap> transaction = student.createTransaction( userId, moduleId, activityId, progress );
 			register( transaction );
@@ -136,6 +152,10 @@ public class ActorService {
 	public IAdviceMap updateAdvice( long userId, int adviceId, IAdvice.Notifications notification, double progress ) throws Exception {
 		try {
 			Student student = (Student) this.implementations.get(Compass.Tetras.CONSUMER);
+			if( student == null ) {
+				logger.warning("This advice was not prepared: " + userId );
+				return null;
+			}
 			TetraTransaction<IAdviceMap> transaction = student.updateTransaction(adviceId, notification);
 			register( transaction );
 			student.fire( transaction );

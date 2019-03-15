@@ -1,5 +1,5 @@
 //const UPDATE_URL = 'http://localhost:10080/moodle/module/update';
-const UPDATE_URL = 'http://www.condast.com:8080/moodle/module/update';
+const UPDATE_URL = 'https://www.condast.com:8443/moodle/module/update';
 
 /**
  * Show the push notification

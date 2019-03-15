@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.collin.moodle.advice.AdviceData;
 import org.collin.moodle.xml.ModuleBuilder;
 import org.condast.commons.messaging.http.AbstractHttpRequest;
 import org.condast.commons.messaging.http.IHttpClientListener;
@@ -260,21 +261,24 @@ public class TestComposite extends Composite {
 				Map<String, String> params = new LinkedHashMap<>();
 
 				try {
-					int moduleId = spinner_module.getSelection();
+					long courseId = 300;
+					long moduleId = spinner_module.getSelection();
 					int activityId = spinner_activity.getSelection();
 					int progress = spinner_progress.getSelection();
-					Map<Integer,Boolean> details = new HashMap<>();
-					for( int i = 0; i<10; i++ ) {
+					Map<Long,Boolean> details = new HashMap<>();
+					for( long i = 0; i<10; i++ ) {
 						details.put(i, progress>i*10);
 					}
 					Gson gson = new Gson();
-					params.put( Parameters.ID.toString(),  String.valueOf( spinnerUserId.getSelection()));
-					params.put( Parameters.TOKEN.toString(), "12");
+					long userId = spinnerUserId.getSelection();
+					params.put( Parameters.ID.toString(),  String.valueOf( userId));
+					String token=  "12";
+					params.put( Parameters.TOKEN.toString(), token);
 					params.put( Parameters.COURSE_ID.toString(), String.valueOf( moduleId ));
 					params.put( Parameters.MODULE_ID.toString(), String.valueOf( activityId ));
 					params.put( Parameters.PROGRESS.toString(),gson.toJson(details, HashMap.class));
-					String[] data = params.values().toArray( new String[ params.size()]);
-					client.sendPost(Requests.ADVICE, new HashMap<String, String>(), gson.toJson(data, String[].class));
+					AdviceData data = new AdviceData( userId, token, courseId, moduleId, details);
+					client.sendPost(Requests.ADVICE, new HashMap<String, String>(), gson.toJson(data, AdviceData.class));
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}

@@ -97,7 +97,7 @@ public class ModuleBuilder<D extends Object>{
 
 	private Collection<ISequenceEventListener> listeners;
 	
-	private Logger logger = Logger.getLogger( ModuleBuilder.class.getName() );
+	private static Logger logger = Logger.getLogger( ModuleBuilder.class.getName() );
 
 	public ModuleBuilder( Class<?> clss ) throws IOException {
 		this( clss, getDefaultModuleLocation());
@@ -363,12 +363,12 @@ public class ModuleBuilder<D extends Object>{
 			if( StringUtils.isEmpty(description))
 				return;
 			current.setDescription(description);
-			Logger.getLogger( this.getClass().getName()).info( builder.toString());			
+			logger.fine( builder.toString());			
 		}
 
 		private void print(SAXParseException x)
 		{
-			Logger.getLogger( this.getClass().getName()).info(x.getMessage());
+			logger.fine(x.getMessage());
 		}
 
 		@Override

@@ -77,7 +77,7 @@ public class AdviceManager extends AbstractTimedDelegate<SequenceNode<IAdviceMap
 
 		IAdvice advice = null;
 		String description = null;
-		SequenceNode<IAdviceMap> adviceNode = getAdviceNode(node, adviceMap, type);
+		SequenceNode<IAdviceMap> adviceNode = getAdviceNode( (SequenceNode<IAdviceMap>) getData(), adviceMap, type);
 		description = StringUtils.isEmpty(node.getDescription())? AdviceMap.createDescription( member, type, tracking ): node.getDescription();
 		advice =  ( adviceNode == null )? null: new Advice( adviceMap, type, description, member, mood, adviceNode );
 		member = getTeam(tracking);

@@ -59,7 +59,7 @@ function callServer(userid, subscription) {
     var key = subscription.getKey ? subscription.getKey('p256dh') : '';
     var auth = subscription.getKey ? subscription.getKey('auth') : '';
 
-	console.log('fetch from server');
+	console.log("fetch from server");
 	//Send the subscription details to the server using the Fetch API.
 	fetch( SUBSCRIBE_URL + '?id='+ userid + '&token=12', {
 		method: 'post',

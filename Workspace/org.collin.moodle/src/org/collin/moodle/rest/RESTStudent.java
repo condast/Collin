@@ -17,6 +17,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.collin.moodle.advice.AdviceData;
 import org.collin.moodle.advice.IAdvice;
 import org.collin.moodle.advice.IAdviceMap;
 import org.collin.moodle.core.Push;
@@ -84,13 +85,15 @@ public class RESTStudent{
 	public Response getAdvice( String input ) {
 		try{
 			Gson gson = new Gson();
-			logger.info( "Advice received: " + input);
-			String[] split = gson.fromJson(input, String[].class);
-			long userId = Long.parseLong( split[0] );
-			String token = split[1];
-			long courseId = Long.parseLong( split[2]);
-			long moduleId = Long.parseLong( split[3]);
-			double progress = getProgress(split[4]);
+			logger.info( "Advice received: '" + input + "'");
+			//input = AdviceData.S_EXAMPLE;
+			//logger.info( "Compare received: '" + input + "'");
+			AdviceData data = gson.fromJson(input, AdviceData.class);
+			long userId = data.getUserid();
+			String token = data.getToken();
+			long courseId = data.getCourseid();
+			long moduleId = data.getCmid();
+			double progress = data.getProgress();
 			boolean response = RESTUtils.checkId(userId, token, courseId);
 			if( !response ) {
 				return ( courseId < 0 )? Response.noContent().build(): Response.status( Status.UNAUTHORIZED ).build();
