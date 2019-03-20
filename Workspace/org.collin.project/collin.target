@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="collin.target" sequenceNumber="157">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="collin.target" sequenceNumber="157">
 <locations>
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\registry" type="Directory"/>
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\jaxrs" type="Directory"/>
@@ -15,15 +14,17 @@
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\gson" type="Directory"/>
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\gson" type="Directory"/>
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\apache" type="Directory"/>
+	<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\mail" type="Directory"/>
+	<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\freemarker" type="Directory"/>
 </locations>
 <includeBundles>
 <plugin id="cdi.api"/>
 <plugin id="ch.qos.logback.access"/>
-<plugin id="ch.qos.logback.classic" version="1.2.3"/>
 <plugin id="ch.qos.logback.classic" version="1.0.7.v20121108-1250"/>
+<plugin id="ch.qos.logback.classic" version="1.2.3"/>
 <plugin id="ch.qos.logback.classic.source"/>
-<plugin id="ch.qos.logback.core" version="1.0.7.v20121108-1250"/>
 <plugin id="ch.qos.logback.core" version="1.2.3"/>
+<plugin id="ch.qos.logback.core" version="1.0.7.v20121108-1250"/>
 <plugin id="ch.qos.logback.core.source"/>
 <plugin id="ch.qos.logback.slf4j"/>
 <plugin id="ch.qos.logback.slf4j.source"/>
@@ -45,19 +46,18 @@
 <plugin id="javax.el"/>
 <plugin id="javax.jms" version="1.1.0.v200906010428"/>
 <plugin id="javax.jms" version="1.1.0.v201205091237"/>
-<plugin id="javax.mail"/>
-<plugin id="javax.mail.glassfish"/>
+<plugin id="javax.mail.glassfish" version="1.4.1.v201005082020"/>
 <plugin id="javax.persistence" version="2.2.0.v201708071007"/>
 <plugin id="javax.persistence.javadoc"/>
 <plugin id="javax.persistence.source" version="2.2.0.v201708071007"/>
 <plugin id="javax.resource"/>
 <plugin id="javax.servlet" version="2.4.0.v200806031604"/>
-<plugin id="javax.servlet" version="3.0.0.v201112011016"/>
 <plugin id="javax.servlet" version="3.1.0.20170128"/>
+<plugin id="javax.servlet" version="3.0.0.v201112011016"/>
 <plugin id="javax.servlet.jsp"/>
 <plugin id="javax.servlet.jsp.jstl-api"/>
-<plugin id="javax.transaction" version="1.1.1.v201105210645"/>
 <plugin id="javax.transaction" version="1.1.0.v201002051055"/>
+<plugin id="javax.transaction" version="1.1.1.v201105210645"/>
 <plugin id="javax.validation"/>
 <plugin id="javax.validation.api"/>
 <plugin id="javax.ws.rs"/>
@@ -71,7 +71,7 @@
 <plugin id="jaxb-xjc"/>
 <plugin id="oevm.javax.portlet"/>
 <plugin id="oevm.org.aopalliance"/>
-<plugin id="org.apache.commons.codec"/>
+<plugin id="org.apache.commons.codec" version="1.10.0.v20151023-1447"/>
 <plugin id="org.apache.commons.fileupload"/>
 <plugin id="org.apache.commons.io"/>
 <plugin id="org.apache.commons.lang3"/>
@@ -99,10 +99,10 @@
 <plugin id="org.eclipse.equinox.console"/>
 <plugin id="org.eclipse.equinox.console.ssh"/>
 <plugin id="org.eclipse.equinox.ds"/>
-<plugin id="org.eclipse.equinox.http.jetty"/>
+<plugin id="org.eclipse.equinox.http.jetty" version="3.0.200.v20131021-1843"/>
 <plugin id="org.eclipse.equinox.http.registry"/>
 <plugin id="org.eclipse.equinox.http.servlet" version="1.4.0.v20170524-1452"/>
-<plugin id="org.eclipse.equinox.http.servlet.source" version="1.4.0.v20170524-1452"/>
+<plugin id="org.eclipse.equinox.http.servlet.source"/>
 <plugin id="org.eclipse.equinox.preferences"/>
 <plugin id="org.eclipse.equinox.region"/>
 <plugin id="org.eclipse.equinox.registry"/>
@@ -190,7 +190,7 @@
 <plugin id="org.eclipse.virgo.medic.core"/>
 <plugin id="org.eclipse.virgo.web.dm"/>
 <plugin id="org.eclipse.virgo.web.servlet.adapter"/>
-<plugin id="org.freemarker.freemarker" version="2.3.26.stable-incubating"/>
+<plugin id="org.freemarker.freemarker"/>
 <plugin id="org.glassfish.hk2.api"/>
 <plugin id="org.glassfish.hk2.external.aopalliance-repackaged"/>
 <plugin id="org.glassfish.hk2.external.javax.inject"/>

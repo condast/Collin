@@ -1,6 +1,6 @@
 //ALWAYS call this method from localhost or https 
 //const SUBSCRIBE_URL = 'http://localhost:10080/moodle/push/subscribe';
-const SUBSCRIBE_URL = 'https://www.condast.com:8443/moodle/push/subscribe';
+var SUBSCRIBE_URL = 'https://www.condast.com:8443/moodle/push/subscribe';
 	
 function registerServiceWorker(userid ) { 
 	console.log('userid: ' + userid );
@@ -14,10 +14,10 @@ function registerServiceWorker(userid ) {
 		return false;
 	}
 
-	return navigator.serviceWorker.register('/moodletest/js/push/collin-service.js').then( 
+	return navigator.serviceWorker.register('/moodletest/js/push/collin-service.js', { scope: './' }).then( 
 			function( registration) { 
 				console.log(' Service worker successfully registered.'); 
-				askPermission().then(() => {
+				askPermission().then(()=> {
 					console.log(' Subscribe.'); 
 					const APP_SERVER_KEY = 'BDvq04Lz9f7WBugyNHW2kdgFI7cjd65fzfFRpNdRpa9zWvi4yAD8nAvgb8c8PpRXdtgUqqZDG7KbamEgxotOcaA';
 

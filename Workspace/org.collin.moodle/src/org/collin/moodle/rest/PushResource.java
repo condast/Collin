@@ -1,10 +1,15 @@
 package org.collin.moodle.rest;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -14,6 +19,7 @@ import javax.ws.rs.core.Response.Status;
 import org.collin.moodle.core.Push;
 import org.collin.moodle.service.ActorService;
 import org.condast.commons.messaging.push.ISubscription;
+import org.condast.commons.strings.StringUtils;
 
 //Sets the path to alias + path
 @Path("/push")
@@ -24,7 +30,9 @@ public class PushResource{
 	
 	public static final String S_PUBLIC_KEY = "BDvq04Lz9f7WBugyNHW2kdgFI7cjd65fzfFRpNdRpa9zWvi4yAD8nAvgb8c8PpRXdtgUqqZDG7KbamEgxotOcaA";
 	public static final String S_CODED = "BMfyyFPnyR8MRrzPJ6jloLC26FyXMcrL8v46d7QEUccbQVArghc9YHC6USyp4TggrFleNzAUq8df0RiSS13xwtM";
-	
+
+	public static final String S_RES_INDEX_JS = "/resources/html/push.html";
+
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	private ActorService service = ActorService.getInstance();
@@ -32,6 +40,35 @@ public class PushResource{
 	public PushResource() {
 	}
 
+	@GET
+	@Path("push")
+	public Response getIndex(@QueryParam("id") long userId, @QueryParam("token") String token){
+		Response response = Response.noContent().build();
+		Scanner scanner = new Scanner( PushResource.class.getResourceAsStream( S_RES_INDEX_JS ));
+		try {   
+			if( userId < 0 ) {
+				response = Response.status( Status.UNAUTHORIZED).build();
+				return response;
+			}
+			Map<String, String> params = new HashMap<>();
+			params.put("user-id", String.valueOf(userId));
+			StringBuilder builder = new StringBuilder();
+			while( scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				builder.append( StringUtils.replace(line, params));
+			}
+			response = Response.ok( builder.toString()).build();
+		}
+		catch( Exception ex ) {
+			ex.printStackTrace();
+			response = Response.serverError().build();
+		}
+		finally {
+			scanner.close();
+		}
+		return response;
+	}
+	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
