@@ -5,8 +5,15 @@
 <title>Plusklas.nu Push Berichten Service</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body onload="registerServiceWorker(12)">
-	<script src="./push/js/index.js"></script>
+<body>
+	<script src="https://www.condast.com:8443/moodletest/js/push/index.js"></script>
+	<script>
+		window.addEventListener("load", function(event) {
+			console.log("All resources finished loading!");
+			registerServiceWorker(12);
+		});
+	</script>
+
 	<p>PUSH NOTIFICATIONS REGISTERED!</p>
 </body>
 </html>

@@ -14,7 +14,7 @@ function registerServiceWorker(userid ) {
 		return false;
 	}
 
-	return navigator.serviceWorker.register('./push/js/collin-service.js') .then( 
+	return navigator.serviceWorker.register('/moodletest/js/push/collin-service.js', { scope: './' }).then( 
 			function( registration) { 
 				console.log(' Service worker successfully registered.'); 
 				askPermission().then(() => {
@@ -31,8 +31,12 @@ function registerServiceWorker(userid ) {
 					// we got the pushSubscription object
 					callServer( userid, pushSubscription );
 				}).catch( function( err) { 
-					console.error(' Unable to register service worker.', err);
+					console.error(' Permission denied:', err);
+					throw(err);
 				});
+			}).catch( function( err) { 
+				console.error(' Unable to register service worker:', err);
+				throw(err);
 			});
 }
 
@@ -59,7 +63,7 @@ function callServer(userid, subscription) {
     var key = subscription.getKey ? subscription.getKey('p256dh') : '';
     var auth = subscription.getKey ? subscription.getKey('auth') : '';
 
-	console.log('fetch from server');
+	console.log("fetch from server");
 	//Send the subscription details to the server using the Fetch API.
 	fetch( SUBSCRIBE_URL + '?id='+ userid + '&token=12', {
 		method: 'post',
