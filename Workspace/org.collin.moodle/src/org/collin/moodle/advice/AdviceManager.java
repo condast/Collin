@@ -1,6 +1,8 @@
 package org.collin.moodle.advice;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,6 +27,8 @@ import org.condast.commons.strings.StringUtils;
 public class AdviceManager extends AbstractTimedDelegate<SequenceNode<IAdviceMap>, IAdviceMap> {
 
 	public static final int DEFAULT_LESSON_TIME = 900;
+	public static final int DEFAULT_INTERVAL_TIME = 120;
+
 	private LinkedHashMap<Integer, IAdviceMap> advice;
 
 	private long userId;
@@ -33,6 +37,9 @@ public class AdviceManager extends AbstractTimedDelegate<SequenceNode<IAdviceMap
 	private int adviceCounter;
 	
 	private int nominalTimeLesson;
+	
+	private int interval;
+	private Date lastAdvice;
 	
 	private static Logger logger = Logger.getLogger(AdviceManager.class.getName());
 
@@ -45,6 +52,9 @@ public class AdviceManager extends AbstractTimedDelegate<SequenceNode<IAdviceMap
 		SequenceQuery<IAdviceMap> query = new SequenceQuery<IAdviceMap>( sequence.getParent() );
 		String str = query.findUpStream( ModuleBuilder.AttributeNames.DURATION.toXmlStyle());
 		this.nominalTimeLesson = StringUtils.isEmpty(str)?DEFAULT_LESSON_TIME: Integer.parseInt(str);
+		
+		str = query.findUpStream( ModuleBuilder.AttributeNames.INTERVAL.toXmlStyle());
+		this.interval = StringUtils.isEmpty( str )? DEFAULT_INTERVAL_TIME: Integer.parseInt( str );
 		this.advice = new LinkedHashMap<>();
 		this.adviceCounter = 0;
 	}
@@ -62,6 +72,15 @@ public class AdviceManager extends AbstractTimedDelegate<SequenceNode<IAdviceMap
 	}
 	
 	protected IAdvice createAdvice( SequenceNode<IAdviceMap> node, IAdviceMap adviceMap, IAdvice.AdviceTypes type  ) {
+		Calendar calendar = Calendar.getInstance();
+		Date current = calendar.getTime();
+		Date next = (lastAdvice == null )? current: this.lastAdvice;
+		calendar.setTime(next);
+		calendar.add(Calendar.SECOND, interval);
+		next = calendar.getTime();
+		if(( lastAdvice != null ) && (current.before(next)))
+			return null;
+		this.lastAdvice = current;
 		this.adviceCounter = 0;//An advice has been given, so restart count
 		Random random = new Random();
 		List<Team> members = new ArrayList<>( EnumSet.allOf(Team.class));

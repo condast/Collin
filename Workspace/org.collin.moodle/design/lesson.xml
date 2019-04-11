@@ -6,7 +6,9 @@
 			<sections
 				uri="https://www.plusklas.nu/course/view.php?id=${course.id}#${type}-${index}">
 				<task
-					delegate="org.collin.moodle.delegates.StudentAdviceDelegate"></task>
+					delegate="org.collin.moodle.delegates.StudentAdviceDelegate"
+					interval="120">
+				</task>
 				<section index="0" title="Algemeen" />
 				<section index="1" title="Het Avontuur">
 					<modules uri="https://www.plusklas.nu/mod/url/view.php">

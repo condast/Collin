@@ -64,23 +64,24 @@ public class ModuleBuilder<D extends Object>{
 	}
 
 	public enum AttributeNames{
-		ID,
-		TITLE,
-		NAME,
-		DELEGATE,
 		COLLIN,
+		DELEGATE,
 		DESCRIPTION,
 		DURATION,
 		ENABLED,
-		TYPE,
+		FROM,
+		ID,
 		INDEX,
+		INTERVAL,
 		LOCALE,
+		NAME,
 		PERCENT,
 		POLL_TIME,
 		PROGRESS,
 		SOURCE,
+		TITLE,
+		TYPE,
 		URI,
-		FROM,
 		TO;
 
 		@Override
@@ -241,8 +242,8 @@ public class ModuleBuilder<D extends Object>{
 			String index_str = attributes.getValue( AttributeNames.INDEX.toXmlStyle());
 			String progress_str = attributes.getValue( AttributeNames.PROGRESS.toXmlStyle());
 			float progress = StringUtils.isEmpty(progress_str)?0: Float.valueOf(progress_str);  
-			String locale_str = attributes.getValue( AttributeNames.LOCALE.toXmlStyle());
 			String delegate_str = attributes.getValue( AttributeNames.DELEGATE.toXmlStyle());
+			String locale_str = attributes.getValue( AttributeNames.LOCALE.toXmlStyle());
 			if(!StringUtils.isEmpty(locale_str)) {
 				String[] split = locale_str.split("[-]");
 				locale = new Locale(split[0], split[1]);

@@ -10,7 +10,7 @@ self.addEventListener('push', function(event) {
 	const payload = event.data ? event.data.text() : 'no payload';
 	if( payload === null )
 		return;
-
+	console.log( payload);
 	const options = JSON.parse(payload);
 
 	const maxVisibleActions = Notification.maxActions; 
