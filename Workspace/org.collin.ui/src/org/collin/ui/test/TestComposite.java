@@ -4,7 +4,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Label;
 import com.google.gson.Gson;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
@@ -35,8 +34,8 @@ public class TestComposite extends Composite {
 	//public static final String S_CONTEXT_PATH = "http://www.condast.com:8080/moodle/module/";
 	//public static final String S_PUSH_CONTEXT_PATH = "http://www.condast.com:8080/moodleresources/push/";
 
-	public static final String S_CONTEXT_PATH = "http://127.0.0.1:10080/moodle/module/";
-	public static final String S_PUSH_CONTEXT_PATH = "http://127.0.0.1:10080/moodle/push/";
+	public static final String S_CONTEXT_PATH = "http://127.0.0.1:10080/moodle/module";
+	public static final String S_PUSH_CONTEXT_PATH = "http://127.0.0.1:10080/moodle/push";
 
 	public static final String S_SUBSCRIPTION_SERVER =  S_PUSH_CONTEXT_PATH;
 
@@ -101,11 +100,11 @@ public class TestComposite extends Composite {
 		}		
 	}
 
-	private IHttpClientListener listener = new IHttpClientListener() {
+	private IHttpClientListener<Requests,Object> listener = new IHttpClientListener<Requests,Object>() {
 
 		@Override
-		public void notifyResponse(ResponseEvent event) {
-			Requests request = Requests.getRequest(event.getRequest());
+		public void notifyResponse(ResponseEvent<Requests,Object> event) {
+			Requests request = event.getRequest();
 			switch( request ){
 			case START:
 				break;
@@ -302,29 +301,32 @@ public class TestComposite extends Composite {
 		// Disable the check that prevents subclassing of SWT components
 	}
 
-	private class WebClient extends AbstractHttpRequest<Requests>{
+	private class WebClient extends AbstractHttpRequest<Requests,Object>{
 
 		public WebClient( String context ) {
 			super(context );
 		}
 
-		public void sendGet( Requests request, Map<String, String> parameters ) throws Exception {
-			super.sendGet(request.getPath(), parameters);
+		public void sendGet( Requests request, Map<String, String> parameters ) throws IOException {
+			if( Requests.SUBSCRIBE.equals(request))
+				setContextPath(S_PUSH_CONTEXT_PATH);
+			else
+				setContextPath(S_CONTEXT_PATH);				
+			super.sendGet(request, parameters);
 		}
 		
 		@Override
-		protected void sendPost(Requests request, Map<String, String> parameters, String data) throws Exception {
-			super.sendPost(request.getPath(), parameters, data);
+		protected void sendPost(Requests request, Map<String, String> parameters, String data) throws IOException {
+			if( Requests.SUBSCRIBE.equals(request))
+				setContextPath(S_PUSH_CONTEXT_PATH);
+			else
+				setContextPath(S_CONTEXT_PATH);				
+			super.sendPost(request, parameters, data);
 		}
 
+		
 		@Override
-		protected String onHandleResponse(URL url, int responsecode, BufferedReader reader) throws IOException {
-			try{
-				return super.transform(reader);
-			}
-			catch( Exception ex ){
-				ex.printStackTrace();
-			}
+		protected String onHandleResponse(ResponseEvent<Requests, Object> event, Object data) throws IOException {
 			return Responses.BAD.name();
 		}
 	}

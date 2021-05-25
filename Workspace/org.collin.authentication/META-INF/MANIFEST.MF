@@ -7,7 +7,6 @@ Bundle-Activator: org.collin.authentication.Activator
 Bundle-Vendor: Condast
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: com.google.gson;version="2.7.0",
- javax.annotation;version="1.2.0",
  javax.crypto,
  javax.crypto.interfaces,
  javax.crypto.spec,
@@ -65,5 +64,5 @@ Export-Package: org.collin.authentication,
  org.collin.authentication.core,
  org.collin.authentication.rest
 Automatic-Module-Name: org.fgf.animal.count.authentication
-Service-Component: OSGI-INF/org.collin.authentication.provider.xml
 Bundle-ActivationPolicy: lazy
+Service-Component: OSGI-INF/org.collin.authentication.provider.xml

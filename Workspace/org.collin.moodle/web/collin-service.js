@@ -1,5 +1,5 @@
-//const UPDATE_URL = 'http://localhost:10080/moodle/module/update';
-const UPDATE_URL = 'https://www.condast.com:8443/moodle/module/update';
+const UPDATE_URL = 'http://localhost:10081/moodle/module/update';
+//const UPDATE_URL = 'https://www.condast.com:8443/moodle/module/update';
 
 /**
  * Show the push notification
@@ -17,7 +17,7 @@ self.addEventListener('push', function(event) {
 	console.log( options.title);
 	if ( options.actions.length > maxVisibleActions) { 
 		options.body = 'This notification will only display' +
-		'${ maxVisibleActions} actions.';
+		'4 actions.';
 	}
 
 	//	Keep the service worker alive until the notification is created.

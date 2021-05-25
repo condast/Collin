@@ -31,11 +31,11 @@ public class AuthenticationComponent{
 	}
 
 	@Reference
-	public void setFactory( ILoginProvider factory ){
-		dispatcher.setFactory(factory);
+	public void setFactory( ILoginProvider provider ){
+		dispatcher.setLoginProvider(provider);
 	}
 
 	public void unsetFactory( ILoginProvider factory ){
-		dispatcher.unsetFactory(factory);
+		dispatcher.unsetLoginProvider(factory);
 	}
 }

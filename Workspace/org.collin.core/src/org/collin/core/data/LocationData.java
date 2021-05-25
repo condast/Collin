@@ -2,8 +2,8 @@ package org.collin.core.data;
 
 import java.util.Date;
 
+import org.condast.commons.IUpdateable;
 import org.condast.commons.data.latlng.ILocation;
-import org.condast.commons.persistence.def.IUpdateable;
 
 @SuppressWarnings("unused")
 public class LocationData {

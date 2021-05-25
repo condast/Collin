@@ -241,4 +241,10 @@ public class Person implements IPerson, Serializable, Cloneable {
 		}
 		return retval;
 	}
+
+	@Override
+	public IPersonAddress[] getPersonAddresses() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

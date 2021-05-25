@@ -14,7 +14,7 @@ function registerServiceWorker(userid ) {
 		return false;
 	}
 
-	return navigator.serviceWorker.register('/moodletest/js/push/collin-service.js').then( 
+	return navigator.serviceWorker.register('http://localhost:10081/moodletest/collin-service.js').then( 
 			function( registration) { 
 				console.log(' Service worker successfully registered.'); 
 				askPermission().then(() => {
@@ -52,8 +52,8 @@ function askPermission() {
 			permissionResult.then( resolve, reject); 
 		}
 	}).then( function( permissionResult){ 
-		if (permissionResult !== 'granted') { 
-			throw new Error(' We weren\'t granted permission.'); 
+		if (( permissionResult !== 'default') && (permissionResult !== 'granted')) { 
+			throw new Error(' We weren\'t granted permission: ' + permissionResult); 
 		} 
 	}); 
 }
@@ -103,3 +103,8 @@ function urlBase64ToUint8Array(base64String) {
 	}
 	return outputArray;
 }
+
+window.addEventListener("load", function(event) {
+	console.log("All resources finished loading!");
+	registerServiceWorker(12);
+});

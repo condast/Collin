@@ -64,4 +64,15 @@ public class LoginUserProvider implements ILoginProvider {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public boolean hasLoginUser(String userName, long token) {
+		return false;
+	}
+
+	@Override
+	public void logout(ILoginUser user) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -4,11 +4,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Label;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.condast.commons.authentication.core.AuthenticationEvent;
 import org.condast.commons.authentication.core.IAuthenticationListener;
 import org.condast.commons.authentication.core.ILoginProvider;
@@ -194,18 +194,17 @@ public class CollinComposite extends Composite {
 		super.dispose();
 	}
 
-	private class WebClient extends AbstractHttpRequest{
+	private class WebClient extends AbstractHttpRequest<Requests, Object>{
 
 		public WebClient() {
 			super();
 		}
 
+		
 		@Override
-		protected String onHandleResponse(URL url, int responsecode, BufferedReader reader) throws IOException {
+		protected String onHandleResponse(ResponseEvent<Requests, Object> event, Object data) throws IOException {
 			try{
-				Requests request = Requests.getRequest(url);
-				ResponseEvent response= new ResponseEvent( this, request.name(), reader );
-				notifyListeners( response );
+				notifyListeners( event);
 				return Responses.OK.name();
 			}
 			catch( Exception ex ){

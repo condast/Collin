@@ -9,7 +9,7 @@ import org.collin.moodle.advice.IAdvice;
 import org.collin.moodle.images.TeamImages;
 import org.collin.moodle.images.TeamImages.Team;
 import org.condast.commons.strings.StringUtils;
-import org.condast.js.commons.push.PushOptionsBuilder;
+import org.condast.js.push.core.builder.PushOptionsBuilder;
 
 public class PushOptionsAdviceBuilder extends PushOptionsBuilder {
 

@@ -14,6 +14,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.condast.commons.authentication.user.ILoginUser;
+import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.ui.date.DateUtils;
 
 @Entity
@@ -152,5 +153,29 @@ public class Login implements ILoginUser {
 	public int compareTo(ILoginUser arg0) {
 		long diff = id - arg0.getId();
 		return ( diff < 0)?-1: (diff>0)?1:0;
+	}
+
+	@Override
+	public boolean isCorrect(long userId, String token) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void setToken(long token) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public LatLng getLocation() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setLocation(double latitude, double longitude) {
+		// TODO Auto-generated method stub
+		
 	}
 }
