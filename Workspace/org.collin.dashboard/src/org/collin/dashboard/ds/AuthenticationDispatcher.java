@@ -35,10 +35,4 @@ public class AuthenticationDispatcher extends AbstractLoginClient{
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	public void logoutRequest() {
-		// TODO Auto-generated method stub
-		
-	}
 }

@@ -100,10 +100,10 @@ public class TestComposite extends Composite {
 		}		
 	}
 
-	private IHttpClientListener<Requests,Object> listener = new IHttpClientListener<Requests,Object>() {
+	private IHttpClientListener<Requests> listener = new IHttpClientListener<Requests>() {
 
 		@Override
-		public void notifyResponse(ResponseEvent<Requests,Object> event) {
+		public void notifyResponse(ResponseEvent<Requests> event) {
 			Requests request = event.getRequest();
 			switch( request ){
 			case START:
@@ -301,7 +301,7 @@ public class TestComposite extends Composite {
 		// Disable the check that prevents subclassing of SWT components
 	}
 
-	private class WebClient extends AbstractHttpRequest<Requests,Object>{
+	private class WebClient extends AbstractHttpRequest<Requests>{
 
 		public WebClient( String context ) {
 			super(context );
@@ -316,17 +316,17 @@ public class TestComposite extends Composite {
 		}
 		
 		@Override
-		protected void sendPost(Requests request, Map<String, String> parameters, String data) throws IOException {
+		protected void sendPost(Requests request, Map<String, String> parameters, String post) throws IOException {
 			if( Requests.SUBSCRIBE.equals(request))
 				setContextPath(S_PUSH_CONTEXT_PATH);
 			else
 				setContextPath(S_CONTEXT_PATH);				
-			super.sendPost(request, parameters, data);
+			super.sendPost(request, parameters,post);
 		}
 
 		
 		@Override
-		protected String onHandleResponse(ResponseEvent<Requests, Object> event, Object data) throws IOException {
+		protected String onHandleResponse(ResponseEvent<Requests> event) throws IOException {
 			return Responses.BAD.name();
 		}
 	}

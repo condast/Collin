@@ -1,6 +1,5 @@
 package org.collin.ui.menu;
 
-import org.condast.commons.authentication.ui.menu.AbstractMenuButton;
 import org.condast.commons.authentication.user.ILoginUser;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.ui.help.AbstractHelpDialog;
@@ -14,7 +13,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 
-public class MenuButton extends AbstractMenuButton<ILoginUser> {
+public class MenuButton extends Composite {
 	private static final long serialVersionUID = 1L;
 	
 	public static final String S_HELP_URL = "/help/help.html";
@@ -48,7 +47,7 @@ public class MenuButton extends AbstractMenuButton<ILoginUser> {
 	 */
 	public MenuButton(Composite parent, int style) {
 		super(parent, style);
-		this.button = this;
+		//this.button = this;
 		this.selection = 0;
 	}
 
@@ -56,7 +55,6 @@ public class MenuButton extends AbstractMenuButton<ILoginUser> {
 		return selection;
 	}
 
-	@Override
 	protected void onSetupMenu(Menu menu) {
 		MenuItem mntmRegisterVessel = new MenuItem(menu, SWT.NONE);
 		mntmRegisterVessel.setText("Register Vessel");
@@ -105,7 +103,6 @@ public class MenuButton extends AbstractMenuButton<ILoginUser> {
 		});		
 	}
 
-	@Override
 	protected void onPrepareLogout(ILoginUser user) {
 		// TODO Auto-generated method stub
 		

@@ -11,8 +11,6 @@ import javax.security.auth.callback.TextOutputCallback;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
-import org.collin.dashboard.ds.AuthenticationDispatcher;
-
 /*
 *
 * Copyright (c) 2000, 2002, Oracle and/or its affiliates. All rights reserved.
@@ -117,7 +115,7 @@ public class CollinLoginModule implements LoginModule {
     }
 
     public boolean logout() throws LoginException {
-    	AuthenticationDispatcher.getInstance().logoutRequest();
+    	//AuthenticationDispatcher.getInstance().logoutRequest();
     	return true;
     }
 }

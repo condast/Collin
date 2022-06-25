@@ -11,8 +11,21 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <properties>
-        <tycho.version>0.26.0</tycho.version>
+  	<licenses>
+    	<license>
+      		<name>Apache License, Version 2.0</name>
+      		<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      		<distribution>repo</distribution>
+    	</license>
+  	</licenses>
+
+	<properties>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<tycho.version>2.3.0</tycho.version>
+		<generics>P:/GitHub/</generics>
+		<project-root>P:/GitHub/org.condast.commons</project-root>
+        <tycho.version>2.3.0</tycho.version>
         <generics>P:/GitHub/</generics>
         <project-root>P:/GitHub/org.condast.commons</project-root>
         <workspace-root>P:/Windows/Condast/Workspace/org.condast.commons</workspace-root>
@@ -61,6 +74,7 @@
     </dependency>
   </dependencies>
   <modules>
+	<module>../org.collin.target</module>
     <module>../org.collin.core</module>
     <module>../org.collin.authentication</module>
     <module>../org.collin.ui</module>
@@ -84,7 +98,15 @@
                 <artifactId>target-platform-configuration</artifactId>
                 <version>${tycho.version}</version>
                 <configuration>
-                      <environments>
+ 					<pomDependencies>consider</pomDependencies>
+					<target>
+						<artifact>
+							<groupId>org.collin</groupId>
+							<artifactId>collin.target</artifactId>
+							<version>${project.version}</version>
+						</artifact>
+					</target>
+                     <environments>
                         <environment>
                             <os>linux</os>
                             <ws>gtk</ws>

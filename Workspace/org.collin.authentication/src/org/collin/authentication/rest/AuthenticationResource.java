@@ -73,7 +73,7 @@ public class AuthenticationResource{
 
 			LoginService service = new LoginService( dispatcher ); 
 			try{
-				service.open();
+				//service.open();
 				ILoginUser user = service.create(name, password, email);
 				dispatcher.addUser(user);
 				retval = Response.ok( String.valueOf( user.getId())).build();
@@ -83,7 +83,7 @@ public class AuthenticationResource{
 				return Response.serverError().build();
 			}
 			finally {
-				service.close();
+				//service.close();
 			}
 			return retval;
 	}
@@ -153,7 +153,7 @@ public class AuthenticationResource{
 
 		LoginService service = new LoginService( dispatcher ); 
 		try{
-			service.open();	
+			//service.open();	
 			ILoginUser user = dispatcher.getUser( id );
 			logger.info( "Unregister " + user.getUserName() );			
 
@@ -166,7 +166,7 @@ public class AuthenticationResource{
 			return Response.serverError().build();
 		}
 		finally{ 
-			service.close();
+			//service.close();
 		}
 		return retval;
 	}
@@ -204,7 +204,7 @@ public class AuthenticationResource{
 	public static String toResponseString( ILoginUser user ) {
 		long[] str = new long[2];
 		str[0] = user.getId();
-		str[1] = user.getToken();
+		str[1] = user.getSecurity();
 		Gson gson = new Gson();
 		return gson.toJson(str, long[].class);
 	}

@@ -124,15 +124,17 @@ public class Login implements ILoginUser {
 	public void setUpdateDate(Date update) {
 		this.updateDate = update;
 	}
+
 	
 	@Override
-	public long getToken() {
+	public long getSecurity() {
 		long token = toString().hashCode();
 		token<<=31;
 		token += this.lsbtoken;
 		return token;
 	}
 
+	
 	/**
 	 * returns true if the user has administrative privileges
 	 * @param userName
@@ -156,13 +158,31 @@ public class Login implements ILoginUser {
 	}
 
 	@Override
-	public boolean isCorrect(long userId, String token) {
+	public void setSecurity(long security) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isRegistered() {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public void setToken(long token) {
+	public void setRegistered(boolean registered) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isConfirmed() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void setConfirmed(boolean confirmed) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -178,4 +198,12 @@ public class Login implements ILoginUser {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public boolean isCorrect(long userId, long security) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	
 }

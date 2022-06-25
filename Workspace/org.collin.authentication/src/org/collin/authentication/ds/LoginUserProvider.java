@@ -3,8 +3,6 @@ package org.collin.authentication.ds;
 import java.util.Collection;
 import java.util.Map;
 
-import javax.security.auth.callback.CallbackHandler;
-
 import org.collin.authentication.services.LoginService;
 import org.condast.commons.authentication.core.IAuthenticationListener;
 import org.condast.commons.authentication.core.ILoginProvider;
@@ -32,11 +30,6 @@ public class LoginUserProvider implements ILoginProvider {
 	}
 	
 	@Override
-	public boolean isLoggedIn(long loginId) {
-		return dispatcher.isLoggedIn(loginId);
-	}
-
-	@Override
 	public ILoginUser getLoginUser( long loginId, long token) {
 		return dispatcher.getLoginUser( loginId, token );
 	}
@@ -48,21 +41,9 @@ public class LoginUserProvider implements ILoginProvider {
 	}
 
 	@Override
-	public void logoutRequest() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void logout(long loginId, long token) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public CallbackHandler createCallbackHandler() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -74,5 +55,11 @@ public class LoginUserProvider implements ILoginProvider {
 	public void logout(ILoginUser user) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public boolean isLoggedIn(long loginId, long security) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

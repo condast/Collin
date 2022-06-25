@@ -15,7 +15,6 @@ import org.condast.commons.authentication.core.ILoginProvider;
 import org.condast.commons.messaging.http.AbstractHttpRequest;
 import org.condast.commons.messaging.http.ResponseEvent;
 import org.eclipse.equinox.security.auth.ILoginContext;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.layout.GridData;
@@ -86,12 +85,12 @@ public class CollinComposite extends Composite {
 						switch( event.getEvent()) {
 						case REGISTER:
 						case LOGIN:
-							menuButton.loggedIn( event.getUser());
+							//menuButton.loggedIn( event.getUser());
 							break;
 						default:
 							//ILoginUser user = menuButton.getData();
 							//provider.logout( user.getId(), user.getToken() );
-							menuButton.logOut();
+							///menuButton.logOut();
 							break;
 						}
 					}
@@ -136,8 +135,8 @@ public class CollinComposite extends Composite {
 		textPassword.setText("TestPassword");
 
 		menuButton = new MenuButton(this, SWT.NONE);
-		menuButton.setData( RWT.CUSTOM_VARIANT, S_COLLIN);
-		menuButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+		//menuButton.setData( RWT.CUSTOM_VARIANT, S_COLLIN);
+		//menuButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 
 		Link loginLink = new Link(this, SWT.NONE);
 		loginLink.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
@@ -194,7 +193,7 @@ public class CollinComposite extends Composite {
 		super.dispose();
 	}
 
-	private class WebClient extends AbstractHttpRequest<Requests, Object>{
+	private class WebClient extends AbstractHttpRequest<Requests>{
 
 		public WebClient() {
 			super();
@@ -202,7 +201,7 @@ public class CollinComposite extends Composite {
 
 		
 		@Override
-		protected String onHandleResponse(ResponseEvent<Requests, Object> event, Object data) throws IOException {
+		protected String onHandleResponse(ResponseEvent<Requests> event) throws IOException {
 			try{
 				notifyListeners( event);
 				return Responses.OK.name();

@@ -118,16 +118,4 @@ public class Dispatcher extends AbstractPersistencyService implements IPersisten
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	protected Map<String, String> onPrepareManager() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	protected void onManagerCreated(EntityManager manager) {
-		// TODO Auto-generated method stub
-		
-	}	
 }
