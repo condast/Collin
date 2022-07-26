@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.collin.core.graph.ICollINVertex;
 import org.collin.core.graph.IEdge.Direction;
 import org.condast.commons.strings.StringUtils;
 

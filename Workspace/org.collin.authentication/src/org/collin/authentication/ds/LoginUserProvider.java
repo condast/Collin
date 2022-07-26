@@ -6,6 +6,7 @@ import java.util.Map;
 import org.collin.authentication.services.LoginService;
 import org.condast.commons.authentication.core.IAuthenticationListener;
 import org.condast.commons.authentication.core.ILoginProvider;
+import org.condast.commons.authentication.user.IAdmin;
 import org.condast.commons.authentication.user.ILoginUser;
 import org.osgi.service.component.annotations.Component;
 
@@ -61,5 +62,11 @@ public class LoginUserProvider implements ILoginProvider {
 	public boolean isLoggedIn(long loginId, long security) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public IAdmin getAdmin(ILoginUser user) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

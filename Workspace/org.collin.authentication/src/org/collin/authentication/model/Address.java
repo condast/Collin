@@ -127,7 +127,6 @@ public class Address implements IAddress, Serializable {
 		return country;
 	}
 
-	@Override
 	public void setCountry(String country) {
 		this.country = country;
 	}
@@ -170,5 +169,29 @@ public class Address implements IAddress, Serializable {
 			s.append("]");
 		}
 		return s.toString();
+	}
+
+	@Override
+	public void setNumber(String number) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getHouseNumber() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasValidLocation() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -29,7 +29,7 @@ import org.condast.commons.na.model.IPerson;
 import org.condast.commons.na.model.IProfessional;
 import org.condast.commons.na.model.IPersonAddress;
 import org.condast.commons.na.model.IAddress.AddressTypes;
-import org.condast.commons.ui.date.DateUtils;
+import org.condast.commons.date.DateUtils;
 
 /**
  * The persistent class for the eet_tb_persoon database table.

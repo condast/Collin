@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="collin.target" sequenceNumber="157">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.8"?>
+<target name="collin.target" sequenceNumber="157">
 <locations>
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\registry" type="Directory"/>
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\jaxrs" type="Directory"/>
@@ -22,7 +24,6 @@
 <plugin id="ch.qos.logback.access"/>
 <plugin id="ch.qos.logback.classic"/>
 <plugin id="ch.qos.logback.core"/>
-<plugin id="com.google.gson" version="2.7.0"/>
 <plugin id="com.ibm.icu"/>
 <plugin id="com.ibm.icu.source"/>
 <plugin id="com.mysql.jdbc"/>
@@ -38,29 +39,29 @@
 <plugin id="javax.annotation-api"/>
 <plugin id="javax.ejb"/>
 <plugin id="javax.el"/>
-<plugin id="javax.jms" version="1.1.0.v200906010428"/>
 <plugin id="javax.jms" version="1.1.0.v201205091237"/>
+<plugin id="javax.jms" version="1.1.0.v200906010428"/>
 <plugin id="javax.mail.glassfish" version="1.4.1.v201005082020"/>
 <plugin id="javax.persistence" version="2.2.0.v201708071007"/>
 <plugin id="javax.persistence.javadoc"/>
 <plugin id="javax.persistence.source" version="2.2.0.v201708071007"/>
 <plugin id="javax.resource"/>
-<plugin id="javax.servlet" version="3.1.0.20170128"/>
 <plugin id="javax.servlet" version="3.0.0.v201112011016"/>
+<plugin id="javax.servlet" version="3.1.0.20170128"/>
 <plugin id="javax.servlet" version="2.4.0.v200806031604"/>
 <plugin id="javax.servlet.jsp"/>
 <plugin id="javax.servlet.jsp.jstl-api"/>
-<plugin id="javax.transaction" version="1.1.1.v201105210645"/>
 <plugin id="javax.transaction" version="1.1.0.v201002051055"/>
+<plugin id="javax.transaction" version="1.1.1.v201105210645"/>
 <plugin id="javax.validation"/>
 <plugin id="javax.validation.api"/>
-<plugin id="javax.ws.rs"/>
+<plugin id="javax.ws.rs" version="2.0.1.v201504171603"/>
 <plugin id="javax.ws.rs-api"/>
 <plugin id="javax.wsdl"/>
 <plugin id="javax.xml"/>
 <plugin id="javax.xml.bind"/>
 <plugin id="javax.xml.soap"/>
-<plugin id="javax.xml.ws"/>
+<plugin id="javax.xml.ws" version="2.0.0.v200902170419"/>
 <plugin id="jaxb-core"/>
 <plugin id="jaxb-xjc"/>
 <plugin id="oevm.javax.portlet"/>
@@ -80,7 +81,7 @@
 <plugin id="org.apache.logging.log4j.to-slf4j"/>
 <plugin id="org.apache.taglibs.standard.glassfish"/>
 <plugin id="org.aspectj.weaver"/>
-<plugin id="org.eclipse.core.commands"/>
+<plugin id="org.eclipse.core.commands" version="3.9.300.v20190215-1957"/>
 <plugin id="org.eclipse.core.contenttype"/>
 <plugin id="org.eclipse.core.databinding"/>
 <plugin id="org.eclipse.core.databinding.beans"/>
@@ -220,5 +221,6 @@
 	<plugin id="org.eclipse.osgi.util.source"/>
 	<plugin id="org.apache.felix.scr"/>
 	<plugin id="org.eclipse.equinox.http.servlet"/>
+	<plugin id="com.google.gson" version="2.8.2"/>
 </includeBundles>
 </target>

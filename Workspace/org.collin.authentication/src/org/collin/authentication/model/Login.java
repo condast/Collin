@@ -15,7 +15,7 @@ import javax.persistence.TemporalType;
 
 import org.condast.commons.authentication.user.ILoginUser;
 import org.condast.commons.data.latlng.LatLng;
-import org.condast.commons.ui.date.DateUtils;
+import org.condast.commons.date.DateUtils;
 
 @Entity
 public class Login implements ILoginUser {

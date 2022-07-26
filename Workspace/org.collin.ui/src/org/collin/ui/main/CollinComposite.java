@@ -153,7 +153,7 @@ public class CollinComposite extends Composite {
 					}
 				}		
 			});
-			button.setImage( PlayerImages.getInstance().getImage(type));
+			button.setImage( PlayerImages.getImage(type));
 			return button;
 		}
 	}	

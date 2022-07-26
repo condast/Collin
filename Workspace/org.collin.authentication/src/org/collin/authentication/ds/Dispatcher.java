@@ -6,14 +6,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.persistence.EntityManager;
 import javax.security.auth.callback.CallbackHandler;
 
 import org.collin.authentication.services.LoginService;
 import org.condast.commons.authentication.core.AuthenticationEvent;
 import org.condast.commons.authentication.core.IAuthenticationListener;
 import org.condast.commons.authentication.core.IAuthenticationListener.AuthenticationEvents;
-import org.condast.commons.authentication.core.ILoginProvider;
 import org.condast.commons.authentication.user.ILoginUser;
 import org.condast.commons.persistence.service.AbstractPersistencyService;
 import org.condast.commons.persistence.service.IPersistenceService;

@@ -181,7 +181,6 @@ public class PersonAddress implements IPersonAddress, Serializable {
 		return address.getStreet();
 	}
 
-	@Override
 	public void setStreet(String street) {
 		this.address.setStreet(street);
 	}
@@ -211,12 +210,10 @@ public class PersonAddress implements IPersonAddress, Serializable {
 		return this.address.getTown();
 	}
 
-	@Override
 	public void setTown(String town) {
 		this.address.setTown(town);
 	}
 
-	@Override
 	public void setStreetExtension(String text) {
 		this.address.setStreetExtension(text);
 	}
@@ -231,7 +228,6 @@ public class PersonAddress implements IPersonAddress, Serializable {
 		return this.address.getCountry();
 	}
 
-	@Override
 	public void setCountry(String country) {
 		this.address.setCountry(country);
 	}
@@ -303,5 +299,11 @@ public class PersonAddress implements IPersonAddress, Serializable {
 	public boolean hasValidLocation() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

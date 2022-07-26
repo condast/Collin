@@ -5,12 +5,11 @@ Bundle-SymbolicName: org.collin.core
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.collin.core.Activator
 Bundle-Vendor: Condast
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: org.fgf.animal.count.core
 Import-Package: org.condast.commons,
  org.condast.commons.authentication.user,
  org.condast.commons.data.latlng,
- org.condast.commons.persistence.def,
  org.condast.commons.strings,
  org.osgi.framework;version="1.3.0"
 Bundle-ActivationPolicy: lazy

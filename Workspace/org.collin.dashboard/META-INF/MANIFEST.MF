@@ -5,7 +5,6 @@ Bundle-SymbolicName: org.collin.dashboard;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.collin.dashboard.Activator
 Bundle-Vendor: Condast
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Automatic-Module-Name: org.fgf.animal.dasboard
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.servlet;version="3.1.0.20170128",
@@ -18,9 +17,8 @@ Import-Package: javax.servlet;version="3.1.0.20170128",
  org.collin.ui.menu,
  org.collin.ui.test,
  org.condast.commons.authentication.core,
-  org.condast.commons.i18n,
+ org.condast.commons.i18n,
  org.condast.commons.messaging.http,
- org.condast.commons.preferences,
  org.condast.commons.strings,
  org.condast.commons.ui.logger,
  org.condast.commons.ui.xml,
@@ -34,8 +32,8 @@ Import-Package: javax.servlet;version="3.1.0.20170128",
  org.eclipse.swt.layout,
  org.eclipse.swt.widgets,
  org.osgi.framework,
- org.osgi.service.component.annotations;version="1.2.0",
- org.osgi.service.prefs;version="1.1.1"
+ org.osgi.service.component.annotations;version="1.2.0"
 Service-Component: OSGI-INF/contribution.xml,
  OSGI-INF/org.collin.dashboard.service.login.xml
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 
