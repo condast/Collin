@@ -8,7 +8,6 @@ import org.collin.core.def.ITetraImplementation;
 import org.collin.core.essence.TetraEvent;
 import org.collin.core.essence.TetraEvent.Results;
 import org.collin.core.impl.SequenceNode;
-import org.collin.core.task.AbstractDelegate;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 

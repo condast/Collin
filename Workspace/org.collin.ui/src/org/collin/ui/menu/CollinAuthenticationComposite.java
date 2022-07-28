@@ -154,7 +154,7 @@ public class CollinAuthenticationComposite extends Composite {
 				try {
 					Map<String, String> parameters = new HashMap<String, String>();
 					parameters.put( Parameters.NAME.toString(), textName.getText());
-					client.sendGet( Requests.LOGIN.getPath(), parameters);
+					client.sendGet( Requests.LOGIN, parameters);
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
@@ -172,7 +172,7 @@ public class CollinAuthenticationComposite extends Composite {
 					Map<String, String> parameters = new HashMap<String, String>();
 					parameters.put( Parameters.NAME.toString(), textName.getText());
 					parameters.put( Parameters.PASSWORD.toString(), textPassword.getText());
-					client.sendGet( Requests.REGISTER.getPath(), parameters);
+					client.sendGet( Requests.REGISTER, parameters);
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
@@ -204,6 +204,12 @@ public class CollinAuthenticationComposite extends Composite {
 		}
 
 		
+		@Override
+		protected void sendGet(Requests request, Map<String, String> parameters) throws IOException {
+			super.sendGet(request, parameters);
+		}
+
+
 		@Override
 		protected String onHandleResponse(ResponseEvent<Requests> event) throws IOException {
 			try{

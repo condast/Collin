@@ -15,17 +15,17 @@ public class AdviceFactory {
 	public static String S_DEFAULT_LOCATION = "/resources/advice/advice.mdl";
 	
 	private Collection<Advice> advices;
-	private SequenceNode node;
+	private SequenceNode<Advice> node;
 	
-	public AdviceFactory( SequenceNode node ) {
+	public AdviceFactory( SequenceNode<Advice> node ) {
 		advices = new ArrayList<>();
 		this.node = node;
 	}
 	
-	protected String getAdviceURI(SequenceNode root, IAdvice.AdviceTypes type, int index ) {
-		List<SequenceNode> children = root.getChildren();
-		List<SequenceNode> temp = new ArrayList<>();
-		for( SequenceNode nd: children ) {
+	protected String getAdviceURI(SequenceNode<Advice> root, IAdvice.AdviceTypes type, int index ) {
+		List<SequenceNode<Advice>> children = root.getChildren();
+		List<SequenceNode<Advice>> temp = new ArrayList<>();
+		for( SequenceNode<Advice> nd: children ) {
 			String type_str = StringStyler.styleToEnum(nd.getType());
 			IAdvice.AdviceTypes nttype = IAdvice.AdviceTypes.valueOf(type_str);
 			if(! nttype.equals(type ))

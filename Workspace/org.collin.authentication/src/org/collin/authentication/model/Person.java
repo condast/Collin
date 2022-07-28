@@ -21,12 +21,12 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.condast.commons.Utils;
 import org.condast.commons.na.model.Gender;
 import org.condast.commons.na.model.IAddress;
 import org.condast.commons.na.model.IName;
 import org.condast.commons.na.model.IPerson;
 import org.condast.commons.na.model.IProfessional;
+import org.condast.commons.strings.StringUtils;
 import org.condast.commons.na.model.IPersonAddress;
 import org.condast.commons.na.model.IAddress.AddressTypes;
 import org.condast.commons.date.DateUtils;
@@ -181,7 +181,7 @@ public class Person implements IPerson, Serializable, Cloneable {
 			if( entry.getValue().getAddress().equals(address ))
 				key = entry.getKey();
 		}
-		if( Utils.assertNull(key))
+		if( StringUtils.isEmpty(key))
 			addresses.remove( key );
 	}
 
