@@ -7,6 +7,7 @@ import org.condast.commons.Utils;
 import org.condast.commons.authentication.core.IAuthenticationListener;
 import org.condast.commons.authentication.core.ILoginProvider;
 import org.condast.commons.authentication.user.AnonymousUser;
+import org.condast.commons.authentication.user.IAdmin;
 import org.condast.commons.authentication.user.ILoginUser;
 import org.condast.commons.persistence.service.AbstractPersistencyService;
 import org.condast.commons.strings.StringUtils;
@@ -47,12 +48,12 @@ public class Dispatcher extends AbstractPersistencyService implements ILoginProv
 			return false;
 		return this.loginProvider.isRegistered(loginId);
 	}
-
+	
 	@Override
-	public boolean isLoggedIn(long loginId ) {
+	public boolean isLoggedIn(long loginId, long security) {
 		if( this.loginProvider == null )
 			return false;
-		return this.loginProvider.isLoggedIn(loginId);
+		return this.loginProvider.isLoggedIn(loginId, security);
 	}
 
 	/**
@@ -65,7 +66,7 @@ public class Dispatcher extends AbstractPersistencyService implements ILoginProv
 		if( this.loginProvider == null )
 			return false;
 		ILoginUser user = this.loginProvider.getLoginUser(loginId, token);
-		return( user == null )?false: user.getToken() == token;
+		return( user == null )?false: user.getSecurity() == token;
 	}
 
 	/**
@@ -111,13 +112,25 @@ public class Dispatcher extends AbstractPersistencyService implements ILoginProv
 	}
 
 	@Override
-	public void logoutRequest() {
+	public void logout(long loginId, long token) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void logout(long loginId, long token) {
+	public IAdmin getAdmin(ILoginUser user) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasLoginUser(String userName, long security) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void logout(ILoginUser user) {
 		// TODO Auto-generated method stub
 		
 	}

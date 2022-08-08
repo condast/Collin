@@ -1,6 +1,6 @@
 package org.fgf.animal.count.location.ds;
 
-import org.collin.core.authentication.ILoginProvider;
+import org.condast.commons.authentication.core.ILoginProvider;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;

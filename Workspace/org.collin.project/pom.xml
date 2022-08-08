@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project
-     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
     http://maven.apache.org/xsd/maven-4.0.0.xsd"
     xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -23,6 +22,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<tycho.version>2.3.0</tycho.version>
+		<bundle-name>org.collin</bundle-name>
 		<generics>P:/GitHub/</generics>
 		<project-root>P:/GitHub/org.condast.commons</project-root>
         <tycho.version>2.3.0</tycho.version>
@@ -33,27 +33,20 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  
         <eclipse-update-repo.url>http://download.eclipse.org/eclipse/updates/4.7</eclipse-update-repo.url>
         <rap-repo.url>http://download.eclipse.org/rt/rap/3.4/</rap-repo.url>
-        <condast-repo.url>${virgo-root}/alpha.condast.root.update/</condast-repo.url>
+		<update-site>${project-root}/${bundle-name}.update/target/site/plugins</update-site>
+		<release-dir>P:/Releases</release-dir>
         <condast-commons>file:${generics}/org.condast.commons/Workspace/</condast-commons>
         <condast-js>file:${generics}/org.condast.js/Workspace/</condast-js>
       </properties>
 
+	<distributionManagement>
+		<repository>
+			<id>release directory</id>
+			<url>file:${release-dir}/release</url>
+		</repository>
+	</distributionManagement>
+
     <repositories>
-        <repository>
-            <id>eclipse-update</id>
-            <url>${eclipse-update-repo.url}</url>
-            <layout>p2</layout>
-        </repository>
-        <repository>
-            <id>rap-update</id>
-            <url>${rap-repo.url}</url>
-            <layout>p2</layout>
-        </repository>
-        <repository>
-            <id>condast-repo</id>
-            <url>${condast-repo.url}</url>
-            <layout>p2</layout>
-        </repository>
          <repository>
             <id>org-condast-commons</id>
             <url>${condast-commons}/org.condast.commons.update/target/site</url>

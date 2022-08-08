@@ -13,11 +13,11 @@ import java.util.logging.Logger;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.core.Response;
 
-import org.collin.core.authentication.ILoginUser;
 import org.collin.core.data.BatchEntry;
 import org.collin.core.model.IBatch;
 import org.collin.core.model.IMeasurement;
 import org.condast.commons.Utils;
+import org.condast.commons.authentication.user.ILoginUser;
 import org.condast.commons.comparable.NullComparator;
 import org.condast.commons.data.latlng.ILocation;
 import org.condast.commons.data.latlng.LatLng;

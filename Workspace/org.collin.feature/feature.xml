@@ -19,27 +19,27 @@
 
    <requires>
       <import plugin="com.google.gson"/>
-      <import plugin="javax.annotation-api"/>
       <import plugin="org.eclipse.osgi"/>
       <import plugin="javax.persistence"/>
       <import plugin="javax.servlet"/>
-      <import plugin="javax.ws.rs"/>
       <import plugin="org.apache.commons.codec"/>
       <import plugin="org.eclipse.core.commands"/>
       <import plugin="org.eclipse.equinox.http.registry"/>
       <import plugin="org.eclipse.equinox.security"/>
       <import plugin="org.eclipse.rap.jface"/>
-      <import plugin="org.eclipse.persistence.core"/>
       <import plugin="org.glassfish.jersey.core.jersey-common"/>
       <import plugin="org.glassfish.jersey.core.jersey-server"/>
       <import plugin="org.glassfish.jersey.containers.jersey-container-servlet-core"/>
       <import plugin="org.eclipse.osgi.services"/>
       <import plugin="org.eclipse.equinox.preferences"/>
       <import plugin="org.condast.commons.data" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rap.rwt"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.eclipse.core.runtime" version="3.9.100" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.runtime" version="3.0.0" match="greaterOrEqual"/>
+      <import plugin="osgi.enterprise"/>
       <import plugin="org.eclipse.rap.nebula.widgets.richtext"/>
+      <import plugin="org.eclipse.rap.rwt"/>
+      <import plugin="org.condast.js.commons"/>
+      <import plugin="nl.martijndwars.webpush"/>
+      <import plugin="org.condast.js.push"/>
    </requires>
 
    <plugin
@@ -128,6 +128,13 @@
 
    <plugin
          id="org.collin.moodle"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="javax.ws.rs-api"
          download-size="0"
          install-size="0"
          version="0.0.0"
