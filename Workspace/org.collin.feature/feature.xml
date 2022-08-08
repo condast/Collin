@@ -23,6 +23,7 @@
       <import plugin="javax.persistence"/>
       <import plugin="javax.servlet"/>
       <import plugin="org.apache.commons.codec"/>
+      <import plugin="org.condast.commons.data" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.commands"/>
       <import plugin="org.eclipse.equinox.http.registry"/>
       <import plugin="org.eclipse.equinox.security"/>
@@ -32,14 +33,18 @@
       <import plugin="org.glassfish.jersey.containers.jersey-container-servlet-core"/>
       <import plugin="org.eclipse.osgi.services"/>
       <import plugin="org.eclipse.equinox.preferences"/>
-      <import plugin="org.condast.commons.data" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.runtime" version="3.0.0" match="greaterOrEqual"/>
-      <import plugin="osgi.enterprise"/>
+      <import plugin="org.condast.js.commons"/>
       <import plugin="org.eclipse.rap.nebula.widgets.richtext"/>
       <import plugin="org.eclipse.rap.rwt"/>
-      <import plugin="org.condast.js.commons"/>
       <import plugin="nl.martijndwars.webpush"/>
       <import plugin="org.condast.js.push"/>
+      <import plugin="org.eclipse.core.runtime" version="3.0.0" match="greaterOrEqual"/>
+      <import plugin="org.condast.commons"/>
+      <import plugin="org.condast.commons.authentication"/>
+      <import plugin="org.condast.commons.messaging"/>
+      <import plugin="org.condast.commons.na"/>
+      <import plugin="org.condast.commons.persistence"/>
+      <import plugin="org.condast.commons.ui"/>
    </requires>
 
    <plugin
@@ -57,63 +62,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.condast.commons"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.condast.commons.authentication"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.condast.commons.data"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.condast.commons.na"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.condast.commons.persistence"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.condast.commons.test"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.condast.commons.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.collin.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.condast.commons.messaging"
          download-size="0"
          install-size="0"
          version="0.0.0"
