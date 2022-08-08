@@ -4,6 +4,10 @@ tmp/
 features/
 plugins/
 
+#Persistence
+persistence.xml
+META-INF/sql/*.sql
+
 *.class
 *.tmp
 artifacts.jar
